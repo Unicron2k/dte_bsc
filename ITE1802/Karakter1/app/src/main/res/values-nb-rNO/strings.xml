@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StrongMan</string>
+    <string name="str_about_text">Om Appen:\nLaget av Meg</string>
+    <string name="str_refresh">Oppfrisker…</string>
+    <string name="str_settings">Innstillinger</string>
+    <string name="str_option_menu_about">Om appen</string>
+    <string name="str_option_menu_quit">Avslutt</string>
+    <string name="str_option_menu_refresh">Oppfrisk</string>
+    <string name="str_option_menu_settings">Innstillinger</string>
+</resources>

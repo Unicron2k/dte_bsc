@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Assignment 4-2 - Three.js</title>
+	<meta charset="UTF-8">
+</head>
+<body>
+<canvas id="webgl">
+	Denne nettleseren støtter ikke canvas-elementet!
+</canvas>
+
+<script type="module">
+	'use strict';
+	(function(){const script = document.createElement('script');script.onload=function(){const stats = new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})();
+	import {main} from "./js/Assignment4-2.js";
+	main();
+</script>
+</body>
+</html>

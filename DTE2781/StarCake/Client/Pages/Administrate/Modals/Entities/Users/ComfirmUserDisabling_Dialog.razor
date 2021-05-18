@@ -1,0 +1,78 @@
+@using StarCake.Shared.Models.ViewModels
+@inject ISnackbar Snackbar
+
+
+<!-- Disable variable chek if disable user, if not so activate the user -->
+
+
+<MudDialog>
+    <TitleContent>
+        @if (Disable)
+        {
+            <MudText Typo="Typo.h6">
+                <MudIcon Icon="@Icons.Material.Filled.DeleteForever" Class="mr-3 mb-n1"/>
+                Disable @Users.UserName?
+            </MudText>
+        }
+        else
+        {
+            <MudText Typo="Typo.h6">
+                <MudIcon Icon="@Icons.Material.Filled.Check" Class="mr-3 mb-n1"/>
+                Activate @Users.UserName?
+            </MudText>
+        }
+    </TitleContent>
+
+    <!-- Main content -->
+    <DialogContent>
+        @if (Disable)
+        {
+            <MudText Class="p-2"> Are you sure you will disable the user: </MudText>
+            <MudText>@Users.LastName, @Users.FirstName</MudText>
+            <MudText>@Users.UserName</MudText>
+
+        }
+        else
+        {
+            <MudText Class="p-2"> Are you sure you will activate the user: </MudText>
+            <MudText>@Users.LastName, @Users.FirstName</MudText>
+            <MudText>@Users.UserName</MudText>
+        }
+    </DialogContent>
+
+    <!--Buttons-->
+    <DialogActions>
+        @if (Disable)
+        {
+            <MudButton OnClick="Yes" Variant="Variant.Text" Size="Size.Small" Class="ma-2">Disable account</MudButton>
+            <MudButton OnClick="No" Variant="Variant.Text" Size="Size.Small" Color="Color.Error" Class="ma-2">No</MudButton>
+        }
+        else
+        {
+            <MudButton OnClick="Yes" Variant="Variant.Text" Size="Size.Small" Class="ma-2">Activate this account</MudButton>
+            <MudButton OnClick="No" Variant="Variant.Text" Size="Size.Small" Color="Color.Error" Class="ma-2">No</MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+       
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    
+    [Parameter] public bool Disable { get; set; }
+    [Parameter] public ApplicationUserViewModel Users { get; set; }
+    
+    private void Yes()
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void No()
+    {
+         MudDialog.Cancel();
+    } 
+    
+}

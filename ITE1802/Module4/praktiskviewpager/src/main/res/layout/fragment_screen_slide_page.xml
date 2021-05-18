@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- fragment_screen_slide_page.xml -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <TextView style="@style/textViewStyle"
+                  android:id="@+id/tv_type"/>
+
+        <TextView style="@style/textViewStyle"
+                  android:id="@+id/tv_manufacturer"/>
+
+        <TextView style="@style/textViewStyle"
+                  android:id="@+id/tv_model"/>
+
+        <TextView style="@style/textViewStyle"
+                  android:id="@+id/tv_loanStatus"/>
+
+        <TextView style="@style/textViewStyle"
+                  android:id="@+id/tv_loanedTo"/>
+
+        <TextView style="@style/textViewStyle"
+                  android:id="@+id/tv_imageURL"/>
+
+        <TextView style="@style/textViewStyle"
+                  android:id="@+id/tv_dateOfPurchase"/>
+    </LinearLayout>
+</ScrollView>

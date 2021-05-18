@@ -1,0 +1,105 @@
+﻿@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Services
+@inject ISnackbar Snackbar
+@inject HttpClient Http
+@inject AppData AppData
+
+@if (Entity==null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+}
+else
+{
+    <EditForm Model="@_component" OnValidSubmit="SubmitForm" OnInvalidSubmit="ShowErrorSnack">
+        @*<DataAnnotationsValidator/>*@
+        <MudCard>
+            <MudCardContent>
+                <MudTextField
+                    Label="Name"
+                    @bind-value="@_component.Name"
+                    For="@(() => _component.Name)"/>
+                <MudTextField
+                    Label="Serial number"
+                    @bind-value="@_component.SerialNumber"
+                    For="@(() => _component.SerialNumber)"/>
+                <MudTextField
+                    Label="Max cycles between maintenance"
+                    @bind-value="@_component.MaxCyclesBtwMaintenance"
+                    For="@(() => _component.MaxCyclesBtwMaintenance)"/>
+                <MudTextField
+                    Label="Max days between maintenance"
+                    @bind-value="@_component.MaxDaysBtwMaintenance"
+                    For="@(() => _component.MaxDaysBtwMaintenance)"/>
+                <MudTextField
+                    Label="Max hours flight-time between maintenance"
+                    @bind-value="@_component.MaxFlightSecondsBtwMaintenance"
+                    For="@(() => _component.MaxFlightSecondsBtwMaintenance)"/>
+                <MudSelect T="int" @bind-value="@_component.ComponentTypeId" Label="Type" Strict="true" Variant="Variant.Outlined" Format="F2">
+                    @foreach (var componentType in AppData.ComponentTypes.Where(a=>a.IsActive).OrderBy(x => x.Name))
+                    {
+                        <MudSelectItem T="int" Value="@componentType.ComponentTypeId">
+                            @componentType.Name
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+                <MudSelect T="int" @bind-value="@_component.ManufacturerId" Label="Manufacturer" Strict="true" Variant="Variant.Outlined" Format="F2">
+                    @foreach (var manufacturer in AppData.Manufacturers.Where(a=>a.IsActive).OrderBy(x => x.ManufacturerId))
+                    {
+                        <MudSelectItem T="int" Value="@manufacturer.ManufacturerId">
+                            @manufacturer.Name
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+                    Add component
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </EditForm>
+}
+
+@code {
+    private ComponentViewModel _component;
+
+    protected override void OnInitialized()
+    {
+        _component = new ComponentViewModel
+        {
+            EntityId = Entity.EntityId,
+            DepartmentId = AppData.CurrentUser.CurrentLoggedInDepartmentId,
+            CreationDate = DateTime.UtcNow,
+            TotalFlightCycles = 0,
+            TotalFlightDurationInSeconds = 0,
+            CyclesSinceLastMaintenance = 0,
+            FlightSecondsSinceLastMaintenance = 0,
+            LastMaintenanceDate = DateTime.UtcNow
+        };
+    }
+
+    // Rx parameter
+    [Parameter]
+    public EntityViewModel Entity { get; set; }
+
+    // Tx parameter
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+    
+    void SubmitForm()
+    {
+        if (_component.ComponentTypeId == 0 || _component.ManufacturerId == 0)
+            ShowErrorSnack();
+        else
+        {   
+            // Return component to page that called this Modal
+            _component.MaxFlightSecondsBtwMaintenance *= 60 * 60;
+            MudDialog.Close(DialogResult.Ok(_component));
+        }
+    }
+
+    void ShowErrorSnack()
+    {
+        Snackbar.Add("Make sure to fill in all fields", Severity.Error);
+    }
+}

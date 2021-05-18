@@ -1,0 +1,223 @@
+@using StarCake.Client.Services
+@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Pages.Administrate.Modals.Entities.Users
+@using StarCake.Shared
+@inject AppData AppData
+@inject HttpClient Http
+@inject IDialogService DialogService
+
+<MudGrid Class="justify-content-center my-3">
+    <MudItem xs="12" md="9">
+        
+        <MudTable T="DepartmentApplicationUserViewModel" Items="choosenDepartment">
+            <ColGroup>
+                <col style="width: 20px;"/>
+                <col style="width: 40px;"/>
+                <col style="width: 40px;"/>
+                <col style="width: 40px;"/>
+                <col style="width: 20px;"/>
+                <col style="width: 20px;"/>
+                 <col style="width: 20px;"/>
+                <col style="width: auto;"/>
+            </ColGroup>
+            <HeaderContent>
+                <MudTh>
+                    <MudMenu
+                        EndIcon="@Icons.Filled.KeyboardArrowDown"
+                        Label="@selectedDepartment"
+                        Color="Color.Primary" Variant="Variant.Filled" Direction="Direction.Bottom"
+                        Size="Size.Small">
+                        <!-- List all department the currentUser is member of -->
+                        @foreach (var department in AppData.CurrentUser.Departments.Where(x=> x.OrganizationId == AppData.CurrentUser.CurrentDepartment.OrganizationId).ToList())
+                        {
+                            <MudMenuItem OnClick="()=> ShowUsersInDepartment(department.DepartmentId)">@department.Name</MudMenuItem>
+                        }
+                    </MudMenu>
+                </MudTh>
+                <MudTh>
+                    <b>Firstname</b>
+                </MudTh>
+                <MudTh>
+                    <b>Lastname</b>
+                </MudTh>
+                <MudTh>
+                    <b>Username</b>
+                </MudTh>
+                <MudTh>
+                    <b>Department Maintainer</b>
+                </MudTh>
+                <MudTh>
+                    <b>Organization Maintainer</b>
+                </MudTh>
+                <MudTh>
+                    <b>Edit membership</b>
+                </MudTh>
+                <MudTh>
+                    <b>Active</b>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate Context="users">
+                @if (users.ApplicationUserId != AppData.CurrentUser.Id)
+                {
+                    @if (users.ApplicationUser.LockoutEnd == null)
+                    {
+                        <MudTd>
+                            <MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Circle" Color="Color.Success"></MudIcon>
+                        </MudTd>
+                    }
+                    else
+                    {
+                      
+            <MudTd>
+                <MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Circle" Color="Color.Error"></MudIcon>
+            </MudTd>
+                    }
+                    <MudTd DataLabel="Firstname">@users.ApplicationUser.FirstName</MudTd>
+                    <MudTd DataLabel="Lastname">@users.ApplicationUser.LastName</MudTd>
+                    <MudTd DataLabel="Active">@users.ApplicationUser.UserName</MudTd>
+                    <MudTd>
+                        <MudToggleIconButton Toggled="@users.IsMaintainer"
+                                             ToggledChanged="() => OnToggledChangedDepartment(users)"
+                                             Icon="@Icons.Material.Outlined.CheckBoxOutlineBlank"
+                                             ToggledIcon="@Icons.Material.Outlined.CheckBox"
+                                             Disabled="isUserDisabled(users)"/>
+                    </MudTd>
+
+                    <MudTd>
+                        <MudToggleIconButton Toggled="@users.ApplicationUser.IsOranizationMaintainer"
+                                             ToggledChanged="() => OnToggledOrganizationMaintainer(users)"
+                                             Icon="@Icons.Material.Outlined.CheckBoxOutlineBlank"
+                                             ToggledIcon="@Icons.Material.Outlined.CheckBox"
+                                             Disabled="isUserDisabled(users)"/>
+                    </MudTd>
+                    <MudTd>
+                        <MudButton OnClick="() => ModifyUserMebmer(users.ApplicationUser)" Variant="Variant.Text" Size="Size.Small" Color="Color.Error" Class="ma-2">Edit</MudButton>
+                    </MudTd>
+                    @if (users.ApplicationUser.LockoutEnd == null)
+                    {
+                        <MudTd>
+                            <MudButton OnClick="() => ChangeUserStatus(users.ApplicationUserId, true, users.ApplicationUser)" Variant="Variant.Text" Size="Size.Small" Color="Color.Error" Class="ma-2">Disable user</MudButton>
+                        </MudTd>
+                    }
+                    else
+                    {
+                        <MudTd >
+                            <MudButton OnClick="() => ChangeUserStatus(users.ApplicationUserId, false, users.ApplicationUser)" Variant="Variant.Text" Size="Size.Small" Class="ma-2">Activate user</MudButton>
+                        </MudTd>
+                    }
+                }
+
+            </RowTemplate>
+        </MudTable>
+    </MudItem>
+</MudGrid>
+
+@code{
+
+    ICollection<DepartmentApplicationUserViewModel> choosenDepartment;
+    string selectedDepartment;
+
+    protected override async Task OnInitializedAsync()
+    {
+         choosenDepartment = AppData.CurrentUser.CurrentDepartment.DepartmentApplicationUsers;
+        selectedDepartment = AppData.CurrentUser.CurrentDepartment.Name;
+    }
+    
+    async Task ModifyUserMebmer(ApplicationUserViewModel user)
+    {
+        var disableBackDropClick = new DialogOptions()
+        {
+            DisableBackdropClick = true,
+            FullWidth = true
+        };
+        var parameteres = new DialogParameters();
+        parameteres.Add(nameof(ModifyDepartmentMember.User), user);
+        var dialog = DialogService.Show<ModifyDepartmentMember>("Modify user department", parameteres, disableBackDropClick);
+    }
+
+    //Use for Disable the ToggleSwitch depends by user is disabled or not.
+    public bool isUserDisabled(DepartmentApplicationUserViewModel user)
+    {
+        return user.ApplicationUser.LockoutEnd != null;
+    }
+
+    //Update the user is Maintainer or not. 
+    public async void OnToggledChangedDepartment(DepartmentApplicationUserViewModel departmentApplicationUserViewModel)
+    {
+        var tempViewModel = departmentApplicationUserViewModel.Clone();
+        tempViewModel.IsMaintainer = !departmentApplicationUserViewModel.IsMaintainer;
+        var respons = await Http.PutAsJsonAsync("api/ApplicationUserAPI/DMaintainerUpdate", tempViewModel);
+
+        if (respons.IsSuccessStatusCode)
+        {
+            var responseDataDB = await respons.Content.ReadFromJsonAsync<DepartmentApplicationUserViewModel>();
+
+            AppData.ParentRoot.ShowSnackBar(" Department maintainer status for " + departmentApplicationUserViewModel.ApplicationUser.FirstName + " is updated", Severity.Normal);
+            departmentApplicationUserViewModel.IsMaintainer = responseDataDB.IsMaintainer;
+            StateHasChanged();
+           
+        }
+        else
+        {
+            AppData.ParentRoot.ShowSnackBar("Something went wrong when update the Department maintainer", Severity.Error);
+        }
+    }
+
+    public async void OnToggledOrganizationMaintainer(DepartmentApplicationUserViewModel departmentApplicationUserViewModel)
+    {
+        var tempViewModel = departmentApplicationUserViewModel.Clone();
+        tempViewModel.ApplicationUser.IsOranizationMaintainer = !departmentApplicationUserViewModel.ApplicationUser.IsOranizationMaintainer;
+        var respons = await Http.PutAsJsonAsync("api/ApplicationUserAPI/OMaintainerUpdate", tempViewModel);
+        if (respons.IsSuccessStatusCode)
+        {
+            var responseDataDB = await respons.Content.ReadFromJsonAsync<DepartmentApplicationUserViewModel>();
+            departmentApplicationUserViewModel.ApplicationUser.IsOranizationMaintainer = responseDataDB.ApplicationUser.IsOranizationMaintainer;
+            StateHasChanged();
+
+            AppData.ParentRoot.ShowSnackBar("Organization maintainer status for " + departmentApplicationUserViewModel.ApplicationUser.FirstName + " is updated", Severity.Normal);
+        }
+        else
+        {
+            AppData.ParentRoot.ShowSnackBar("Something went wrong when update the Organization maintainer", Severity.Error);
+        }
+    }
+
+    //MUDBLAZOR - DIALOG
+    async Task ChangeUserStatus(string userId, bool disable, ApplicationUserViewModel user)
+    {
+        var parameters = new DialogParameters();
+        parameters.Add(nameof(ComfirmUserDisabling_Dialog.Disable), disable);
+        parameters.Add("Users", user);
+        var dialog = DialogService.Show<ComfirmUserDisabling_Dialog>("Comfirm Action", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            var resonse = await Http.PutAsJsonAsync("api/ApplicationUserAPI/DisableUser/" + userId, disable);
+
+            if (resonse.IsSuccessStatusCode)
+            {
+                var fromDB = await resonse.Content.ReadFromJsonAsync<ApplicationUserViewModel>();
+                var noe = choosenDepartment.Where(x => x.ApplicationUserId == userId).FirstOrDefault();
+                noe.ApplicationUser = fromDB;
+                AppData.ParentRoot.ShowSnackBar(fromDB.FirstName + ", is " + (disable ? "disabled" : "activated"), Severity.Normal);
+                StateHasChanged();
+            }
+            else
+            {
+                AppData.ParentRoot.ShowSnackBar("Something went wrong by disable/activate the user", Severity.Error);
+            }
+        }
+    }
+
+    async Task ShowUsersInDepartment(int departmentId)
+    {
+        
+        var resonseFromAPI = await Http.GetFromJsonAsync<DepartmentViewModel>("api/DepartmentAPI/" + departmentId);
+
+        choosenDepartment = resonseFromAPI.DepartmentApplicationUsers;
+        selectedDepartment = resonseFromAPI.Name;
+        StateHasChanged();
+    }
+
+}

@@ -1,0 +1,66 @@
+﻿@page "/Maintenance"
+@* Should probably pass this as a parameterized or base64-encoded string string*@
+@page "/Maintenance/{ItemSerialNumber}"
+@page "/Maintenance/{ItemSerialNumber}/{EntityOnly:bool}"
+@page "/Maintenance/{ItemSerialNumber}/{EntityOnly:bool}/{ImmediateOnly:bool}"
+@using StarCake.Client.Services
+@inject NavigationManager _navigation
+@inject HttpClient _http
+@inject AppData _appData
+
+@if (!AppData.IsLoaded)
+{
+    //Cheeky check done ;)
+    _navigation.NavigateTo(_navigation.BaseUri, forceLoad: true);
+}
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudGrid Justify="Justify.Center">
+            <MudItem>
+                <MudText Typo="Typo.h5">Maintenance</MudText> @*Insert highest current Role*@
+            </MudItem>
+        </MudGrid>
+    </MudItem>
+</MudGrid>
+
+
+<MudTabs Elevation="2" Rounded="true" Centered="true" @ref="_tabs" >
+    <MudTabPanel Text="Status" BadgeData='"S"' @ref="_status" OnClick="ClearUri">
+        <MaintenanceStatus/>
+    </MudTabPanel>
+
+    <MudTabPanel Text="Record new" BadgeData='"N"' @ref="_newEntry">
+        <MaintenanceNewEntry ItemSerialNumber="@ItemSerialNumber" EntityOnly="@EntityOnly" ImmediateOnly="@ImmediateOnly" />
+    </MudTabPanel>
+</MudTabs>
+
+@code
+{
+    [Parameter]
+    public string ItemSerialNumber { get; set; } = "";
+    [Parameter]
+    public bool EntityOnly { get; set; }
+    [Parameter]
+    public bool ImmediateOnly { get; set; }
+    
+    MudTabs _tabs;
+    MudTabPanel _status;
+    MudTabPanel _newEntry;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!string.IsNullOrEmpty(ItemSerialNumber))
+            _tabs.ActivatePanel(_newEntry);
+        base.OnAfterRender(firstRender);
+    }
+
+    // Somewhat nasty hack to clear parameters from URL...
+    private void ClearUri()
+    {
+        if (_navigation.Uri.Contains("/Maintenance/"))
+        {
+            _navigation.NavigateTo("/Maintenance");
+        }
+    }
+}

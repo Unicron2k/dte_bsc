@@ -1,0 +1,36 @@
+{% extends 'base.twig' %}
+
+{% block main %}
+    <div class="container">
+        <div class="containerMessage">
+            <form action="action_page.php">
+                <br>
+                <h5>Emnebeskrivelse for "ITE1807 Systemutvikling" ikke godkjent</h5>
+{#            <div class="rowMessage">#}
+
+{#                <div class="col-75">#}
+{#                    <input type="text" id="fname" name="firstname" placeholder="Navn" required>#}
+{#                </div>#}
+{#            </div>#}
+            <br>
+            <div class="rowMessage">
+                <div class="col-75">
+                    <textarea id="subject" name="subject" placeholder="Emnet er ikke godkjent.." style="height:350px" required></textarea>
+                    <p>Også..jeg vet ikke hvorfor det funker ikke med CSS height attribute når jeg setter den på 100%, så den skal helt nede, men funker ikke. Bare med pixels som ikke er responsiv :// meeeeh</p>
+                </div>
+            </div>
+                <div class="rowMessage">
+                    <div class="col-75">
+                        <input type="submit" value="Send">
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+{% endblock %}

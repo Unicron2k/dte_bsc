@@ -1,0 +1,74 @@
+﻿@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Services
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject AppData AppData
+
+@if (_departments == null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading data...</span>
+        </div>
+    </div>
+}
+else
+{
+    <MudGrid>
+        <MudItem xs="24" sm="12" md="8">
+            <MudSelect T="DepartmentViewModel" @bind-Value="@_selectedDepartment" Label="Select department to log in to" Variant="Variant.Outlined" ToStringFunc="@converter" OffsetY="true">
+                @foreach (var department in _departments) {
+                    <MudSelectItem Value="@department"/>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            @if(_selectedDepartment==null) {
+                <MudText Class="mt-5">Nothing selected yet.</MudText>
+            }        
+            else {
+                <MudText Class="mt-5">Department: @_selectedDepartment.Name</MudText>
+                <MudFab OnClick="SubmitForm"Icon="@Icons.Material.Filled.Add" Label="Select" />
+            }
+        </MudItem>    
+    </MudGrid>
+}
+
+
+
+@code {
+    Func<DepartmentViewModel,string> converter = d => d?.Name;
+    
+    DepartmentViewModel _selectedDepartment;
+    private DepartmentViewModel[] _departments;
+    protected override async Task OnInitializedAsync()
+    {
+        _departments = await Http.GetFromJsonAsync<DepartmentViewModel[]>("api/ApplicationUserAPI/DEPARTMENTS/" + AppData.CurrentUser.Id);
+        //Console.WriteLine(await Http.GetStringAsync("https://api.opencagedata.com/geocode/v1/json?key=7aa9a926d6ba4561b2c7d924010c9ca2&q=51.952659%2C+7.632473&pretty=1&no_annotations=1"));
+    }
+
+    /* Rx parameter */
+    //[Parameter] public ApplicationUserViewModel ApplicationUser { get; set; }
+
+    
+    /* Tx parameter */
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+
+    async Task SubmitForm()
+    {
+        var response = await Http.PutAsJsonAsync("api/ApplicationUserAPI/CURRENTDEPARTMENTID/" + AppData.CurrentUser.Id, _selectedDepartment.DepartmentId);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine(response);//AppData.CurrentUser.CurrentLoggedInDepartmentId = await response.Content.ReadFromJsonAsync<int>());
+            await ModalInstance.CloseAsync(ModalResult.Ok(_selectedDepartment.DepartmentId));            
+        }
+            
+
+    }
+
+    void Cancel()
+    {
+        ModalInstance.CancelAsync();
+    }
+
+}

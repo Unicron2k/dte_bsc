@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/yellowFragment"
+        android:icon="@drawable/ic_settings_input_antenna_black_24dp"
+        android:menuCategory="secondary"
+        android:title="Yellow screen" />
+
+    <item
+        android:id="@+id/blueFragment"
+        android:icon="@drawable/ic_settings_input_antenna_black_24dp"
+        android:menuCategory="secondary"
+        android:title="Blue screen" />
+
+    <item
+        android:id="@+id/purpleFragment"
+        android:icon="@drawable/ic_shopping_cart_black_24dp"
+        android:menuCategory="secondary"
+        app:showAsAction="always"
+        android:title="Purple screen" />
+
+</menu>

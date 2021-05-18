@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/fragmentTitle"
+        android:text="@string/newAppProgramType_title" />
+
+    <!-- icon -->
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/newAppProgramType_tv_icon" />
+
+    <Spinner
+        android:id="@+id/spinner_existing_icons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp" />
+
+    <!-- description -->
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/newUserProgram_appProgramType_description" />
+
+    <EditText
+        android:id="@+id/newAppProgramType_description_et"
+        style="@style/TextView20spWithLeftPadding"
+        android:autofillHints="@string/newAppProgramType_hint_description"
+        android:hint="@string/newAppProgramType_hint_description"
+        android:inputType="text"
+        android:maxLength="50" />
+
+    <!-- back_color -->
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/newAppProgramType_tv_color" />
+    <Button
+        android:id="@+id/newAppProgramType_button_color"
+        style="@style/TextView20spWithLeftPadding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/newAppProgramType_button_color_title" />
+
+    <!-- POST_button -->
+    <Button
+        android:id="@+id/newAppProgramType_button_post"
+        style="@style/Text20spWrapCenter"
+        android:text="@string/newAppProgramType_button_post_title" />
+</LinearLayout>

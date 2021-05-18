@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">Ultimate TicTacToe 2k21 - Game Of The Year Edition</string>
+    <string name="action_settings">Settings</string>
+    <string name="vertical_ellipsis">&#8942;</string>
+
+    <string name="str_sec_per_move">Seconds per move:</string>
+    <string name="str_color_p1">Color, player 1;</string>
+    <string name="str_color_p2">Color, player 2:</string>
+    <string name="str_symbol_p1">Symbol, player 1:</string>
+    <string name="str_symbol_p2">Symbol, player 2:</string>
+    <string name="str_board_size">Boardsize:</string>
+
+    <string name="hint_sec_per_move">Seconds (1-10)</string>
+    <string name="hint_color_p1">Color player 1 (#XXYYZZ)</string>
+    <string name="hint_color_p2">Color player 2 (#XXYYZZ)</string>
+    <string name="hint_symbol_p1">Symbol player 1</string>
+    <string name="hint_symbol_p2">Symbol player 2</string>
+    <string name="hint_board_size">Boardsize (3-10)</string>
+
+    <string name="default_sec_per_move">7</string>
+    <string name="default_color_p1">#FF0000FF</string>
+    <string name="default_color_p2">#FFFF0000</string>
+    <string name="default_symbol_p1">X</string>
+    <string name="default_symbol_p2">O</string>
+    <string name="default_board_size">3</string>
+    <string name="default_result_msg">Result: </string>
+
+    <string name="str_result_msg">Result: %1$s, Time: %2$d:%3$d</string>
+    <string name="str_game_timer">%1$d:%2$d</string>
+    <string name="str_game_timer_00">%1$2d:%2$2d</string>
+    <string name="str_sym_p1">1 (%1$s)</string>
+    <string name="str_sym_p2">2 (%1$s)</string>
+    <string name="str_player">Player</string>
+    <string name="str_start">Start</string>
+    <string name="str_stopp">Stop</string>
+    <string name="str_draw">Result: Draw</string>
+</resources>

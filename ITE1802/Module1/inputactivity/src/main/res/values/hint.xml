@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="post_code">Post-code</string>
+    <string name="birthyear">Birthyear</string>
+</resources>

@@ -1,0 +1,9 @@
+ <div style="text-align: center;">
+  {% if verified==true %}
+    <p>User verified!</p>
+  {% elseif verified==false %}
+    <p>Could not verify user!</p>
+  {% elseif noVerify==true %}
+    <p>No verificationkey specified!</p>
+  {% endif %}
+ </div>

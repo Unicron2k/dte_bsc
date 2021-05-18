@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>displayAllFilesExample</title>
+</head>
+<body>
+<style>
+    .inline {
+        display: inline;
+    }
+</style>
+
+
+
+<!--Show all files-->
+{% if files %}
+<h1>Alle filer:</h1>
+<ul>
+    {% for file in files %}
+        <li>
+            <p class="inline">Filnavn: {{ file.getFileName }}</p>
+            <p class="inline">Eier ID: {{ file.getUserID }}</p>
+            <p class="inline">Størrelse: {{ file.getSize }}</p>
+            <p class="inline">Views: {{ file.getViews }}</p>
+            <p class="inline">Dato: {{ file.getDate }}</p> <br>
+        </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
+<!--Show users files-->
+{% if userFiles %}
+    {% for file in userFiles|slice(0,000000001) %}
+        <h1>{{ file.getAuthor }} sine filer</h1>
+    {% endfor %}
+    <ul>
+    {% for file in userFiles %}
+        <li>
+            <p class="inline">Filnavn: {{ file.getFileName }}</p>
+            <p class="inline">Eier ID: {{ file.getUserID }}</p>
+            <p class="inline">Størrelse: {{ file.getSizeInMb }}Mb</p>
+            <p class="inline">Views: {{ file.getViews }}</p>
+            <p class="inline">Dato: {{ file.getDate }}</p> <br>
+        </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<!--Delete files example form-->
+<!--value == userfiles.getFileID!!-->
+{% if userFilesToDelete %}
+<form method="post" enctype="multipart/form-data" style="border: 1px solid #ccc">
+    <div class="container">
+        <h1>Slett dine filer</h1>
+
+        <ul>
+            {% for file in userFilesToDelete %}
+                <li>
+                    <input type="radio" name="fileDeleteButton" value="{{ file.getFileID }}">Filnavn: {{ file.getFileName }} Størrelse: {{ file.getSizeInMb }}Mb Dato: {{ file.getDate }}<br>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <label for="submit_fileDelete"><b>SLETT VALGT FIL</b></label>
+        <input type="submit" name="submit_fileDelete" value="SLETT">
+
+    </div>
+</form>
+{% endif %}
+
+
+
+</body>
+</html>

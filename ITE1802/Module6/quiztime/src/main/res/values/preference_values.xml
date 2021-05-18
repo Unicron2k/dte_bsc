@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Category -->
+    <string-array name="category_entries">
+        <item>Any category</item>
+        <item>General Knowledge</item>
+        <item>Entertainment: Books</item>
+        <item>Science and Nature</item>
+        <item>Sports</item>
+    </string-array>
+    
+    <string-array name="category_entry_values">
+        <item>ANY</item>
+        <item>9</item>
+        <item>10</item>
+        <item>17</item>
+        <item>21</item>
+    </string-array>
+
+
+    <!-- Difficulty -->
+    <string-array name="difficulty_entries">
+        <item>Any difficulty</item>
+        <item>Easy</item>
+        <item>Medium</item>
+        <item>Hard</item>
+    </string-array>
+
+    <string-array name="difficulty_values">
+        <item>ANY</item>
+        <item>easy</item>
+        <item>medium</item>
+        <item>hard</item>
+    </string-array>
+
+
+    <!-- Type -->
+    <string-array name="type_entries">
+        <item>Any type</item>
+        <item>Multiple Choice</item>
+        <item>True or False</item>
+    </string-array>
+
+    <string-array name="type_values">
+        <item>ANY</item>
+        <item>multiple</item>
+        <item>boolean</item>
+    </string-array>
+
+</resources>

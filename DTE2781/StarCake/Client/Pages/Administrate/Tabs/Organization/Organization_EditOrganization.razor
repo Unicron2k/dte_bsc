@@ -1,0 +1,149 @@
+@using StarCake.Client.Services
+@using StarCake.Shared.Models.ViewModels
+
+@inject AppData AppData
+@inject HttpClient Http
+
+@if (AppData.CurrentUser.CurrentDepartment.Organization == null || _organizationViewModel == null)
+{
+    <MudProgressCircular Class="my-3 justify-content-center" Color="Color.Default" Indeterminate="true"/>
+    <MudText>"Appdata.CurrentUser.CurrentDepartment.Organization and _organizationViewModel is NULL</MudText>
+}
+else
+{
+    <MudGrid Class="justify-content-center my-3">
+        <MudItem xs="12" sm="8" md="9" Class="justify-content-center">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText>Change Organization info</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <EditForm Model="_organizationViewModel" OnValidSubmit="SubmitFormOrganization">
+                    <MudCardContent>
+                        <DataAnnotationsValidator/>
+                        <MudGrid>
+                            <MudItem xs="12" md="6">
+                                <MudTextField
+                                    @bind-Value="@_organizationViewModel.Name"
+                                    For="@(() => _organizationViewModel.Name)"
+                                    Label="Name"/>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField
+                                    @bind-Value="@_organizationViewModel.City"
+                                    For="@(() => _organizationViewModel.City)"
+                                    Label="City"/>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField
+                                    @bind-Value="@_organizationViewModel.Address"
+                                    For="@(() => _organizationViewModel.Address)"
+                                    Label="Address"/>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField
+                                    @bind-Value="@_organizationViewModel.OperatorNumber"
+                                    For="@(() => _organizationViewModel.OperatorNumber)"
+                                    Label="Operator number"/>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudItem xs="12" md="6">
+                                    <MudTextField
+                                        @bind-Value="@_organizationViewModel.OrganizationNumber"
+                                        For="@(() => _organizationViewModel.OrganizationNumber)"
+                                        Label="Organization Number"/>
+                                </MudItem>
+                                <MudTextField
+                                    @bind-Value="@_organizationViewModel.ZipCode"
+                                    For="@(() => _organizationViewModel.ZipCode)"
+                                    Label="Zipcode"
+                                    InputType="InputType.Number"/>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField
+                                    @bind-Value="@_organizationViewModel.Email"
+                                    For="@(() => _organizationViewModel.Email)"
+                                    Label="Email"
+                                    InputType="InputType.Email"/>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField
+                                    @bind-Value="@_organizationViewModel.PhoneNumber"
+                                    For="@(() => _organizationViewModel.PhoneNumber)"
+                                    Label="Phone number"
+                                    InputType="InputType.Number"/>
+                            </MudItem>
+                            
+                            <MudItem xs="12" md="6">
+                                <MudTextField
+                                    @bind-Value="@_organizationViewModel.ApiKeyOpenCageData"
+                                    For="@(() => _organizationViewModel.ApiKeyOpenCageData)"
+                                    Label="Phone number"/>
+                            </MudItem>
+
+                        </MudGrid>
+
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Outlined" ButtonType="ButtonType.Submit" Class="ml-1">
+                            SAVE
+                        </MudButton>
+                    </MudCardActions>
+                </EditForm>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+
+    private OrganizationViewModel _organizationViewModel { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var organization = AppData.CurrentUser.CurrentDepartment.Organization;
+        _organizationViewModel = new OrganizationViewModel
+        {
+            OrganizationId = organization.OrganizationId,
+            Name = organization.Name,
+            Address = organization.Address,
+            City = organization.City,
+            ZipCode = organization.ZipCode,
+            Email = organization.Email,
+            PhoneNumber = organization.PhoneNumber,
+            OperatorNumber = organization.OperatorNumber,
+            OrganizationNumber = organization.OrganizationNumber,
+            ApiKeyOpenCageData = organization.ApiKeyOpenCageData
+        };
+    }
+
+    async Task SubmitFormOrganization()
+    {
+        var response = await Http.PutAsJsonAsync("api/Organization/", _organizationViewModel);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var organizationFromDb = await response.Content.ReadFromJsonAsync<OrganizationViewModel>();
+            var organiation = AppData.CurrentUser.CurrentDepartment.Organization;
+
+            organiation.OrganizationId = organizationFromDb.OrganizationId;
+            organiation.Name = organizationFromDb.Name;
+            organiation.Address = organizationFromDb.Address;
+            organiation.City = organizationFromDb.City;
+            organiation.ZipCode = organizationFromDb.ZipCode;
+            organiation.Email = organizationFromDb.Email;
+            organiation.PhoneNumber = organizationFromDb.PhoneNumber;
+            organiation.OperatorNumber = organizationFromDb.OperatorNumber;
+            organiation.OrganizationNumber = organizationFromDb.OrganizationNumber;
+            organiation.ApiKeyOpenCageData = organiation.ApiKeyOpenCageData;
+
+            AppData.ParentRoot.ShowSnackBar("Organization info is sucsefully updated", Severity.Normal);
+        }
+        else
+        {
+            AppData.ParentRoot.ShowSnackBar("Something went wrong with update Organization info", Severity.Error);
+        }
+    }
+
+}

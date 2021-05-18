@@ -1,0 +1,58 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Microsoft.AspNetCore.Http.Features;
+@using StarCake.Client.Services
+
+@inject HttpClient _http
+
+
+
+
+@if (_showBanner)
+{
+    <div class="alert alert-info" role="alert">
+        <div class="text-wrap">
+            <p>Use this space to summarize your privacy-policy.</p>
+        </div>
+        <div class="text-right">
+            <button type="button" class="btn btn-success accept-policy" data-dismiss="alert" aria-label="Close" @onclick="Accept">
+                <span aria-hidden="true">Accept</span>
+            </button>
+            <button type="button" class="btn btn-danger" data-dismiss="alert" aria-label="Close" @onclick="Dismiss">
+                <span aria-hidden="true">Dismiss</span>
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+
+    bool _showBanner;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _showBanner = !AppData.CurrentUser.CanTrack;
+        if(AppData.CurrentUser.CanTrack)
+            await _http.GetStringAsync("/consent");
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Accept()
+    {
+        try
+        {
+            await _http.GetStringAsync("/consent");
+            AppData.CurrentUser.CanTrack=true;
+            _showBanner = false;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    private void Dismiss()
+    {
+        _showBanner = false;
+    }
+}

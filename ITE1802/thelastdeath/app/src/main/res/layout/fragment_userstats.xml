@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Title -->
+    <TextView
+        style="@style/fragmentTitle"
+        android:text="@string/userstats_title" />
+
+    <!-- Last7Days & CurrentWeek -->
+    <LinearLayout style="@style/userStatsExternalLinearLayoutStyle">
+
+        <LinearLayout style="@style/userStatsInternalLinearLayoutStyle">
+            <!-- Last7days -->
+            <TextView
+                style="@style/Text25spWrap"
+                android:text="@string/userstats_last7days_title" />
+
+            <TextView
+                android:id="@+id/userStats_Last7Days_sessionCount"
+                style="@style/Text15spWrapCenter" />
+
+            <TextView
+                android:id="@+id/userStats_Last7Days_timeSpent"
+                style="@style/Text15spWrapCenter" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/userStatsInternalLinearLayoutStyle">
+            <!-- CurrentWeek -->
+            <TextView
+                style="@style/Text25spWrap"
+                android:text="@string/userstats_currentWeek_title" />
+
+            <TextView
+                android:id="@+id/userStats_CurrentWeek_sessionCount"
+                style="@style/Text15spWrapCenter" />
+
+            <TextView
+                android:id="@+id/userStats_CurrentWeek_timeSpent"
+                style="@style/Text15spWrapCenter" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- CurrentMonth & Last30Days -->
+    <LinearLayout style="@style/userStatsExternalLinearLayoutStyle">
+
+        <LinearLayout style="@style/userStatsInternalLinearLayoutStyle">
+            <!-- CurrentMonth -->
+            <TextView
+                style="@style/Text25spWrap"
+                android:text="@string/userstats_CurrentMonth_title" />
+
+            <TextView
+                android:id="@+id/userStats_CurrentMonth_sessionCount"
+                style="@style/Text15spWrapCenter" />
+
+            <TextView
+                android:id="@+id/userStats_CurrentMonth_timeSpent"
+                style="@style/Text15spWrapCenter" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/userStatsInternalLinearLayoutStyle">
+            <!-- CurrentWeek -->
+            <TextView
+                style="@style/Text25spWrap"
+                android:text="@string/userstats_Last30Days_title" />
+
+            <TextView
+                android:id="@+id/userStats_Last30Days_sessionCount"
+                style="@style/Text15spWrapCenter" />
+
+            <TextView
+                android:id="@+id/userStats_Last30Days_timeSpent"
+                style="@style/Text15spWrapCenter" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- CurrentYear -->
+    <LinearLayout style="@style/userStatsExternalLinearLayoutStyle">
+
+        <LinearLayout style="@style/userStatsInternalLinearLayoutStyle">
+            <!-- CurrentYear -->
+            <TextView
+                style="@style/Text25spWrap"
+                android:text="@string/userstats_CurrentYear_title" />
+
+            <TextView
+                android:id="@+id/userStats_CurrentYear_sessionCount"
+                style="@style/Text15spWrapCenter" />
+
+            <TextView
+                android:id="@+id/userStats_CurrentYear_timeSpent"
+                style="@style/Text15spWrapCenter" />
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

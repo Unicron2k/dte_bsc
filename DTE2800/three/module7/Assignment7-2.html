@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Assignment 7-1 - Three.js</title>
+	<meta charset="UTF-8">
+</head>
+
+<body>
+<script src="../lib/ammo/ammo.js"></script>
+<script type="module">
+	import {SaloonDooors} from "./js/Assignment7-2.js";
+
+	// Ammojs initialisering:
+	Ammo().then( startApp() );
+	// Starter ...:
+	function startApp() {
+		let saloonDooors = new SaloonDooors();
+		saloonDooors.start();
+	}
+</script>
+</body>
+</html>

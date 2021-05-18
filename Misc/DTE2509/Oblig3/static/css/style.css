@@ -1,0 +1,88 @@
+html{
+    background-color: rgb(19, 21, 22) !important;
+    color: rgb(216, 212, 207);
+}
+
+body{
+    font-family: Arial, sans-serif;
+    margin: 10em;
+}
+
+input {
+    display:block;
+}
+textarea, input, select, button{
+    color: #e8e6e3;
+    border-color: #736b5e;
+    background-color: #181a1b;
+}
+
+.textbox, .textfield{
+    width: calc(100% - 0.5rem); /* Fallback in case below dont work */
+    width: -moz-available; /* Non-standard */
+    width: -webkit-fill-available; /* Non-standard */
+    width: available;  /* If standard */
+
+}
+
+.textbox{
+    height: 20ch;
+    resize: both;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+}
+
+.entry{
+    margin: 0.5rem 0 0.5rem 0;
+    padding: 0.1rem 0.5rem 0.1rem 0.5rem;
+    background: #2d2d2d;
+    border-radius: 15px;
+    max-width: 500px;
+}
+.entry hr{
+    margin: 0.5rem -0.5rem 0.5rem -0.5rem;
+    padding: 0;
+}
+.entry .entry-header{}
+.entry .entry-body{
+    background: #484848;
+    margin: 0.5rem -0.5rem 0.5rem -0.5rem;
+}
+.entry .entry-body p{
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    margin: -0.5rem 0 -0.5rem 0;
+}
+.entry .entry-footer{}
+
+.entry .row{
+    display: flex;
+    margin: 0.1rem;
+}
+.m1{
+    margin: 0.1rem;
+}
+.m2{
+    margin: 0.2rem;
+}
+.m3{
+    margin: 0.3rem;
+}
+
+.button {
+    display: block;
+    width: auto;
+    height: auto;
+    background: #4E9CAF;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    line-height: 12px;
+    text-decoration: none;
+}

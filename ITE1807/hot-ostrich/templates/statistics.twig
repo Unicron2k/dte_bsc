@@ -1,0 +1,87 @@
+{% extends 'base.twig' %}
+
+{% block title %} Statistikk {% endblock %}
+
+{% block main %}
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-9">
+                <h1 class="text-center">Statistikk</h1>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-2" id="single_course_code">
+                <div class="card">
+                    <div class="card-header">
+                        <b>Totalt antall emnebeskrivelser</b>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{ desc_amount }}</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-2" id="single_course_code">
+                <div class="card">
+                    <div class="card-header">
+                        <b>Antall godkjente emnebeskrivelser</b>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{ approved_amount }}</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-2" id="single_course_code">
+                <div class="card">
+                    <div class="card-header">
+                        <b>Antall emnebeskrivelser i godkjenningsfasen</b>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{ pending_approval }}</h4>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <br>
+
+        <div class="row justify-content-center">
+            <div class="col-2" id="single_course_code">
+                <div class="card">
+                    <div class="card-header">
+                        <b>Status for emnebeskrivelser</b>
+                    </div>
+                    <div class="card-body text-left">
+                        <h4 class="card-title">Godkjent: X</h4>
+                        <h4 class="card-title">Ikke godkjent: X</h4>
+                        <h4 class="card-title">Osv: X</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-2" id="single_course_code">
+                <div class="card">
+                    <div class="card-header">
+                        <b>Tidligste versjon av en emnebeskrivelse</b>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{ earliest_version }}</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-2" id="single_course_code">
+                <div class="card">
+                    <div class="card-header">
+                        <b>Antall emnebeskrivelser der godkjenning ikke er påbegynt</b>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{ not_approved_amount }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

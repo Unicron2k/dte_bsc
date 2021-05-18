@@ -1,0 +1,23 @@
+{% extends 'base.twig' %}
+
+{% block title %}Innboks{% endblock %}
+
+{% block main %}
+    <div class="container" style="margin-top: 20px;">
+        <div class="row justify-content-center text-left">
+            <div class="col-6 border text-left">
+                <h3>{{ message.getName }}: {{ message.getTitle}}</h3>
+
+                <p>{{ message.getDescription }}</p>
+
+                <p>{{ message.getDate }}</p>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-6 text-left">
+                <a href="inbox.php"><- Tilbake til innboks</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

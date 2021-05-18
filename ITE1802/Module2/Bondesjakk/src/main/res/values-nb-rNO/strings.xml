@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Ultimate TicTacToe 2k21 - Game Of The Year Edition</string>
+    <string name="action_settings">Innstillinger</string>
+    <string name="default_board_size">3</string>
+    <string name="default_color_p1">#FF0000FF</string>
+    <string name="default_color_p2">#FFFF0000</string>
+    <string name="default_result_msg">"Resultat: "</string>
+    <string name="default_sec_per_move">7</string>
+    <string name="default_symbol_p1">X</string>
+    <string name="default_symbol_p2">O</string>
+    <string name="hint_board_size">Brettstørelse (3-10)</string>
+    <string name="hint_color_p1">Farge spiller 1 (#XXYYZZ)</string>
+    <string name="hint_color_p2">Farge spiller 2 (#XXYYZZ)</string>
+    <string name="hint_sec_per_move">Sekunder (1-10)</string>
+    <string name="hint_symbol_p1">Symbol spiller 1</string>
+    <string name="hint_symbol_p2">Symbol spiller 2</string>
+    <string name="str_board_size">Bresttstørelse</string>
+    <string name="str_color_p1">Farge, spiller 1</string>
+    <string name="str_color_p2">Farge, spiller 2</string>
+    <string name="str_draw">Resultat: Uavgjort</string>
+    <string name="str_game_timer">%1$d:%2$d</string>
+    <string name="str_game_timer_00">%1$2d:%2$2d</string>
+    <string name="str_player">Spiller</string>
+    <string name="str_result_msg">Resultat: %1$s, Tid: %2$d:%3$d</string>
+    <string name="str_sec_per_move">Sekunder per trekk:</string>
+    <string name="str_start">Start</string>
+    <string name="str_stopp">Stopp</string>
+    <string name="str_sym_p1">1 (%1$s)</string>
+    <string name="str_sym_p2">2 (%1$s)</string>
+    <string name="str_symbol_p1">Symbol, spiller 1:</string>
+    <string name="str_symbol_p2">Symbol, spiller 2</string>
+    <string name="vertical_ellipsis">&#8942;</string>
+</resources>

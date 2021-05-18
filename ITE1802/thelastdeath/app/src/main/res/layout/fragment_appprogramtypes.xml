@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/standardFragmentLinearLayoutStyle">
+
+    <TextView
+        style="@style/fragmentTitle"
+        android:text="@string/appProgramTypes_title" />
+
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/appProgramTypes_spinner_title" />
+
+    <Spinner
+        android:id="@+id/appPRogramTypes_spinner_existing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#c0c0c0" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/colorGreyText">
+        <!-- Description -->
+        <TextView
+            style="@style/Text20spWrap"
+            android:text="@string/newExercise_description"/>
+        <EditText
+            android:id="@+id/appProgramTypes_et_name"
+            style="@style/TextView20spWithLeftPadding"
+            android:inputType="text"
+            android:maxLength="500"
+            android:hint="@string/appProgramTypes_et_name_title"
+            android:autofillHints="@string/appProgramTypes_et_name_title" />
+
+        <!-- Icon -->
+        <TextView
+            style="@style/Text20spWrap"
+            android:text="@string/newExercise_icon"/>
+        <Spinner
+            android:id="@+id/appProgramTypes_spinner_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp" />
+
+        <!-- back_color -->
+        <TextView
+            style="@style/Text20spWrap"
+            android:text="@string/newAppProgramType_tv_color" />
+        <Button
+            android:id="@+id/appProgramTypes_button_color"
+            style="@style/TextView20spWithLeftPadding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/newAppProgramType_button_color_title" />
+
+        <!-- PUT_button -->
+        <Button
+            android:id="@+id/appProgramTypes_button_put"
+            style="@style/Text20spWrapCenter"
+            android:text="@string/appProgramTypes_button_put_title" />
+
+    </LinearLayout>
+
+</LinearLayout>

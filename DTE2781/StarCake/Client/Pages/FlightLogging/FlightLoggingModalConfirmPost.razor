@@ -1,0 +1,21 @@
+﻿<div class="row">
+    <div class="col-md-6">
+        <button @onclick="SubmitForm" class="btn btn-primary btn-block">Yes</button>
+    </div>
+    <div class="col-md-6">
+        <button @onclick="Cancel" class="btn btn-danger btn-block">No</button>
+    </div>
+</div>
+
+
+@code {
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    bool ShowForm { get; set; } = true;
+
+    void SubmitForm() {
+        ModalInstance.CloseAsync(ModalResult.Ok(true));
+    }
+    void Cancel() {
+        ModalInstance.CancelAsync();
+    }
+}

@@ -1,0 +1,356 @@
+<resources>
+    <!-- TODO: Remove unused string resources! -->
+    <string name="app_name">The last rep.</string>
+
+
+    <!--Code-critical variables-->
+    <!--TODO: Check this works-->
+    <string name="program_package_reference">com.andyeseapps.treningsprogram_navigation.entity.Program</string>
+
+    <!--UserProfileFragment-->
+    <string name="userprofile">My Profile</string>
+    <string name="userprofile_title">User profile</string>
+    <string name="userprofile_name">Name:</string>
+    <string name="userprofile_hint_name">Write your name…</string>
+    <string name="userprofile_email">Email:</string>
+    <string name="userprofile_hint_email">Write your email…</string>
+    <string name="userprofile_phone">Phone:</string>
+    <string name="userprofile_hint_phone">Write your phone number…</string>
+    <string name="userprofile_birthyear">Birth year:</string>
+    <string name="userprofile_hint_birthyear">Write your birth year…</string>
+    <string name="userprofile_confirm">Confirm changes</string>
+    <string name="userprofile_error_empty_fields">Some fields were empty…</string>
+    <string name="userprofile_deleteaccount">Delete your account</string>
+    <string name="userprofile_alert_title_deleteuser">Are you sure you want to delete your account?</string>
+    <string name="userprofile_alert_message_deleteuser">Deleting your account will permanently delete your stored data</string>
+    <string name="userprofile_alert_yes">Yes</string>
+    <string name="userprofile_alert_no">No</string>
+    <string name="userprofile_alert_delete_canceled">Account deletion canceled!</string>
+    <string name="userprofile_alert_password_write">"Please write you password to confirm deletion"</string>
+    <string name="userprofile_alert_password_confirm">Confirm password</string>
+    <string name="userprofile_alert_password_cancel">Cancel!</string>
+    <string name="userprofile_alert_delete_success">Account was successfully deleted, we hope you create a new account soon!</string>
+    <string name="userprofile_delete">Delete user!</string>
+    <string name="userprofile_profilName">%s</string>
+
+
+
+
+    <!-- UserStatsFragment -->
+    <string name="userstats_menu_title">Statistics</string>
+    <string name="userstats_title">User statistics</string>
+    <string name="userstats_last7days_title">Last 7 days:</string>
+    <string name="userstats_currentWeek_title">Current week:</string>
+    <string name="userstats_CurrentMonth_title">Current month:</string>
+    <string name="userstats_Last30Days_title">Last 30 days:</string>
+    <string name="userstats_CurrentYear_title">Current year:</string>
+    <string name="userstats_sessioncount_substring">Sessions: %s</string>
+    <string name="userstats_timespent_substring">Time spent: %s</string>
+
+
+
+
+    <!-- HomeFragment -->
+    <string name="home_firebase_displayName">%s</string>
+    <string name="home_achieved_title_placeholder">No title achieved</string>
+    <string name="log_out">Log out</string>
+    <string name="home">Home</string>
+    <string name="profile">Profile</string>
+    <string name="start_workout">Start workout</string>
+    <string name="programs">Programs</string>
+    <string name="add_program">Add program</string>
+    <string name="exercises">Exercises</string>
+    <string name="add_program_type">Add Program type</string>
+    <string name="home_api_newUserCreated">A new account was created!</string>
+    <string name="home_editType">Edit type</string>
+
+
+    <!-- Warnings -->
+    <string name="warning_edittext_empty">Check your inputs, some were empty!</string>
+    <string name="warning_firebase_not_logged_in">You are not logged in!</string>
+
+
+
+
+    <!-- API Responces -->
+    <string name="responseCode_200_GET_success">Data was successfully downloaded</string>
+    <string name="responseCode_200_GET_failure">Error: Data was not downloaded!</string>
+    <string name="responseCode_201_POST_success">Data was successfully saved</string>
+    <string name="responseCode_202_PUT_success">Data was successfully updated</string>
+    <string name="responseCode_202_PUT_failure">Error: Data was not updated!</string>
+    <string name="responseCode_203_DELETE_success">Data was successfully deleted</string>
+    <string name="responseCode_common_failure">Error: Could not do response!</string>
+    <string name="responseCode_record_created">New record was created!</string>
+    <string name="responseCode_record_deleted">Record was deleted!</string>
+    <string name="responseCode_record_updated">Record was updated!</string>
+
+
+
+    <!-- Firebase -->
+    <string name="firebase_security_success_signOut">Successfully signed out</string>
+    <string name="firebase_security_warning_alreadySignedOut">You are already signed out!</string>
+
+    <!-- LoginFragment -->
+    <string name="loginfragment_Login">Sign in(Firebase)</string>
+    <string name="loginfragment_warning_login_failed">Login failed, try again!</string>
+    <string name="loginFragment_login">Login or Register</string>
+    <string name="btn_logout">Log out</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_password">Password</string>
+    <string name="tv_welcome">Welcome back!</string>
+
+
+
+    <!-- NewUserProgram -->
+    <string name="newUserProgram_title">Add a new program</string>
+    <string name="newUserProgram_appProgramType_title">Choose type for your new program</string>
+    <string name="newUserProgram_appProgramType_name">Choose a name:</string>
+    <string name="newUserProgram_appProgramType_hint_name">Name..</string>
+    <string name="newUserProgram_appProgramType_description">Choose a description:</string>
+    <string name="newUserProgram_appProgramType_hint_description">Description..</string>
+    <string name="newUserProgram_appProgramType_hint_useTiming_title">Do you want timing for this program?</string>
+    <string name="newUserProgram_appProgramType_hint_useTiming">Timing for program:</string>
+    <string name="newUserProgram_appProgramType_hint_hint_useTiming_yes">Yes:</string>
+    <string name="newUserProgram_appProgramType_hint_hint_useTiming_no">No:</string>
+    <string name="newUserProgram_appProgramType_button_post">Create program!</string>
+
+
+
+    <!-- NewUserProgramSession -->
+    <string name="newUserProgramSession_userProgram">Choose which program:</string>
+    <string name="newUserProgramSession_date">Choose a date:</string>
+    <string name="newUserProgramSession_date_button">Open calendar</string>
+    <string name="newUserProgramSession_date_tv_hint">yyyy-mm-dd</string>
+    <string name="newUserProgramSession_date_switch_today">Today</string>
+    <string name="newUserProgramSession_numberpicker_title">Time used:</string>
+    <string name="newUserProgramSession_numberpicker_hours">Hours</string>
+    <string name="newUserProgramSession_numberpicker_minutes">Minutes</string>
+    <string name="newUserProgramSession_numberpicker_seconds">Seconds</string>
+    <string name="newUserProgramSession_description_title">Description:</string>
+    <string name="newUserProgramSession_description_hint">Describe your session..</string>
+    <string name="newUserProgramSession_extrajsondata_button_text">Put extra text (optional)</string>
+    <string name="newUserProgramSession_extrajsondata_title">Extra text</string>
+    <string name="newUserProgramSession_extrajsondata_hint">Write more detailed text here</string>
+    <string name="newUserProgramSession_button_post_text">Create session</string>
+    <string name="newUserProgramSession_warning_pick_date">Please pick a date!</string>
+
+
+
+    <!-- UserPrograms -->
+    <string name="userPrograms_title">Click on a program for more details</string>
+
+    <!-- UserProgramDetails -->
+    <string name="userProgramsDetails_title">Details of the program</string>
+    <string name="userProgramsDetails_details_title">Description:</string>
+    <string name="userProgramsDetails_useTiming_title">Does it use timing?</string>
+    <string name="userProgramsDetails_appProgramType_title">Program type:</string>
+    <string name="userProgramsDetails_yes">Yes</string>
+    <string name="userProgramsDetails_no">No</string>
+    <string name="userProgramsDetails_tv_alert_no_Exercises">No exercises found…</string>
+    <string name="userProgramsDetails_tv_alert_no_Sessions">No sessions found…</string>
+    <string name="userProgramsDetails_tv_Exercises">Exercises:</string>
+    <string name="userProgramsDetails_tv_Sessions">Sessions:</string>
+    <string name="userProgramsDetails_listView_title">Click on an exercise/session (if any):</string>
+    <string name="userProgarmDetails_alert_title">Do you want to delete this program?</string>
+    <string name="userProgarmDetails_alert_message">Deleting this program will also delete all sessions</string>
+    <string name="userProgarmDetails_alert_delete_cancelled">Deletion was cancelled</string>
+    <string name="userProgarmDetails_button_delete_title">Delete this program</string>
+    <string name="userProgramDetails_button_add_exercise">Add Exercise</string>
+
+
+
+    <!-- NewUserProgramSession -->
+    <string name="newUserProgramSession_title">Register your session!</string>
+
+
+
+    <!-- NewAppProgramType -->
+    <string name="newAppProgramType_title">Add new program type</string>
+    <string name="newAppProgramType_tv_icon">Choose an icon: </string>
+    <string name="newAppProgramType_hint_description">Description…</string>
+    <string name="newAppProgramType_tv_color">Pick a color:</string>
+    <string name="newAppProgramType_button_color_title">Click here</string>
+    <string name="newAppProgramType_button_post_title">Post new program type</string>
+
+
+
+    <!-- AppProgramTypes -->
+    <string name="appProgramTypes_title">All program types</string>
+    <string name="appProgramTypes_spinner_title">Select the program type you want to edit: </string>
+    <string name="appProgramTypes_et_name_title">Description…</string>
+    <string name="appProgramTypes_button_put_title">Update program type</string>
+    <string name="appProgramTypes_button_delete_title">Delete program type</string>
+    <string name="appProgramTypes_alert_title">Do you want to delete this program type?</string>
+    <string name="appprogramTypes_alert_message">This cannot be undone!</string>
+    <string name="appProgramTypes_alert_cancelled">Deletion of program type cancelled</string>
+
+    <!-- AppProgramTypeDetails -->
+    <string name="appProgramTypeDetails_title">Details of program type</string>
+
+    <!-- UserProgramSessionDetails -->
+    <string name="userProgramSessionDetails_title">Details of the session</string>
+    <string name="userProgramSessionDetails_put_session">Update this session</string>
+    <string name="userProgramSessionDetails_alert_title">Do you want to delete this session?</string>
+    <string name="userProgramSessionDetails_alert_message">Deleting this is permanent</string>
+    <string name="userProgramSessionDetails_alert_delete_cancelled">Deletion of session was cancelled</string>
+    <string name="userProgramSessionDetails_delete_session">Delete this session</string>
+    <string name="userProgramSessionDetails_deleted">Session was deleted!</string>
+
+
+
+    <!-- UserProgramExerciseDetails -->
+    <string name="userProgramExerciseDetails_name_title">Name:</string>
+    <string name="userProgramExerciseDetails_name_hint_et">Name the exercise…</string>
+    <string name="userProgramExerciseDetails_description_title">Description:</string>
+    <string name="userProgramExerciseDetails_description_hint_et">Give it a description…</string>
+    <string name="userProgramExerciseDetails__tv_icon">Icon: (Current: %s)</string>
+    <string name="userProgramExerciseDetails_button_put_title">Update the exercise</string>
+    <string name="userProgramExerciseDetails_alert_title">Do you want to delete this exercise from your program?</string>
+    <string name="userProgramExerciseDetails_alert_message">Deleting this will remove the exercise from current program, not the exercise itself!</string>
+    <string name="userProgramExerciseDetails_alert_delete_cancelled">Deletion was cancelled!</string>
+    <string name="userProgramExerciseDetails_button_delete_title">Delete exercise from current program</string>
+    <string name="userProgramExerciseDetails_deleted">Exercise was removed from the program…</string>
+
+
+
+
+    <!-- NewExercise -->
+    <string name="newExercise_title">Add a new exercise</string>
+    <string name="newExercise_name">Choose a name: </string>
+    <string name="newExercise_hint_name">Name..</string>
+    <string name="newExercise_description">Add a description:</string>
+    <string name="newExercise_hint_description">Description..</string>
+    <string name="newExercise_icon">Choose a icon</string>
+    <string name="newExercise_color">Choose a color</string>
+    <string name="newExercise_button_post">Create Exercise!</string>
+
+    <style name="newExercise_dialog_cancel">Cancel</style>
+
+
+
+
+    <!-- SignUp Fragment -->
+    <string name="tv_signup_title">Register a new user.</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_phone">Phone</string>
+    <string name="hint_birthyear">Birth year</string>
+    <string name="btn_signup">Sign Up!</string>
+
+
+
+    <!-- General strings -->
+    <string name="downloading">Downloading…</string>
+    <string name="no_downloading">Nothing to download…</string>
+    <string name="not_logged_in">You are not logged in…</string>
+    <string name="settings">Settings</string>
+    <string name="back">Back</string>
+    <string name="placeholder">Placeholder</string>
+    <string name="user_icon">User-icon</string>
+    <string name="icon_running_human">Icon of human running</string>
+    <string name="category_icon">Category-icon</string>
+
+
+
+
+    <!-- ExerciseActivity -->
+    <string name="exercise_exercises">Exercises</string>
+    <string name="exercise_program_name">Program name: </string>
+    <string name="exercise_program_description">Program description: </string>
+
+
+
+    <!-- ShowExerciseActivity -->
+    <string name="show_exercise_exercise">Exercise</string>
+    <string name="show_exercise_name">Name:</string>
+    <string name="show_exercise_description">Description:</string>
+    <string name="show_exercise_image">Image:</string>
+    <string name="show_exercise_imageview_contentdescription">Exercise icon</string>
+
+
+
+    <!-- SettingsFragment -->
+    <string name="settings_version_name">Version number: %s</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
+    <string name="disabled">Disabled</string>
+    <string name="enabled">Enabled</string>
+
+    <!-- SettingsFragment - Appearance -->
+    <string name="pref_key_category_appearance">pref_key_category_appearance</string>
+    <string name="pref_title_category_appearance">Appearance</string>
+    <!-- DarkMode -->
+    <string name="pref_key_dark_mode">pref_key_dark_mode</string>
+    <string name="pref_dark_mode_enable_disable">Enable/Disable DarkMode</string>
+    <string name="pref_dark_mode_drop_down_summary">Force enable/disable of DarkMode, or let the system decide</string>
+    <string name="system_auto">Auto - Follows Time of Day </string>
+    <string name="system_specified">Use System-Specified Mode</string>
+    <string name="system_auto_battery">Auto Battery DarkMode</string>
+    <!-- SettingsFragment - Notifications -->
+    <string name="pref_key_category_notifications">pref_key_category_notifications</string>
+    <string name="pref_title_category_notifications">Notifications</string>
+    <string name="pref_key_notifications">pref_key_notifications</string>
+    <string name="pref_enable_notifications">Enable notifications</string>
+    <!-- SettingsFragment - Help -->
+    <string name="pref_key_category_help">pref_key_category_help</string>
+    <string name="pref_title_category_help">Help</string>
+    <!-- Feedback -->
+    <string name="pref_key_feedback">pref_key_feedback</string>
+    <string name="pref_send_feedback">Send feedback</string>
+    <string name="pref_report_issues_suggestions">Report technical issues or suggest new features</string>
+    <!-- Delete Data -->
+    <string name="pref_key_delete_data">pref_key_delete_data</string>
+    <string name="pref_delete_data">Delete data</string>
+    <string name="pref_delete_data_summary">Delete all app-data. The app will exit, and will have to log in again.</string>
+    <!-- About-page -->
+    <string name="pref_key_about">pref_key_about</string>
+    <string name="pref_about">About</string>
+    <string name="pref_about_summary">About this app…</string>
+    <string name="creators">Created by\n\nPeople</string>
+    <string name="application_logo">Application logo</string>
+    <string name="message_from_creators">This app has been created as a part of the\nfinal evaluation of the course\nITE1802 - Programmering for Mobil\n\n The purpose of this app is to show\nwhat we have learned during this course,\nand demonstrate our knowledge\n(or lack thereof) in programming for the\nAndroid Mobile OS\n\n As such, the sourcecode for this app is\nan amalgamation of best practices\nand beginner-code.\n\n As you feast your eyes on the source\nwe pray for your mental well-beeing\n\n\nSincerely, The Creators</string>
+
+
+    <!-- toolbar-menu -->
+    <string name="toolbar_menu_settings">Settings</string>
+    <string name="toolbar_menu_refresh_downloaded">Download again</string>
+    <string name="toolbar_menu_about_app">About the app</string>
+    <string name="toolbar_menu_about_app_text">This app is made by People</string>
+    <string name="toolbar_menu_quit">Quit</string>
+    <string name="toolbar_menu_quit_quitting">Quitting!</string>
+    <string name="fragment_user_title">Login/registration</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login_create_account">Create an account</string>
+    <string name="login_signUp">Sign up</string>
+    <string name="signup_title">Create an account below</string>
+    <string name="password_confirm">Confirm password</string>
+    <string name="signUp_signUp">Create account</string>
+    <string name="login_wrong_credentials">Username/password incorrect</string>
+    <string name="signUp_password_mismatch">Passwords did not match up!</string>
+    <string name="login_message">Logging in…</string>
+    <string name="logout_message">Logging out…</string>
+    <string name="empty_input_fields">Some field are empty!</string>
+    <string name="fragment_user_login">Login</string>
+    <string name="fragment_user_logout">Log out</string>
+    <string name="user">User</string>
+    <string name="fragment_user_already_logged_out">Already logged out…</string>
+    <string name="register_user_success_message">User successfully created!</string>
+    <string name="login">login</string>
+
+    <!-- Feedback-form -->
+    <string name="not_defined">Not defined</string>
+    <string name="icon">Icon</string>
+    <string name="bug">Bug</string>
+    <string name="feature_request">Feature-request</string>
+    <string name="review_positive">Positive review</string>
+    <string name="review_negative">Negative review</string>
+    <string name="name">Name</string>
+    <string name="email_optional">Email (optional)</string>
+    <string name="cancel">Cancel</string>
+    <string name="submit_feedback">Submit Feedback</string>
+    <string name="enter_feedback">Enter feedback</string>>
+    <string name="email">Email</string>
+    <string name="edit_delete_type">Edit type</string>
+
+</resources>

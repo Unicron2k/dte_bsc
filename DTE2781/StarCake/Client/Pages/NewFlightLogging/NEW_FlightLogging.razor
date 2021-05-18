@@ -1,0 +1,30 @@
+﻿@page "/newflightlogging"
+@using StarCake.Client.Services
+@inject HttpClient _http
+@inject AppData _appData
+@inject IJSRuntime _jsRuntime
+@inject IDialogService _dialogService
+@inject NavigationManager _navigationManager
+
+@* TODO: Legg til switch for enkel form for f.eks. mobiltelefon *@
+
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12">
+        <PreviousFlightLogs/>
+    </MudItem>
+    <MudItem xs="12">
+            <MudPaper>
+                <MudGrid Justify="Justify.Center">
+                    <MudText Typo="Typo.h3">Log new flights</MudText>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+    @*<MudItem xs="12">
+        <PendingFlightLogs/>
+    </MudItem>*@
+    <MudDivider DividerType="DividerType.Middle" Class="my-6"/>
+    <MudItem xs="12">
+        <AppendFlightLog/>
+    </MudItem>
+</MudGrid>
+

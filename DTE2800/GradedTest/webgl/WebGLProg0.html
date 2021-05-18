@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>WebGL: Basis.</title>
+</head>
+
+<body onload="main()">
+	<canvas id="webgl" width="1200" height="1200">
+		Denne nettleseren støtter ikke "canvas"-elementet!
+	</canvas>
+	<div id="fps-counter">
+		FPS: <span id="fps">--</span><br>
+	</div>
+	<div>
+		WASD rotere kamera.<br>
+		VB zoom inn/ut<br>
+	</div>
+	<script src="./lib/webgl-utils.js"></script>
+	<script src="./lib/webgl-debug.js"></script>
+	<script src="./lib/cuon-utils.js"></script>
+	<script src="./lib/cuon-matrix.js"></script>
+	<script src="./lib/gl-matrix-min.js"></script>
+	<script src="./lib/wfa-helpers.js"></script>
+	<script src="js/WebGLProg0/stack.js"></script>
+	<script src="js/WebGLProg0/coord.js"></script>
+	<script src="js/WebGLProg0/xzplane.js"></script>
+	<script src="js/WebGLProg0/circle.js"></script>
+	<script src="js/WebGLProg0/cube.js"></script>
+	<script src="js/WebGLProg0/cylinder.js"></script>
+	<script src="js/WebGLProg0/mainapp.js"></script>
+
+	<!-- SHADER A -->
+	<script id="vertex-shader-a" type="x-shader/x-vertex">
+		attribute vec3 a_position;
+		attribute vec4 a_color;
+		uniform mat4 u_modelviewMatrix;
+		uniform mat4 u_projectionMatrix;
+		varying vec4 v_color;
+		void main() {
+			gl_Position = u_projectionMatrix * u_modelviewMatrix * vec4(a_position,1.0);
+			v_color = a_color;
+		}
+	</script>
+	<script id="fragment-shader-a" type="x-shader/x-fragment">
+		precision mediump float;
+		varying vec4 v_color;
+		void main() {
+			gl_FragColor = v_color;
+		}
+	</script>
+
+	<!-- SHADER B -->
+	<script id="vertex-shader-b" type="x-shader/x-vertex">
+		attribute vec3 a_position;
+		attribute vec4 a_color; //1A
+		uniform mat4 u_modelviewMatrix;
+		uniform mat4 u_projectionMatrix;
+		varying vec4 v_color; //1A
+		void main() {
+			gl_Position = u_projectionMatrix * u_modelviewMatrix * (vec4(a_position,1.0));
+			v_color = a_color; //1A
+		}
+	</script>
+	<script id="fragment-shader-b" type="x-shader/x-fragment">
+		precision mediump float;
+		varying vec4 v_color; //1A
+		void main() {
+			gl_FragColor = v_color; //1A
+		}
+	</script>
+</body>
+</html>

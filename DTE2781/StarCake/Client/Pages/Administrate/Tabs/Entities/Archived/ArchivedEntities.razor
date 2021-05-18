@@ -1,0 +1,93 @@
+@using StarCake.Shared.Models.ViewModels
+@using StarCake.Shared
+@using StarCake.Client.Services
+@inject ISnackbar Snackbar
+@inject HttpClient Http
+@inject AppData AppData
+@inject IDialogService DialogService
+
+@code {
+    
+}
+
+<MudItem Class="d-flex align-center justify-center mud-width-full py-2">
+    <MudBadge 
+        Content="@(AppData.CurrentUser.CurrentDepartment.Entities.Where(x => x.IsArchived).ToList().Count)" 
+        Color="Color.Primary" 
+        Overlap="false"
+        Bordered="false"
+        Class="mx-6 my-4">
+        <MudText Typo="Typo.h5">
+            Entities
+        </MudText>
+    </MudBadge>
+</MudItem>
+
+
+<MudPaper Class="d-flex align-center justify-center mud-width-full py-4">
+    <MudGrid Justify="Justify.Center">
+            <MudExpansionPanels MultiExpansion="false" Class="mt-6">
+                @foreach (var entityType in AppData.EntityTypes
+                    .Where(x => AppData.CurrentUser.CurrentDepartment.Entities
+                        .Where(a => a.IsArchived)
+                        .Select(c => c.EntityTypeId)
+                        .ToList().Contains(x.EntityTypeId)).ToList())
+                {
+                    var entities = AppData.CurrentUser.CurrentDepartment.Entities.Where(x => x.IsArchived && x.EntityTypeId == entityType.EntityTypeId).ToList();
+                    <MudExpansionPanel>
+                        <TitleContent>
+                            <strong>@entityType.Name &#10240;</strong>
+                            <MudBadge
+                                Content="@(entities.Count)"
+                                Color="Color.Primary"/>
+                        </TitleContent>
+                        <ChildContent>
+                            <MudExpansionPanels MultiExpansion="false">
+                                @foreach (var entity in entities)
+                                {
+                                    <MudExpansionPanel Text="@entity.Name">
+                                        <MudList>
+                                            <MudGrid Justify="Justify.Center">
+                                                <AuthorizeView Roles="@($"{Roles.GetOrganizationMaintainerAndUp()}")">
+                                                    <MudButton
+                                                        OnClick="@(() => UnArchiveEntity(entity))"
+                                                        Variant="Variant.Filled"
+                                                        EndIcon="@Icons.Material.Filled.RestoreFromTrash"
+                                                        Color="Color.Warning"
+                                                        FullWidth="true">
+                                                        Un-archive entity
+                                                    </MudButton>
+
+                                                    @code{
+
+                                                        async Task UnArchiveEntity(EntityViewModel entity)
+                                                        {
+                                                            var parameters = new DialogParameters {{nameof(ModalConfirmEntityUnArchive.Entity), entity}};
+                                                            var dialog = DialogService.Show<ModalConfirmEntityUnArchive>($"Do you want to un-archive {entity.Name}?", parameters);
+                                                            var result = await dialog.Result;
+                                                            if (!result.Cancelled)
+                                                                StateHasChanged();
+                                                        }
+
+                                                    }
+
+                                                </AuthorizeView>
+                                            </MudGrid>
+                                            <MudDivider DividerType="DividerType.Middle" Class="my-6"/>
+
+                                            <MudListItem Text="@("Manufacturer: " + AppData.Manufacturers.Where(x => x.ManufacturerId == entity.ManufacturerId).Select(x => x.Name).FirstOrDefault())" Icon="@Icons.Material.Filled.Store"/>
+                                            <MudListItem Text="@("Creation date: " + entity.CreationDate.ToString("yyyy MMMM dd"))" Icon="@Icons.Material.Filled.CalendarToday"/>
+                                            <MudListItem Text="@("Total cycles: " + entity.TotalFlightCycles)" Icon="@Icons.Material.Filled.Cached"/>
+                                            <MudListItem Text="@("Total flight duration: " + TimeFormatting.SecondsToHMM(entity.TotalFlightDurationInSeconds))" Icon="@Icons.Material.Filled.Timelapse"/>
+                                            <MudListItem Text="@("Number of components: " + entity.Components.Count)" Icon="@Icons.Material.Filled.Tag"/>
+                                            <MudListItem Text="@("Number of FlightLogs: " + entity.FlightLogs.Count)" Icon="@Icons.Material.Filled.AirplanemodeActive"/>
+                                        </MudList>
+                                    </MudExpansionPanel>
+                                }
+                            </MudExpansionPanels>
+                        </ChildContent>
+                    </MudExpansionPanel>
+                }
+            </MudExpansionPanels>
+    </MudGrid>
+</MudPaper>

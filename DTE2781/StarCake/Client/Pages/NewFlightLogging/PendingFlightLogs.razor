@@ -1,0 +1,123 @@
+@using System.Net.Http.Json
+@using StarCake.Shared.Models.ViewModels
+@inject HttpClient _http
+@inject ISnackbar _snackbar
+@using StarCake.Client.Services
+@using System.Globalization
+@using StarCake.Shared
+@inject AppData _appData
+
+@code {
+    // Initialize PendingFlightLogs list if it is NULL
+    protected override void OnInitialized()
+    {
+        //_appData.PendingFlightLogs ??= new List<FlightLogViewModel>();
+    }
+}
+
+<MudTable Items="@_appData.PendingFlightLogs" Bordered="true" Striped="true" Dense="true" Hover="true" ReadOnly="true" SortLabel="Sort By">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Pending FlightLogs</MudText>
+        <MudToolBarSpacer/>
+    </ToolBarContent>
+    
+    <ColGroup>
+        <col style="grid-auto-flow: dense;" /> @* Pilot *@
+        <col style="grid-auto-flow: dense;" /> @* LOGGED *@
+        <col style="grid-auto-flow: dense;" /> @* TYPE OF OPERATION *@
+        <col style="grid-auto-flow: dense;" /> @* ENTITY *@
+        <col style="grid-auto-flow: dense;" /> @* TAKEOFF *@
+        <col style="grid-auto-flow: dense;" /> @* COUNTRY *@
+        <col style="grid-auto-flow: dense;" /> @* TAKEOFF PLACE *@
+        <col style="grid-auto-flow: dense;" /> @* TAKEOFF POSITION *@
+        <col style="grid-auto-flow: dense;" /> @* LANDING *@
+        <col style="grid-auto-flow: dense;" /> @* LANDING PLACE *@
+        <col style="grid-auto-flow: dense;" /> @* LANDING POSITION *@
+        <col style="grid-auto-flow: dense;" /> @* FLIGHT TIME *@
+        <col style="grid-auto-flow: dense;" /> @* REMARKS *@
+    </ColGroup>
+    <HeaderContent>
+        @if (!_appData.PendingFlightLogs.Any())
+        {
+            <MudItem md="4" xs="12">
+                <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Dense="true" Class="my-2">
+                    No logs added to list yet. Add some and click save to upload every in the Pending list.
+                </MudAlert>
+            </MudItem>
+        }
+        else
+        {
+            @*TODO: Add tooltips with info on all MudTh *@
+            @*TODO: Sort when added to AppData.PendingFlightLogs *@
+            <MudTh><strong>Pilot</strong></MudTh>
+            <MudTh><strong>LOGGED</strong></MudTh>
+            <MudTh><strong>TYPE OF OPERATION</strong></MudTh>
+            <MudTh><strong>ENTITY</strong></MudTh>
+            <MudTh><strong>TAKEOFF</strong></MudTh>
+            <MudTh><strong>COUNTRY</strong></MudTh>
+            <MudTh><strong>TAKEOFF PLACE</strong></MudTh>
+            <MudTh><strong>TAKEOFF POSITION</strong></MudTh>
+            <MudTh><strong>LANDING</strong></MudTh>
+            <MudTh><strong>LANDING PLACE</strong></MudTh>
+            <MudTh><strong>LANDING POSITION</strong></MudTh>
+            <MudTh><strong>FLIGHT TIME</strong></MudTh>
+            <MudTh><strong>REMARKS</strong></MudTh>
+        }
+    </HeaderContent>
+    <RowTemplate>
+        @if (_appData.PendingFlightLogs.Any())
+        {
+            <MudTd DataLabel="PILOT">@context.UserPiloted.GetNameFormal()</MudTd>
+            <MudTd DataLabel="LOGGED">@context.UserLogged.GetNameFormal()</MudTd>
+            <MudTd DataLabel="TYPE OF OPERATION">@context.TypeOfOperationsCommaSeparated()</MudTd>
+            <MudTd DataLabel="ENTITY">@context.EntityName</MudTd>
+            <MudTd DataLabel="TAKEOFF">
+                @context.DateTakeOffyymmdd()
+                @context.DateTakeOffClock()
+            </MudTd>
+            <MudTd DataLabel="COUNTRY">@GetCountryCode(context.CountryId)</MudTd>
+            <MudTd DataLabel="TAKEOFF PLACE">@context.AddressTakeOff</MudTd>
+
+            <MudTd DataLabel="TAKEOFF POSITION">
+                <MudGrid Spacing="0">
+                    @foreach (var coordinate in new List<decimal?> {context.LatitudeTakeOff, context.LongitudeTakeOff})
+                    {
+                        <MudItem xs="12">
+                            @coordinate
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudTd>
+            <MudTd DataLabel="LANDING">
+                @context.DateLandingyymmdd()
+                @TimeFormatting.SecondsToHMM(context.SecondsFlown)
+            </MudTd>
+            <MudTd DataLabel="LANDING PLACE">@context.AddressTakeOff</MudTd>
+            <MudTd DataLabel="LANDING POSITION">
+                <MudGrid Spacing="0">
+                    @foreach (var coordinate in new List<decimal?> {context.LatitudeLanding, context.LongitudeLanding})
+                    {
+                        <MudItem xs="12">
+                            @coordinate
+                        </MudItem>
+                    }
+                </MudGrid>
+
+            </MudTd>
+            <MudTd DataLabel="FLIGHT TIME">@TimeFormatting.SecondsToHMM(context.SecondsFlown)</MudTd>
+            <MudTd DataLabel="REMARKS">@context.Remarks</MudTd>
+        }
+    </RowTemplate>
+</MudTable>
+@code {
+    private string GetCountryCode(int countryId)
+    {
+        return _appData.Countries.FirstOrDefault(x => x.CountryId == countryId)?.Name;
+    }
+    private string ImageUriInEntity(int entityId)
+    {
+        return AppData.CurrentUser.CurrentDepartment.Entities.FirstOrDefault(x => x.EntityId == entityId)?.ImageAsDataUriBase64();
+    }
+}
+
+

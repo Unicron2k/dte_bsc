@@ -1,0 +1,208 @@
+﻿@using StarCake.Shared.Models.ViewModels.Administrate
+@using StarCake.Client.Services
+@using StarCake.Shared
+@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Pages.Administrate.Modals
+@using StarCake.Client.Pages.Administrate.Modals
+@using System.Collections.Specialized
+@using StarCake.Client.Pages.Administrate
+@inject HttpClient _http
+@inject AppData _appData
+@inject IDialogService _dialogService
+
+
+<AuthorizeView Roles="@($"{Roles.GetDepartmentMaintainerAndUp()}")">
+    <MudButton OnClick="@(AddNewEntity)" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.AddCircle" Color="Color.Success">
+        Add a new entity
+    </MudButton>
+    @code{
+        async Task AddNewEntity()
+        {
+            var dialog = _dialogService.Show<ModalAddEntityView>("Add a new entity");
+            var result = await dialog.Result;
+            if (!result.Cancelled)
+                StateHasChanged();
+        }
+    }
+</AuthorizeView>
+<MudButton OnClick="@(ShowStatistics)" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.InfoOutline" Color="Color.Success">
+    Statistics
+</MudButton>
+
+
+@if (!AppData.CurrentUser.CurrentDepartment.Entities.Any())
+{
+    <MudAlert Severity="Severity.Error">No entities found in your department!</MudAlert>
+}
+else
+{
+    <MudPaper>
+        <MudItem xs="12">
+            <MudExpansionPanels MultiExpansion="false">
+                @* Get and loop through all EntityType ID's from the entities ordered alphabetically *@
+                @foreach (var entityTypeId in _appData.EntityTypes
+                    .OrderBy(x => x.Name)
+                    .Where(x => AppData.CurrentUser.CurrentDepartment.Entities
+                        .Where(e => !e.IsArchived)
+                        .Select(e => e.EntityTypeId).ToList().Contains(x.EntityTypeId))
+                    .Select(x => x.EntityTypeId).ToList())
+                {
+                    <MudExpansionPanel>
+                        <TitleContent>
+                            <div class="d-flex">
+                                <MudText>
+                                    <strong>@($"{_appData.EntityTypes.Where(x => x.EntityTypeId == entityTypeId).Select(x => x.Name).FirstOrDefault()}")</strong>
+                                </MudText>
+                            </div>
+                        </TitleContent>
+                        <ChildContent>
+                            <MudGrid Justify="Justify.FlexStart">
+                                @foreach (var entity in AppData.CurrentUser.CurrentDepartment.Entities.Where(x => x.EntityTypeId == entityTypeId && x.IsArchived == false).ToList())
+                                {
+                                    <MudItem xs="12" sm="3">
+                                        <MudCard Square="true" Style="border: solid #545b62;">
+                                            <MudCardHeader>
+                                                <CardHeaderAvatar>
+                                                    @* TODO: Insert image of manufacturer here *@
+                                                    <MudAvatar Color="Color.Secondary">I</MudAvatar>
+                                                </CardHeaderAvatar>
+                                                <CardHeaderContent>
+                                                    <MudText Typo="Typo.body1">@entity.Name</MudText>
+                                                    <MudText Typo="Typo.body2">Peninsula in Europe</MudText>
+                                                </CardHeaderContent>
+                                                <CardHeaderActions>
+                                                    <AuthorizeView Roles="@($"{Roles.GetDepartmentMaintainerAndUp()}")">
+                                                        <MudIconButton OnClick="@(() => EditEntity(entity))" Icon="@Icons.Material.Filled.Edit" Color="Color.Info"/>
+                                                    </AuthorizeView>
+                                                </CardHeaderActions>
+                                            </MudCardHeader>
+                                            <MudCardMedia Image="@entity.ImageAsDataUriBase64()" />
+                                            <MudCardActions>
+                                                <MudTooltip Text="@($"Show components ({entity.Components.Count})")">
+                                                    <MudIconButton 
+                                                        OnClick="@(() => ShowComponentsInEntity(entity))" 
+                                                        Icon="@Icons.Material.Filled.DeviceHub" Color="Color.Default"/>
+                                                </MudTooltip>
+
+                                                <AuthorizeView Roles="@($"{Roles.GetOrganizationMaintainerAndUp()}")">
+                                                    <MudTooltip Text="@($"Archive {entity.Name}")">
+                                                        <MudIconButton
+                                                            OnClick="@(() => ArchiveEntity(entity))"
+                                                            Icon="@Icons.Material.Filled.Delete" Color="Color.Error"/>
+                                                    </MudTooltip>
+                                                </AuthorizeView>
+                                                <AuthorizeView Roles="@($"{Roles.GetDepartmentMaintainerAndUp()}")">
+                                                    <MudTooltip Text="@($"Move {entity.Name} to another department")">
+                                                        <MudIconButton
+                                                            OnClick="@(() => MoveDepartment(entity))"
+                                                            Icon="@Icons.Material.Filled.DriveFileMoveOutline" Color="Color.Default"/>
+                                                    </MudTooltip>
+                                                </AuthorizeView>
+                                            </MudCardActions>
+                                            <MudCardContent>
+                                                <MudGrid Justify="Justify.FlexStart">
+                                                    @code {
+                                                        private static Typo _listFontSize = Typo.body2;
+                                                    }
+                                                    <MudList Clickable="true">
+                                                        <MudListItem Text="Info" Icon="@Icons.Material.Filled.Info">
+                                                            <NestedList>
+                                                                <MudListItem Icon="@Icons.Material.Filled.Store">
+                                                                    <MudText Typo="_listFontSize">
+                                                                        <b>Manufacturer: </b>@_appData.Manufacturers.FirstOrDefault(x => x.ManufacturerId == entity.ManufacturerId)?.Name
+                                                                    </MudText>
+                                                                </MudListItem>
+                                                                <MudListItem Icon="@Icons.Material.Filled.CalendarToday">
+                                                                    <MudText Typo="_listFontSize">
+                                                                        <b>Creation date: </b>@($"{entity.CreationDate:yyyy MMMM dd}")
+                                                                    </MudText>
+                                                                </MudListItem>
+                                                                <MudListItem Icon="@Icons.Material.Filled.Timelapse">
+                                                                    <MudText Typo="Typo.body2">
+                                                                        <b>Total flight duration: </b>@TimeFormatting.SecondsToHMM(entity.TotalFlightDurationInSeconds)
+                                                                    </MudText>
+                                                                </MudListItem>
+                                                                <MudListItem Icon="@Icons.Material.Filled.Cached">
+                                                                    <MudText Typo="Typo.body2">
+                                                                        <b>Total cycles: </b>@entity.TotalFlightCycles
+                                                                    </MudText>
+                                                                </MudListItem>
+                                                                <MudListItem Icon="@Icons.Material.Filled.FlightTakeoff">
+                                                                    <MudText Typo="Typo.body2">
+                                                                        <b>Flight Logs: </b>@entity.FlightLogs.Count
+                                                                    </MudText>
+                                                                </MudListItem>
+                                                            </NestedList>
+                                                        </MudListItem>
+                                                    </MudList>
+                                                </MudGrid>
+                                            </MudCardContent>
+                                        </MudCard>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </ChildContent>
+                    </MudExpansionPanel>
+                }
+            </MudExpansionPanels>
+        </MudItem>
+    </MudPaper>
+}
+
+@code {
+
+    async Task MoveDepartment(EntityViewModel entity)
+    {
+        var parameters = new DialogParameters
+        {
+            {nameof(ModalMoveEntityToOtherDepartment.EntityInAppData), entity}
+        };
+        var options = new DialogOptions
+        {
+            FullWidth = true
+        };
+        var dialog = _dialogService.Show<ModalMoveEntityToOtherDepartment>($"Change department of {entity.Name}", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+            StateHasChanged();
+    }
+
+    async Task EditEntity(EntityViewModel entity)
+    {
+        var parameters = new DialogParameters
+        {
+            {nameof(ModalEditEntity.EntityInAppData), entity}
+        };
+        var options = new DialogOptions() {CloseButton = false};
+        var dialog = _dialogService.Show<ModalEditEntity>($"Edit {entity.Name}", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+            StateHasChanged();
+    }
+    
+    void ShowComponentsInEntity(EntityViewModel entity)
+    {
+        var parameters = new DialogParameters
+        {
+            {nameof(ModalComponentsInEntity.Entity), entity}
+        };
+        _dialogService.Show<ModalComponentsInEntity>($"Components in {entity.Name}", parameters);
+    }
+    
+    async Task ArchiveEntity(EntityViewModel entity)
+    {
+        var parameters = new DialogParameters
+        {
+            {nameof(ModalConfirmEntityArchiveView.Entity), entity}
+        };
+        var dialog = _dialogService.Show<ModalConfirmEntityArchiveView>($"Are you sure you want to archive {entity.Name} and its components?", parameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+            StateHasChanged();
+    }
+
+    private void ShowStatistics()
+    {
+        _appData.ParentRoot.ShowSnackBar("NOT IMPLEMENTED YET", Severity.Warning);
+    }
+}

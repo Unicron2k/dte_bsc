@@ -1,0 +1,61 @@
+@model Tuple<List<uDev.Models.ViewModels.TransactionViewModel>, string[]>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Your outbound transactions</h1>
+<hr />
+<br>
+<p class="text-center"> <span class="card badge-info">Your Cryptocoin-address(DGC): @Model.Item2[0]</span><br>
+    Current funds: @Model.Item2[1]<text>DGC</text> Confirmed, @Model.Item2[2]<text>DGC</text> pending
+</p>
+<p>
+    <a asp-action="Transfer">New transaction</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1[0].DateCreated)
+            </th>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1[0].Txid)
+            </th>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1[0].CryptoAddressFrom)
+            </th>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1[0].CryptoAddressTo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(tuple => tuple.Item1[0].Value)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Item1) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateCreated)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Txid)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CryptoAddressFrom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CryptoAddressTo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.TransactionId">Details</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

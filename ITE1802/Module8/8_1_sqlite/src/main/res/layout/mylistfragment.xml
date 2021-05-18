@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btnInsert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Legg til" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Slett" />
+
+        <Button
+            android:id="@+id/btnAvslutt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Avslutt" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/etEtternavn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textCapSentences"
+        android:ems="10"
+        android:hint="Etternavn" >
+    </EditText>
+
+    <EditText
+            android:id="@+id/etFornavn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences"
+            android:ems="10"
+            android:hint="Fornavn" >
+    </EditText>
+
+    <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:ems="10"
+            android:hint="Email" >
+    </EditText>
+
+    <EditText
+            android:id="@+id/etTelefon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:hint="Telefonnumer" >
+    </EditText>
+
+    <EditText
+            android:id="@+id/etFodselsaar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:imeOptions="actionDone"
+            android:hint="Fødselsår" >
+    </EditText>
+
+    <ListView
+        android:id="@+id/lvKontakter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </ListView>
+
+</LinearLayout>

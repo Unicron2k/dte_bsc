@@ -1,0 +1,88 @@
+@inject AppData _appData
+@using StarCake.Client.Services
+@using StarCake.Shared.Models.ViewModels
+@inject HttpClient _http
+@inject ISnackbar _snackbar
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 80vh; overflow-y: scroll">
+            @code{private const string ErrorMessage = "Add values to all fields";}
+            <EditForm Model="@FlightLogViewModel" OnValidSubmit="@SubmitForm" OnInvalidSubmit="() => _appData.ParentRoot.ShowSnackBar(ErrorMessage, Severity.Error)">
+                <DataAnnotationsValidator/>
+                <MudCard>
+                    <MudCardContent>
+                        <MudAutocomplete 
+                            Dense="true"
+                            T="ApplicationUserViewModel" 
+                            @bind-Value="_currentUserPilot"
+                            SearchFunc="@SearchUsers" 
+                            ToStringFunc="@(e => e == null ? null : $"{e.FirstName} {e.LastName}")"/>
+
+                        <MudAutocomplete 
+                            Dense="true"
+                            T="ApplicationUserViewModel" 
+                            @bind-Value="_currentUserLogged" 
+                            SearchFunc="@SearchUsers" 
+                            ToStringFunc="@(e => e == null ? null : $"{e.FirstName} {e.LastName}")"/>
+
+                        <MudSelect Dense="true" Direction="Direction.Top" T="TypeOfOperationViewModel" MultiSelection="true" @bind-SelectedValues="@SelectedTypeOfOperations">
+                            @foreach (var typeOfOperation in _appData.TypeOfOperations.Where(x => x.IsActive))
+                            {
+                                <MudSelectItem T="TypeOfOperationViewModel" Value="@typeOfOperation">@typeOfOperation.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                        
+                        @*<MudTextField
+                            Label="Country Code"
+                            @bind-value="@CountryToPost.CountryCode"
+                            For="@(() => CountryToPost.CountryCode)"/>*@
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton
+                            ButtonType="ButtonType.Submit"
+                            Variant="Variant.Filled"
+                            Color="Color.Success"
+                            FullWidth="true"
+                            Class="ml-auto">
+                            Add country
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+                <ValidationSummary/>
+            </EditForm>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            OnClick="SubmitForm"
+            FullWidth="true">
+            Close
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    private FlightLogViewModel FlightLogViewModel { get; set; }
+
+    private ApplicationUserViewModel _currentUserPilot;
+    private ApplicationUserViewModel _currentUserLogged;
+    private HashSet<TypeOfOperationViewModel> SelectedTypeOfOperations { get; set; }// = new HashSet<TypeOfOperationViewModel>() { "Alaska" };
+
+    private void SubmitForm()
+    {
+        
+    }
+    
+    private async Task<IEnumerable<ApplicationUserViewModel>> SearchUsers(string value)
+    {
+        await Task.Delay(5);
+        var allUsers = AppData.CurrentUser.CurrentDepartment.DepartmentApplicationUsers.Select(x => x.ApplicationUser).ToList();
+    // if text is null or empty, show complete list
+        return string.IsNullOrEmpty(value) ? allUsers : allUsers.Where(x => ($"{x.FirstName} {x.LastName}").Contains(value, StringComparison.OrdinalIgnoreCase));
+    }
+
+}

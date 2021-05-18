@@ -1,0 +1,37 @@
+@model ProjectREST.Models.ViewModels.BlogPostViewModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete post</h1>
+
+<h3>Are you sure you want to delete this post?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Content)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Content)
+        </dd>
+        <dt class = "col-sm-2">
+            Posted on
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PostDate)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index" asp-route-id="@Model.BlogId">Back to posts</a>
+    </form>
+</div>

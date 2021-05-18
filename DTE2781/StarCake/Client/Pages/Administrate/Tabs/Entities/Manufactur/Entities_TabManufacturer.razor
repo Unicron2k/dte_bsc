@@ -1,0 +1,108 @@
+@using StarCake.Shared.Models.ViewModels.Administrate
+@using StarCake.Client.Services
+@using StarCake.Shared
+@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Pages.Administrate.Modals
+@using StarCake.Client.Pages.Administrate.Modals
+@using StarCake.Client.Pages.Administrate.Modals.Entities
+@inject HttpClient _http
+@inject AppData _appData
+@inject IDialogService _dialogService
+
+<AuthorizeView Roles="@($"{Roles.GetOrganizationMaintainerAndUp()}")">
+    <MudButton OnClick="AddManufacture" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.AddCircle" Color="Color.Success">
+        Add a manufactur
+    </MudButton>
+</AuthorizeView>
+
+
+<MudTable Items="_appData.Manufacturers" SortLabel="Sort By" Hover="true" Dense="true" Bordered="true" Striped="true">
+    <HeaderContent>
+        <MudTh><strong><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ManufacturerViewModel, object>(x => x.Name)">Name</MudTableSortLabel></strong></MudTh>
+        <MudTh><strong><MudTableSortLabel SortBy="new Func<ManufacturerViewModel, object>(x => x.IsActive)">Active</MudTableSortLabel></strong></MudTh>
+        <MudTh><strong>Update</strong></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Active">
+            <MudTooltip Text="@(context.IsActive?"This is active":"This not active")" Placement="Placement.Bottom" Delay="500">
+                <MudToggleIconButton
+                    Toggled="@context.IsActive"
+                    ToggledChanged="@((bool val) => OnActiveChanged(val, context))"
+                    Icon="@Icons.Material.Filled.DisabledByDefault" Color="@Color.Error"
+                    ToggledIcon="@Icons.Material.Filled.Check" ToggledColor="@Color.Success"/>
+            </MudTooltip>
+        </MudTd>
+        <MudTd><MudButton OnClick="() => ShowModalPut(context)" EndIcon="@Icons.Filled.Edit" Color="Color.Error">Update</MudButton></MudTd>
+    </RowTemplate>
+</MudTable>
+
+
+@code {
+
+    private async Task OnActiveChanged(bool toggled, ManufacturerViewModel manufactur)
+    {
+        var manufacturToPut = manufactur.Clone();
+        manufacturToPut.IsActive = toggled;
+        var updated = await UpdateManufactur(manufacturToPut);
+        if (updated != null)
+        {
+            manufactur.Update(updated);
+        }
+
+    }
+
+    private async Task<ManufacturerViewModel> UpdateManufactur(ManufacturerViewModel manufacturer)
+    {
+        var response = await _http.PutAsJsonAsync("api/Manufacturer/" + manufacturer.ManufacturerId, manufacturer);
+        if (response.IsSuccessStatusCode)
+        {
+            var manufacturFromDb = await response.Content.ReadFromJsonAsync<ManufacturerViewModel>();
+            _appData.ParentRoot.ShowSnackBar($"Sucess, '{manufacturFromDb.Name}' was updated", Severity.Success);
+            return manufacturFromDb;
+        }
+        _appData.ParentRoot.ShowSnackBar("Error, could not update component type to database!", Severity.Error);
+        return null;
+    }
+
+    async Task AddManufacture()
+    {
+        var dialog = _dialogService.Show<Dialog_AddData>("Add a new Manufacturer");
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            var manufacturerToPost = (ManufacturerViewModel) result.Data;
+            var response = await _http.PostAsJsonAsync("api/Manufacturer", manufacturerToPost);
+            if (response.IsSuccessStatusCode)
+            {
+                var manufacturFromPost = await response.Content.ReadFromJsonAsync<ManufacturerViewModel>();
+                _appData.Manufacturers = _appData.Manufacturers.Append(manufacturFromPost).ToArray();
+                _appData.ParentRoot.ShowSnackBar($"Sucess component type '{manufacturFromPost.Name}' was added", Severity.Success);
+            }
+            else
+            {
+                _appData.ParentRoot.ShowSnackBar("Error, could not add component type to database", Severity.Error);
+            }
+        }
+    }
+    /* PUT */
+    async Task ShowModalPut(ManufacturerViewModel manufacturer)
+    {
+        var parameters = new DialogParameters()
+        {
+            {nameof(Dialog_UpdateData.Manufacturer), manufacturer.Clone()}
+        };
+        var dialog = _dialogService.Show<Dialog_UpdateData>("Update Manufacture", parameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            var manufacturToPut = (ManufacturerViewModel) result.Data;
+            var updated = await UpdateManufactur(manufacturToPut);
+            if (updated != null)
+            {
+                manufacturer.Update(updated);
+            }
+        }
+    }
+
+}

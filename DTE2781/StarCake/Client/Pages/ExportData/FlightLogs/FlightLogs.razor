@@ -1,0 +1,303 @@
+@using StarCake.Shared.Models.ViewModels;
+@using StarCake.Client.Services
+@using StarCake.Shared
+@using System.Collections.Specialized
+
+@inject IJSRuntime _jsRuntime
+@inject HttpClient _http
+@inject AppData _appData
+@inject ISnackbar _snackbar
+@inject IDialogService _dialogService
+
+@if (_checkedEntities == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+}
+else
+{
+    <MudGrid>
+        <MudItem>
+        <MudGrid xs="12" Spacing="1" Justify="Justify.FlexStart">
+            <MudItem>
+                <MudDatePicker Label="Start date" @bind-Date="@_dateStart" OpenTo="OpenTo.Month" Disabled="@_maxDatesEnabled" MaxDate="_dateEnd"/>
+            </MudItem>
+
+            <MudItem>
+                <MudDatePicker Label="End date" @bind-Date="@_dateEnd" OpenTo="OpenTo.Month" Disabled="@_maxDatesEnabled" MinDate="_dateStart" MaxDate="DateTime.Today"/>
+            </MudItem>
+        </MudGrid>
+
+        <MudGrid xs="12" Spacing="1" Justify="Justify.FlexStart">
+            <MudItem class="row justify-content-center align-self-center">
+                <MudSwitch @bind-Checked="@_maxDatesEnabled" Label="Exclude dates" Color="Color.Primary"/>
+            </MudItem>
+
+            <MudItem class="row justify-content-center align-self-center">
+                <MudSwitch CheckedChanged="@((bool state) => UpdateEntityIncludeStates(state))" Checked="_includeAllEntities" Label="All entities in department" Color="Color.Primary"/>
+            </MudItem>
+            <MudItem class="row justify-content-center align-self-center">
+                <MudSwitch @bind-Checked="@_includePreviousEntities" Disabled="!_includeAllEntities" Label="Include moved entities" Color="Color.Primary"/>
+            </MudItem>
+        </MudGrid>
+ 
+    </MudItem>
+        <MudItem class="row justify-content-center align-self-center">
+            <MudFab OnClick="UpdateFlightLogTable" Color="Color.Primary" Icon="@Icons.Material.Filled.Autorenew" Size="Size.Small" IconSize="Size.Small" Label="Update Table" Class="ma-2"/>
+        </MudItem>
+    </MudGrid>
+
+    <MudSelect Disabled="_includeAllEntities" T="EntityViewModel" Label="Select entities to export" Variant="Variant.Outlined" OffsetY="true">
+        @foreach (var checkedEntity in _checkedEntities)
+        {
+            <MudCheckBox @bind-Checked="@checkedEntity.Checked">@checkedEntity.EntityViewModel.Name</MudCheckBox>
+        }
+    </MudSelect>
+    <br />
+}
+
+
+
+@if (_flightLogs == null) {
+    <MudAlert Severity="Severity.Info">Not updated yet</MudAlert> }
+else if (!_flightLogs.Any()) {
+    <MudAlert Severity="Severity.Warning">No flightlogs found in your search</MudAlert> }
+else 
+{
+    <MudGrid>
+        <MudTable Items="@_flightLogs" MultiSelection="true" @bind-SelectedItems="_selectedItems" Dense="true" Hover="true" Bordered="true" Striped="true" Filter="new Func<FlightLogViewModelTable, bool>(FilterFunc)">
+            <ToolBarContent>
+                <MudGrid Justify="Justify.FlexStart">
+                    <MudItem xs="12">
+                        @functions {
+                            private string TableHeaderText()
+                            {
+                                var str = $"{_flightLogs.Count()} logs found from ";
+                                if (_maxDatesEnabled)
+                                    str += "in all time";
+                                else
+                                    str += $"{_dateStart?.ToString("yyMMdd")} to {_dateEnd?.ToString("yyMMdd")}";
+                                return str;
+                            }
+                        }
+                        <MudText Typo="Typo.h6">@(TableHeaderText())</MudText>
+                        <MudButton OnClick="@(DownloadData)" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.FileDownload" Color="Color.Primary">@($"Export {_selectedItems.Count()} FlightLogs")</MudButton>
+                        <MudButton OnClick="@(ShowStatistics)" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.TrendingUp" Color="Color.Primary">@($"Statistics")</MudButton>
+                    </MudItem>
+                </MudGrid>
+                <MudToolBarSpacer/>
+                <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<FlightLogViewModelTable, object>(x => x.Date)">Date</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.EntityName)">Entity</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.ApplicationUserLoggedNameFormal)">Pilot</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.TypesOfOperationsCommaSeparated())">TOF</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.GetPlace())">Place</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.DateToHHMM())">START</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.FlightDurationInSeconds)">FLIGHT</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.ApplicationUserPilotedNameFormal)">Logged by</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.Remarks)">Remarks</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Date">@TimeFormatting.DateTimeToYYMMDD(context.Date)</MudTd>
+                <MudTd DataLabel="Entity">@context.EntityName</MudTd>
+                <MudTd DataLabel="Pilot">@context.ApplicationUserLoggedNameFormal</MudTd>
+                <MudTd DataLabel="TOF">@context.TypesOfOperationsCommaSeparated()</MudTd>
+                <MudTd DataLabel="Place">@context.GetPlace()</MudTd>
+                <MudTd DataLabel="START">@context.DateToHHMM()</MudTd>
+                <MudTd DataLabel="FLIGHT">@TimeFormatting.SecondsToHMM(context.FlightDurationInSeconds)</MudTd>
+                <MudTd DataLabel="Logged by">@context.ApplicationUserPilotedNameFormal</MudTd>
+
+                @if (IsRemarksNullOrEmpty(context))
+                {
+                    <MudTd DataLabel="Remarks"><MudText Color="Color.Error">None</MudText></MudTd>
+                }
+                else
+                {
+                    <MudTd DataLabel="Remarks">@context.Remarks</MudTd>
+                }
+
+                @code {
+                    private static bool IsRemarksNullOrEmpty(FlightLogViewModelTable flightLogViewModelTable)
+                    {
+                        switch (flightLogViewModelTable.Remarks)
+                        {
+                            case null:
+                            case "":
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                }
+
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager/>
+            </PagerContent>
+        </MudTable>
+        <div class="d-flex flex-wrap mt-4">
+            <MudDivider Vertical="true" FlexItem="true"/>
+            <MudText Inline="true">@($"Selected: {_selectedItems.Count()} of {_flightLogs.Count()} total")</MudText>
+        </div>
+    </MudGrid>
+}
+
+@code {
+
+    private bool _maxDatesEnabled;
+    private bool _includeAllEntities;
+    private bool _includePreviousEntities;
+    private bool _includeOnlyOwnFlights;
+    private string _searchString = "";
+    private DateTime? _dateStart = DateTime.UtcNow.AddMonths(-2);
+    private DateTime? _dateEnd = DateTime.UtcNow;
+    private IEnumerable<FlightLogViewModelTable> _flightLogs;
+    private List<CheckedEntities> _checkedEntities = new List<CheckedEntities>();
+    private HashSet<FlightLogViewModelTable> _selectedItems = new HashSet<FlightLogViewModelTable>();
+    private class CheckedEntities
+    {
+        public EntityViewModel EntityViewModel { get; set; }
+        public bool Checked { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        foreach (var entity in AppData.CurrentUser.CurrentDepartment.Entities)
+            _checkedEntities.Add(new CheckedEntities{EntityViewModel = entity, Checked = false});
+    }
+    
+    private void UpdateEntityIncludeStates(bool state)
+    {
+        _includeAllEntities = state;
+        _includePreviousEntities = state && _includePreviousEntities;
+        StateHasChanged();
+    }
+    
+    private void ShowStatistics()
+    {
+        var flightLogs = _selectedItems.ToList();
+        if (!flightLogs.Any())
+            _appData.ParentRoot.ShowSnackBar("Select one or more FlightLogs first!", Severity.Info);
+        else
+        {
+            var parameters = new DialogParameters
+            {
+                {nameof(ModalExportStatistics.SelectedFlightLogs), flightLogs}
+            };
+            var options = new DialogOptions()
+            {
+                FullScreen = true,
+                NoHeader = true
+            };
+            _dialogService.Show<ModalExportStatistics>($"Statistics of {flightLogs.Count} selected FlightLogs", parameters, options);
+        }
+    }
+
+    private void DownloadData()
+    {
+        var flightLogIds = _selectedItems.Select(x => x.FlightLogId).ToList();
+        if (!flightLogIds.Any())
+            _appData.ParentRoot.ShowSnackBar("No FlightLogs are selected", Severity.Info);
+        else
+        {
+            var parameters = new DialogParameters
+            {
+                {nameof(ExportDataModalDownloadFlightLogs.SelectedFlightLogs), _selectedItems.ToList()},
+                {nameof(ExportDataModalDownloadFlightLogs.FlightLogIds), flightLogIds},
+                {nameof(ExportDataModalDownloadFlightLogs.DateStart), _dateStart},
+                {nameof(ExportDataModalDownloadFlightLogs.DateEnd), _dateEnd},
+                {nameof(ExportDataModalDownloadFlightLogs.ApplicationUserId), AppData.CurrentUser.Id}
+            };
+            _dialogService.Show<ExportDataModalDownloadFlightLogs>("Choose a format", parameters);
+        }
+    }
+
+    private bool FilterFunc(FlightLogViewModelTable element)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+    // Parse remark to empty string if it was NULL
+        element.Remarks ??= "";
+        var strings = new List<string>(new[]
+        {
+    /* Date */ TimeFormatting.DateTimeToYYMMDD(element.Date),
+    /* Entity */ element.EntityName,
+    /* Pilot */ element.ApplicationUserPilotedNameFormal,
+    /* TOF */ element.TypesOfOperationsCommaSeparated(),
+    /* Place */ element.GetPlace(),
+    /* START */ element.DateToHHMM(),
+    /* FLIGHT */ TimeFormatting.SecondsToHMM(element.FlightDurationInSeconds),
+    /* Logged by */ element.ApplicationUserLoggedNameFormal,
+    /* Remarks */ element.Remarks
+        });
+        return strings.Any(str => str.Contains(_searchString, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private async Task UpdateFlightLogTable()
+    {
+        if (_dateStart < _dateEnd)
+        {
+            NameValueCollection nvc = new NameValueCollection();
+            var query = "";
+            var doQuery = false;
+            
+            if (_includeAllEntities)
+            {
+                if (_includePreviousEntities)
+                {
+                    query = "api/FlightLogAPI/FlightLogsForTable/ByDepartment";
+                    nvc.Add("base64DepartmentId", Coding.Base64.ToBase64(AppData.CurrentUser.CurrentLoggedInDepartmentId));
+                    doQuery = true;
+                }
+                else
+                {
+                    query = $"api/FlightLogAPI/FlightLogsForTable/ByEntities";
+                    var entityIds = _checkedEntities.Select(x => x.EntityViewModel.EntityId).ToList();
+                    nvc.Add("base64EntityIdList", Coding.Base64.ToBase64(entityIds));
+                    doQuery = true;
+                }
+            }
+            else
+            {
+                if (_checkedEntities.Any(x => x.Checked))
+                {
+                    query = $"api/FlightLogAPI/FlightLogsForTable/ByEntities";
+                    var entityIds = _checkedEntities.Where(x => x.Checked).Select(x => x.EntityViewModel.EntityId).ToList();
+                    nvc.Add("base64EntityIdList", Coding.Base64.ToBase64(entityIds));
+                    doQuery = true;
+                }
+                else
+                    _snackbar.Add("Make sure to check one or more entities", Severity.Error);
+            }
+
+            // Try to get FlightLogs from database with selected parameters
+            if (doQuery)
+            {
+                try
+                {
+                    if (_maxDatesEnabled)
+                    {
+                        nvc.Add("base64DateStart", Coding.Base64.ToBase64(DateTime.MinValue));
+                        nvc.Add("base64DateEnd", Coding.Base64.ToBase64(DateTime.MaxValue));
+                    }
+                    else
+                    {
+                        nvc.Add("base64DateStart", Coding.Base64.ToBase64(_dateStart.Value.AddDays(-1)));
+                        nvc.Add("base64DateEnd", Coding.Base64.ToBase64(_dateEnd.Value.AddDays(1)));
+                    }
+                    _flightLogs = await _http.GetFromJsonAsync<List<FlightLogViewModelTable>>(query+Coding.Query.ToQueryString(nvc));
+                    _selectedItems = new HashSet<FlightLogViewModelTable>(_flightLogs);
+                }
+                catch (HttpRequestException e)
+                {
+                    Console.WriteLine(e);
+                    _snackbar.Add("There was an error getting data from database", Severity.Error);
+                }
+            }
+        }
+        else
+            _snackbar.Add("Make sure Start date is earlier than End date", Severity.Error);
+    }
+}

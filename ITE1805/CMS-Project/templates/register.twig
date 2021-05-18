@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="../css/login.css">
+<div class="login-page">
+    {% if loggedIn==true %}
+        <p style="text-align: center;">You are already registered!</p>
+    {% else %}
+    {% if registerSuccess==false %}
+    <div class="form">
+        <form class="login-form" method="post">
+    <div class="container">
+        <h1>Sign Up</h1>
+        <p>Create a new user by filling in the form below.</p><hr>
+
+        <label for="firstName"><b>First name</b></label>
+        <input type="text" placeholder="First name" id="firstName" name="firstName" maxlength="50" value="{{ POST.firstName }}" required>
+
+        <label for="lastName"><b>Last name</b></label>
+        <input type="text" placeholder="Last name" id="lastName" name="lastName" maxlength="50" value="{{ POST.lastName }}" required>
+
+        <label for="username"><b>Username</b></label>
+        <input type="text" placeholder="Username" id="username" name="username" maxlength="30" value="{{ POST.username }}" required>
+        {% if userExists==true %}
+            <p class="taken">That username is taken!</p>
+        {% endif %}
+
+        <label for="email"><b>E-Mail</b></label>
+        <input type="email" placeholder="Enter E-Mail" id="email" name="email" maxlength="45" value="{{ POST.email }}" required>
+
+        <label for="psw"><b>Password</b></label>
+        <input type="password" placeholder="Password" id="psw" name="psw" maxlength="40" required>
+
+        <label for="psw-repeat"><b>Repeat password</b></label>
+        <input type="password" placeholder="Password" id="psw-repeat" name="psw-repeat" maxlength="40" required>
+
+        {% if passNoMatch==true %}
+            <p>Passwords do not match!</p>
+        {% endif %}
+        <div class="clearfix">
+                <button type="submit" class="signupbtn" name="submit_signup">Register new user</button>
+                <input type="button" class="cancelbtn" value="Cancel" onclick="window.location.href='index.php'" style="background: #f90000;" />
+
+        </div>
+        </div>
+        </form>
+    </div>
+    {% elseif registerSuccess==true %}
+        <p>Registration successful! redirecting...<br/>If you are not automatically redirected in 5 seconds, click <a href="index.php">here</a></p>
+    {% endif %}
+    {% endif %}
+</div>

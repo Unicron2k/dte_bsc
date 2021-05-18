@@ -1,0 +1,35 @@
+@model ProjectREST.Models.ViewModels.BlogViewModel
+
+@{
+    ViewData["Title"] = "Posts";
+}
+
+<h1>@Model.Name @if(Model.BlogLocked){<text>(Locked)</text>}</h1>
+
+@if (Model.BlogLocked){}
+
+@if (!Model.BlogLocked){
+<p>
+    
+    @Html.ActionLink("Create New Post", "Create", new {id = Model.BlogId})
+</p>}
+<div>
+
+@foreach (var item in Model.BlogPosts) {
+    <div>
+         <hr/>
+         <h4>
+             @Html.ActionLink(item.Title + " - " + item.PostDate, "View", new {id = item.BlogPostId}) @if(item.BlogPostLocked || item.Blog.BlogLocked){<text> (Locked)</text>}
+         </h4>
+         <p>
+             @Html.DisplayFor(modelItem => item.Content)
+         </p>
+         @if (!Model.BlogLocked){
+         <div>
+             @Html.ActionLink("Edit", "Edit", new {id = item.BlogPostId}) |
+             @Html.ActionLink("Delete", "Delete", new {id = item.BlogPostId})
+         </div>
+         }
+    </div>
+}
+</div>

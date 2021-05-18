@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- title -->
+    <TextView
+        style="@style/fragmentTitle"
+        android:text="Details of exercise" />
+
+    <!-- name -->
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/userProgramExerciseDetails_name_title"/>
+    <EditText
+        android:id="@+id/userProgramExerciseDetails_name_et"
+        style="@style/TextView20spWithLeftPadding"
+        android:inputType="text"
+        android:maxLength="500"
+        android:hint="@string/userProgramExerciseDetails_name_hint_et"
+        android:autofillHints="@string/userProgramExerciseDetails_name_hint_et" />
+
+    <!-- description -->
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/userProgramExerciseDetails_description_title"/>
+    <EditText
+        android:id="@+id/userProgramExerciseDetails_description_et"
+        style="@style/TextView20spWithLeftPadding"
+        android:inputType="text"
+        android:maxLength="500"
+        android:hint="@string/userProgramExerciseDetails_description_hint_et"
+        android:autofillHints="@string/userProgramExerciseDetails_description_hint_et" />
+
+    <!-- icon -->
+    <TextView
+        android:id="@+id/userProgramExerciseDetails_current_icon_tv"
+        style="@style/Text20spWrap"
+        android:text="@string/userProgramExerciseDetails__tv_icon" />
+    <Spinner
+        android:id="@+id/spinner_existing_icons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp" />
+
+    <!-- back_color -->
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/newAppProgramType_tv_color" />
+    <Button
+        android:id="@+id/userProgramExerciseDetails_button_color"
+        style="@style/TextView20spWithLeftPadding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/newAppProgramType_button_color_title" />
+
+    <!-- PUT_button -->
+    <Button
+        android:id="@+id/userProgramExerciseDetails_button_put"
+        style="@style/Text20spWrapCenter"
+        android:text="@string/userProgramExerciseDetails_button_put_title" />
+
+    <!-- DELETE_button -->
+    <Button
+        android:id="@+id/userProgramExerciseDetails_button_delete"
+        style="@style/Text20spWrapCenter"
+        android:text="@string/userProgramExerciseDetails_button_delete_title" />
+</LinearLayout>

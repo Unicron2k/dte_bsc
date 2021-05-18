@@ -1,0 +1,12 @@
+include ':Module1:myfirstapp', ':Module1:inputactivity', ':Module1:lab1_3', ':Module1:tidsdifferanse', ':Module1:tidsdifferanse_v1'
+include ':Module2:appbartest1', ':Module2:Bondesjakk'
+include ':Module3:Drag&Drop', ':Module3:TowerOfHanoi'
+include ':Module4:adapter', ':Module4:praktiskviewpager', ':Module4:viewpager'
+include ':Module5:volley', ':Module5:volleytest1livedata', ':Module5:volleytest2livedata'
+include ':Module6:quiztime'
+include ':Module8:8_1_sqlite', ':Module8:8_2_room', ':Module8:8_3_db_comms_room', ':Module8:appRecyclerGrid'
+include ':Module9:android_navigation_java', ':Module9:appMyAsyncTaskService3', ':Module9:appMyIntentService', ':Module9:appMyUnboundService', ':Module9:appMyUnboundServiceThread', ':Module9:lab9_1', ':Module9:lab9_2', ':Module9:navigation2'
+include ':Module10:lab10_1', ':Module10:lab10_2'
+include ':Karakter1:app'
+include ':thelastdeath:app'
+rootProject.name = "Assignments"

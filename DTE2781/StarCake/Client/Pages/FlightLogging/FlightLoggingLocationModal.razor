@@ -1,0 +1,43 @@
+﻿
+
+<MudPaper>
+    <MudList Class="d-flex align-center justify-center mud-width-full py-8">
+        <h2>Automatic location access</h2>
+    </MudList>
+    
+    <MudList>
+        <MudListItem Avatar="@Icons.Material.Filled.ContactSupport">
+            We use your web-browsers integrated functionality to get Location Access.
+        </MudListItem>
+        <MudListItem Avatar="@Icons.Material.Filled.GpsFixed">
+            All types of devices should work, but mobile devices with GPS tend to<br/>
+            have highest accuracy.
+        </MudListItem>
+        <MudListItem Avatar="@Icons.Material.Filled.Laptop">
+            If you are using a device without GPS, it will try to calculate<br/>
+            its coordinate from the connected internet source.<br/>
+            Which may be a little inaccurate in some cases.
+        </MudListItem>
+        <MudListItem Avatar="@Icons.Material.Filled.LockOpen">
+            We only use this data to save to the flight log.
+        </MudListItem>
+        <MudListItem Avatar="@Icons.Material.Filled.EmojiObjects">
+            It is optional to use this feature.
+        </MudListItem>
+    </MudList>
+
+    <MudGrid>
+        <MudItem xs="12" Class="d-flex align-center justify-center mud-width-full py-8">
+            <MudFab OnClick="Cancel" Color="Color.Primary" Icon="@Icons.Material.Filled.Done" Size="Size.Medium" IconSize="Size.Medium" Label="Understood" Class="ma-2"/>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+
+@code {
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    void Cancel()
+    {
+        ModalInstance.CancelAsync();
+    }
+}

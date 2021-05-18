@@ -1,0 +1,88 @@
+﻿@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Services
+@inject AppData AppData
+@inject HttpClient Http
+
+
+<h2>Maintenance</h2>
+
+@if (Entity == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+}
+else
+{
+    <div Class="float-left">
+        <MudList Clickable="true" Dense="true">
+            <MudListItem Text="@Entity.Name">
+                <NestedList>
+                    <MudListItem Text="@($"Creation date: {Entity.CreationDate:yyyy MMMM dd}")"/>
+                    @*
+                    <MudListItem Text="@($"Type: {Entity.EntityTypeViewModel.Name}")"/>
+                    *@
+                    <MudListItem Text="@($"Tot. cycles: {Entity.TotalFlightCycles}")"/>
+                    <MudListItem Text="@($"Tot. min flown: {SecondsToMin(Entity.TotalFlightDurationInSeconds)}")"/>
+                </NestedList>
+            </MudListItem>
+        </MudList>
+        
+        <MudText Typo="Typo.h5">Components</MudText>
+        @try
+        {
+            @if (Entity.Components.Count == 0)
+            {
+                <MudText Typo="Typo.h6">This entity has no components</MudText>
+            }
+            else
+            {
+                <MudList Clickable="true" Dense="true">
+                    @foreach (var component in Entity.Components)
+                    {
+                        <MudListItem Text="@component.Name">
+                            <NestedList>
+                                @*<MudListItem Text="@($"Type: {component.ComponentTypeName}")"/>*@
+                                <MudListItem Text="@($"Creation date: {component.CreationDate:yyyy MMMM dd}")"/>
+                                @*<MudListItem Text="@($"Manufacturer: {component.ManufacturerName}")"/>*@
+                                <MudListItem Text="@($"Total cycles: {component.TotalFlightCycles}")"/>
+                                <MudListItem Text="@($"Total runtime: {component.TotalFlightDurationInSeconds}s")"/>
+                                <MudListItem Text="@($"Last maint. date: {component.LastMaintenanceDate:yyyy MMMM dd}")"/>
+                                <MudListItem Text="@($"Cycles since last maint.: {component.CyclesSinceLastMaintenance}/{component.MaxCyclesBtwMaintenance}max")"/>
+                                <MudListItem Text="@($"Days since last maint.: {(DateTime.UtcNow - component.LastMaintenanceDate).TotalDays:0.0}/{component.MaxDaysBtwMaintenance}max")"/>
+                                <MudListItem Text="@($"Minutes flown since last maint.: {SecondsToMin(component.FlightSecondsSinceLastMaintenance)}/{SecondsToMin(component.MaxFlightSecondsBtwMaintenance, false)}max")"/>
+                                <MudListItem Text="@($"SerialNr.: {component.SerialNumber}")"/>
+                            </NestedList>
+                        </MudListItem>
+                    }
+                </MudList>
+            }
+        }
+        catch (Exception e)
+        {
+            <MudText Typo="Typo.h6">No components was found in the entity</MudText>
+        }
+        
+        <button @onclick="CloseView" class="btn btn-success">Close</button>
+    </div>
+}
+
+
+@code {
+    private static string SecondsToMin(int seconds, bool showDecimal=true)
+    {
+        return (seconds / 60).ToString(showDecimal ? "0.0" : "0");
+    }
+    
+    [Parameter]
+    public EntityViewModel Entity { get; set; }
+
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    void CloseView()
+    {
+        ModalInstance.CancelAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+}

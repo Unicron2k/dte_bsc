@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>displayCommentsExample</title>
+</head>
+<body>
+<style>
+    .inline {
+        display: inline;
+    }
+</style>
+
+
+<!--Add comments-->
+<div class="container">
+    <form method="post" enctype="multipart/form-data" style="border: 1px solid #ccc">
+        <h3>Legg til kommentar:</h3>
+        <textarea rows="12" cols="50" name="comment" placeholder="Skriv din kommentar..."></textarea>
+        <input type="submit" name="submit_commentUpload" value="Legg til">
+    </form>
+</div><br><br>
+
+
+<!--Show comments-->
+{% if comments and file %}
+    {% for comment in comments %}
+        <div class="container">
+    <textarea rows="12" cols="50" readonly>
+Bruker: {{ comment.getAuthor }}
+
+    {{ comment.getComment }}
+
+Dato: {{ comment.getDate() }}
+</textarea>
+    <button type="submit" name={{ comment.getCommentID() }} value={{ comment.getCommentID() }}>Slett kommentar</button>
+</div>
+    {% endfor %}
+{% endif %}
+
+</body>
+</html>

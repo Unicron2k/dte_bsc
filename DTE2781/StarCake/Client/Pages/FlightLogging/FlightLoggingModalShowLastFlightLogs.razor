@@ -1,0 +1,79 @@
+﻿@inject AppData AppData
+@using StarCake.Shared.Models.ViewModels
+@using System.Collections.Specialized
+@using StarCake.Shared
+@using StarCake.Client.Services
+@inject HttpClient Http
+
+@* @if (_flightLogs == null) *@
+@* { *@
+@*     <MudItem xs="12"> *@
+@*         <MudProgressCircular Color="Color.Default" Indeterminate="true"/> *@
+@*     </MudItem> *@
+@* } *@
+@* else *@
+@* { *@
+@*     <MudDialog DisableSidePadding="true"> *@
+@*         <DialogContent> *@
+@*             <MudContainer Style="overflow-y: scroll"> *@
+@*                 <MudGrid> *@
+@*                     <MudItem xs="12"> *@
+@*                         <MudText Typo="Typo.h3">@($"Showing {_flightLogs.Length} newest FlightLogs")</MudText> *@
+@*                     </MudItem> *@
+@*                 </MudGrid> *@
+@*                  *@
+@*                     <MudTable Style="border-width: thin; border-style: dotted" Striped="true"  Items="_flightLogs" Hover="true" Breakpoint="Breakpoint.Sm"> *@
+@*                         <HeaderContent> *@
+@*                             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<FlightLogViewModelTable, object>(x => x.Date)">DATE<br/>YYMMDD</MudTableSortLabel></MudTh> *@
+@*                             <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.ApplicationUserLoggedNameFormal)">Pilot In Command</MudTableSortLabel></MudTh> *@
+@*                             <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.TypesOfOperationsCommaSeparated())">Type of Flight</MudTableSortLabel></MudTh> *@
+@*                             <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.GetPlace())">PLACE</MudTableSortLabel></MudTh> *@
+@*                             <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.DateToHHMM())">START</MudTableSortLabel></MudTh> *@
+@*                             <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => FlightLogViewModel.SecondsToHMM(x.FlightDurationInSeconds))">FLIGHT</MudTableSortLabel></MudTh> *@
+@*                             <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => FlightLogViewModel.SecondsToHHMM(x.ACCOfEntityAtFlightInSeconds))">ACC</MudTableSortLabel></MudTh> *@
+@*                             <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.Remarks)">REMARKS</MudTableSortLabel></MudTh> *@
+@*                             <MudTh><MudTableSortLabel SortBy="new Func<FlightLogViewModelTable, object>(x => x.ApplicationUserPilotedNameFormal)">SIGN</MudTableSortLabel></MudTh> *@
+@*                         </HeaderContent> *@
+@*                         <RowTemplate> *@
+@*                             <MudTd DataLabel="DATE">@TimeFormatting.DateTimeToYYMMDD(context.Date)</MudTd> *@
+@*                             <MudTd DataLabel="Pilot In Command">@context.ApplicationUserLoggedNameFormal</MudTd> *@
+@*                             <MudTd DataLabel="TOF">@context.TypesOfOperationsCommaSeparated()</MudTd> *@
+@*                             <MudTd DataLabel="PLACE">@context.GetPlace()</MudTd> *@
+@*                             <MudTd DataLabel="START">@TimeFormatting.DateToHHMM(context.Date)</MudTd> *@
+@*                             <MudTd DataLabel="FLIGHT">@TimeFormatting.SecondsToHMM(context.FlightDurationInSeconds)</MudTd> *@
+@*                             <MudTd DataLabel="ACC">@TimeFormatting.SecondsToHHMM(context.ACCOfEntityAtFlightInSeconds)</MudTd> *@
+@*                             <MudTd DataLabel="REMARKS">@context.Remarks</MudTd> *@
+@*                             <MudTd DataLabel="SIGN">@context.ApplicationUserPilotedNameFormal</MudTd> *@
+@*                         </RowTemplate> *@
+@*                     </MudTable> *@
+@*             </MudContainer> *@
+@*         </DialogContent> *@
+@*     </MudDialog> *@
+@*      *@
+@* } *@
+
+
+
+
+@code {
+        private const int NumberOfFlightLogsToShow = 3;
+
+    /* Rx parameter */
+    [Parameter]
+    public int EntityId { get; set; }
+
+    private FlightLogViewModelTable[] _flightLogs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var query = "api/FlightLogAPI/GetFlightLogsInEntityForTable";
+        var nvc = new NameValueCollection
+        {
+            {"entityId", EntityId.ToString()},
+            {"numberOfFlightLogs", NumberOfFlightLogsToShow.ToString()}
+        };
+        query += Coding.Query.ToQueryString(nvc);
+        _flightLogs = await Http.GetFromJsonAsync<FlightLogViewModelTable[]>(query);
+    }
+
+}

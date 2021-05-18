@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block body %}
+    {%if entry %}
+        <h1>{{ entry.category }}: {{ entry.title }}</h1>
+        <div class="entry">
+            <div class="entry-header">
+                <p>Posted by {{ entry.user }} on {{ entry.date }}</p>
+            </div>
+            <hr />
+            <div class="entry-body">
+                <p>{{ entry.ingress }}</p>
+                <br />
+                <p>{{ entry.content }}</p>
+                <br />
+                <p><a href="{{ url_for('.index') }}{% if selectedCategory and selectedCategory>0 %}?sort={{ selectedCategory }}{% endif %}"> &lt;- Back to BulletinBoard</a></p>
+            </div>
+            <hr />
+            <div class="entry-footer">
+                <p>seen {{ entry.hitcount }} times</p>
+            </div>
+        </div>
+    {% else %}
+        <p>No entry with given id found!</p>
+    {% endif %}
+{% endblock %}

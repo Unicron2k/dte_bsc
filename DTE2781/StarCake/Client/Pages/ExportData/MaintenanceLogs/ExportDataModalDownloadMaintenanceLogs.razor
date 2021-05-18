@@ -1,0 +1,151 @@
+﻿@using System.Reflection
+@using StarCake.Shared
+@using StarCake.Shared.Models.ViewModels.Maintenance
+@using System.Collections.Specialized
+
+@inject IJSRuntime _js
+@inject HttpClient _http
+@inject NavigationManager _navigation
+
+@if (IsOrderingStarted)
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <MudText>Sorting...</MudText>
+        </MudItem>
+    </MudGrid>
+    
+    <MudGrid>
+        <MudItem xs="12">
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7"/>
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <MudGrid Justify="Justify.Center">
+        @*OrderButton*@
+        <MudItem xs="12">
+            <MudGrid Spacing="1" Justify="Justify.Center">
+                <MudMenu
+                    EndIcon="@Icons.Filled.KeyboardArrowDown"
+                    Label="@($"Order by: {_currentOrdering}")"
+                    Color="Color.Primary" Variant="Variant.Filled" Direction="Direction.Bottom"
+                    OffsetY="true" FullWidth="true" MaxHeight="200">
+                    @* Loop through available OrderValues using reflection *@
+                    @foreach (var propName in typeof(MaintenanceLogOrderEnums).GetFields(BindingFlags.Static | BindingFlags.Public))
+                    {
+                        var value = propName.GetValue(null).ToString();
+                        <MudMenuItem OnClick="() => OrderMaintenanceLogs(value)">@value</MudMenuItem>
+                    }
+                </MudMenu>
+            </MudGrid>
+        </MudItem>
+
+        @*Filetype-buttons*@
+        <MudItem xs="12">
+            <MudGrid Spacing="1" Justify="Justify.Center">
+                <MudItem><MudFab OnClick="@(async () => await DownloadFile(FileTypeEnums.FlightLogGenerator.FileExcel))" Icon="@Icons.Material.Filled.FilePresent" Label="Excel"/></MudItem>
+                <MudItem><MudFab OnClick="@(async () => await DownloadFile(FileTypeEnums.FlightLogGenerator.FileCsv))" Icon="@Icons.Material.Filled.FilePresent" Label="Csv"/></MudItem>
+                <MudItem><MudFab OnClick="@(async () => await DownloadFile(FileTypeEnums.FlightLogGenerator.FilePdf))" Icon="@Icons.Material.Filled.FilePresent" Label="Pdf"/></MudItem>
+                <MudItem><MudFab OnClick="@(async () => await DownloadFile(FileTypeEnums.FlightLogGenerator.FileJson))" Icon="@Icons.Material.Filled.FilePresent" Label="Json"/></MudItem>
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+    
+}
+
+<MudGrid>
+    <MudItem xs="12" Class="d-flex align-center justify-center mud-width-full py-8">
+        @if (IsDownloadStarted == 1) {
+            <MudProgressCircular Color="Color.Primary" Size="Size.Medium" Indeterminate="true" />
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7"/>
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-10"/>
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-12"/>
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-14"/>
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-15"/>
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-17"/>
+        }
+        else if (IsDownloadStarted == 2) {
+            <MudIcon Color="Color.Success" Size="Size.Large" Icon="@Icons.Material.Filled.CheckCircleOutline" />
+        }
+    </MudItem>
+</MudGrid>
+
+@code {
+    private string _currentOrdering = MaintenanceLogOrderEnums.PropDate;
+    
+    protected override void OnInitialized()
+    {
+        OrderMaintenanceLogs(_currentOrdering);
+    }
+
+    private static class MaintenanceLogOrderEnums
+    {
+        public const string PropDate = "Date";
+        public const string PropItem = "Item";
+        public const string PropSerial = "Serial";
+        public const string PropAcc = "ACC";
+        public const string PropUser = "User";
+    }
+    
+    private bool IsOrderingStarted { get; set; }
+    private void OrderMaintenanceLogs(string maintenanceLogOrderEnum)
+    {
+        IsOrderingStarted = true;
+        var iOrderEnum = maintenanceLogOrderEnum switch
+        {
+            MaintenanceLogOrderEnums.PropDate => SelectedMaintenanceLogs.OrderBy(x => x.Date),
+            MaintenanceLogOrderEnums.PropItem => SelectedMaintenanceLogs.OrderBy(x => x.MaintainedItemName),
+            MaintenanceLogOrderEnums.PropSerial => SelectedMaintenanceLogs.OrderBy(x => x.MaintainedItemSerialNumber),
+            MaintenanceLogOrderEnums.PropAcc => SelectedMaintenanceLogs.OrderBy(x => x.ACCSeconds),
+            MaintenanceLogOrderEnums.PropUser => SelectedMaintenanceLogs.OrderBy(x => x.ApplicationUserLogged.GetNameFormal()),
+            _ => SelectedMaintenanceLogs.OrderBy(x => x.Date)};
+        SelectedMaintenanceLogs = iOrderEnum.ToList();
+        IsOrderingStarted = false;
+        _currentOrdering = maintenanceLogOrderEnum;
+    }
+    
+
+
+    
+    /* Rx parameters */
+    [Parameter]
+    public List<MaintenanceLogTableViewModel> SelectedMaintenanceLogs { get; set; }
+    [Parameter]
+    public List<int> MaintenanceLogIds { get; set; }
+    [Parameter]
+    public DateTime DateStart { get; set; }
+    [Parameter]
+    public DateTime DateEnd { get; set; }
+    
+    
+    private int IsDownloadStarted { get; set; }
+    private async Task DownloadFile(string fileTypeFromConst)
+    {
+    //IsDownloadStarted = 1;
+        StateHasChanged();
+        
+        var fileName = $"MaintenanceLogs - {DateStart:yyyy-MM-dd}_to_{DateEnd:yyyy-MM-dd}";
+        var query = $"api/ExportMaintenanceLogs/";
+        fileName += fileTypeFromConst switch
+        {
+            FileTypeEnums.FlightLogGenerator.FileExcel => ".xlsx",
+            FileTypeEnums.FlightLogGenerator.FileCsv => ".csv",
+            FileTypeEnums.FlightLogGenerator.FilePdf => ".pdf",
+            FileTypeEnums.FlightLogGenerator.FileJson => ".json"
+        };
+
+        var nvc = new NameValueCollection
+        {
+            {"base64MaintenanceLogIds", Coding.Base64.ToBase64(SelectedMaintenanceLogs.Select(x=>x.MaintenanceLogId).ToList())},
+            {"base64FileType", Coding.Base64.ToBase64(fileTypeFromConst)}
+        };
+        var response = await _http.GetAsync(query+Coding.Query.ToQueryString(nvc));
+
+        response.EnsureSuccessStatusCode();
+        var fileBytes = await response.Content.ReadAsByteArrayAsync();
+        await _js.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
+        IsDownloadStarted = 2;
+    }
+}

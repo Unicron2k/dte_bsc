@@ -1,0 +1,52 @@
+﻿@model uDev.Models.ViewModels.MissionViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit the Mission</h1>
+
+<h4>By: @Html.DisplayFor(model => model.Owner.Email)</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <p>Created: @Html.DisplayFor(model => model.Created)</p>
+        <p>Last Modified: @Html.DisplayFor(model => model.Modified)</p>
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MissionId" />
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <input asp-for="Content" class="form-control" />
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Claimed" /> @Html.DisplayNameFor(model => model.Claimed)
+                </label>
+            </div>
+            <select asp-for="SpecialtyLanguageId"
+                    asp-items="@(new SelectList(Model.SpecialtyLanguages, "SpecialtyLanguageId", "Name"))">
+                <option>Choose specialty</option>
+            </select>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+    
+
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,194 @@
+﻿@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Services
+@using StarCake.Shared
+@inject AppData AppData
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 80vh; overflow-y: scroll ">
+            @if (Entity == null)
+            {
+                <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+            }
+            else
+            {
+                var entity = AppData.CurrentUser.CurrentDepartment.Entities.FirstOrDefault(x => x.EntityId == Entity.EntityId);
+                if (entity == null) {
+                    <MudAlert Severity="Severity.Error">Requested entity was not found</MudAlert>
+                }
+                else
+                {
+                    if (entity.Components == null)
+                    {
+                        <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+                    } 
+                    else if (!entity.Components.Any())
+                    {
+                        <MudAlert Severity="Severity.Error">This entity has no components!</MudAlert>
+                    }
+                    else
+                    {
+                        <MudExpansionPanels MultiExpansion="false">
+                            @foreach (var componentType in AppData.ComponentTypes
+                                .Where(x => entity.Components
+                                    .Where(a => a.EntityId != null)
+                                    .Select(c => c.ComponentTypeId)
+                                    .ToList().Contains(x.ComponentTypeId)).ToList())
+                            {
+                                <MudExpansionPanel Text="@componentType.Name">
+                                    <MudExpansionPanels MultiExpansion="false">
+                                        @foreach (var component in entity.Components
+                                            .Where(x => x.EntityId != null)
+                                            .Where(x => x.ComponentTypeId == componentType.ComponentTypeId).ToList())
+                                        {
+                                            <MudExpansionPanel Text="@component.Name">
+                                                
+
+                                                <MudList>
+                                                    <MudGrid Justify="Justify.Center">
+                                                        <AuthorizeView Roles="@($"{Roles.GetDepartmentMaintainerAndUp()}")">
+                                                            <MudFab
+                                                                OnClick="@(() => EditComponent(component))" Label="Edit"
+                                                                Icon="@Icons.Material.Filled.Edit"
+                                                                Size="Size.Small" Color="Color.Dark" IconColor="Color.Info"/>
+                                                            <MudFab
+                                                                OnClick="@(() => MoveComponentToOtherEntity(component))" Label="Move to another entity"
+                                                                Icon="@Icons.Material.Filled.DriveFileMoveOutline"
+                                                                Size="Size.Small" Color="Color.Dark" IconColor="Color.Tertiary"/>
+                                                            <MudFab
+                                                                OnClick="@(() => MoveComponentToStorage(component))" Label="Move to storage"
+                                                                Icon="@Icons.Material.Filled.DriveFileMoveOutline"
+                                                                Size="Size.Small" Color="Color.Dark" IconColor="Color.Tertiary"/>
+                                                                                                            
+                                                                                                            
+                                                                                                            
+                                                    
+                                                            @code{
+                                                                async Task MoveComponentToOtherEntity(ComponentViewModel component)
+                                                                {
+                                                                    AppData.ParentRoot.ShowSnackBar($"NOT IMPLEMENTED YET", Severity.Error);
+                                                                }
+                                                                async Task MoveComponentToStorage(ComponentViewModel component)
+                                                                {
+                                                                    AppData.ParentRoot.ShowSnackBar($"NOT IMPLEMENTED YET", Severity.Error);
+                                                                }
+                                                    
+                                                                async Task EditComponent(ComponentViewModel component)
+                                                                {
+                                                                    var parameters = new DialogParameters
+                                                                    {
+                                                                        {nameof(ModalEditComponent.ComponentInAppData), component}
+                                                                    };
+                                                                    var dialog = DialogService.Show<ModalEditComponent>($"Edit {component.Name}", parameters);
+                                                                    var result = await dialog.Result;
+                                                                    if (!result.Cancelled)
+                                                                        StateHasChanged();
+                                                                }
+                                                            }
+                                                        </AuthorizeView>
+                                                    
+                                                        <AuthorizeView Roles="@($"{Roles.GetOrganizationMaintainerAndUp()}")">
+                                                            <MudFab
+                                                                OnClick="@(() => ArchiveComponent(component))" Label="Archive"
+                                                                Icon="@Icons.Material.Filled.Delete"
+                                                                Size="Size.Small" Color="Color.Dark" IconColor="Color.Error"/>
+                                                            @code{
+                                                                async Task ArchiveComponent(ComponentViewModel component)
+                                                                {
+                                                                    var parameters = new DialogParameters
+                                                                    {
+                                                                        {nameof(ModalConfirmComponentArchiveView.Component), component}
+                                                                    };
+                                                                    var dialog = DialogService.Show<ModalConfirmComponentArchiveView>($"Are you sure you want to archive {component.Name}?", parameters);
+                                                                    var result = await dialog.Result;
+                                                                    if (!result.Cancelled)
+                                                                        StateHasChanged();
+                                                                }
+                                                            }
+                                                        </AuthorizeView>
+                                                    </MudGrid>
+                                                    <MudDivider DividerType="DividerType.Middle" Class="my-6"/>
+
+                                                                                                    
+                                                    <MudListItem Text="@("Manufacturer: " + AppData.Manufacturers.Where(x => x.ManufacturerId == component.ManufacturerId).Select(x => x.Name).FirstOrDefault())" Icon="@Icons.Material.Filled.Store"/>
+                                                    <MudListItem Text="@("Creation date: " + component.CreationDate.ToString("yyyy MMMM dd"))" Icon="@Icons.Material.Filled.CalendarToday"/>
+                                                    <MudListItem Text="@("Total cycles: " + component.TotalFlightCycles)" Icon="@Icons.Material.Filled.Cached"/>
+                                                    <MudListItem Text="@("Total flight duration: " + TimeFormatting.SecondsToHMM(component.TotalFlightDurationInSeconds))" Icon="@Icons.Material.Filled.Timelapse"/>
+                                                    <MudListItem Text="@("Serial number: " + component.SerialNumber)" Icon="@Icons.Material.Filled.Tag"/>
+                                                    <MudListItem Text="@("Cycles since last maintenance: " + component.CyclesSinceLastMaintenance)" Icon="@Icons.Material.Filled.Build"/>
+                                                    <MudListItem Text="@("Last maintenance date: " + component.LastMaintenanceDate.ToString("yyyy MMMM dd"))" Icon="@Icons.Material.Filled.Build"/>
+                                                    <MudListItem Text="@("Max cycles between maintenance: " + component.MaxCyclesBtwMaintenance)" Icon="@Icons.Material.Filled.Timeline"/>
+                                                    <MudListItem Text="@("Max days between maintenance: " + component.MaxDaysBtwMaintenance)" Icon="@Icons.Material.Filled.Timeline"/>
+                                                    <MudListItem Text="@("Max flight time between maintenance: " + TimeFormatting.SecondsToHMM(component.MaxFlightSecondsBtwMaintenance))" Icon="@Icons.Material.Filled.Timeline"/>
+                                                </MudList>
+                                            </MudExpansionPanel>
+                                            <MudDivider/>
+                                        }
+                                    </MudExpansionPanels>
+                                </MudExpansionPanel>
+                                <MudDivider/>
+                            }
+                        </MudExpansionPanels>
+                    }
+                }
+            }
+        </MudContainer>
+    </DialogContent>
+
+    <DialogActions>
+        <MudGrid Justify="Justify.Center">
+            <AuthorizeView Roles="@($"{Roles.DepartmentMaintainer}, {Roles.OrganizationMaintainer}")">
+                <MudButton OnClick="@(() => ShowModalAddComponent(Entity))"
+                           Variant="Variant.Filled"
+                           EndIcon="@Icons.Material.Filled.AddCircle"
+                           Color="Color.Success"
+                           FullWidth="true">
+                    New component
+                </MudButton>
+            </AuthorizeView>
+        </MudGrid>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+
+    async Task ShowModalAddComponent(EntityViewModel entity)
+    {
+
+        var parameters = new DialogParameters
+        {
+            {nameof(ModalGetNewComponent.Entity), entity}
+        };
+        var dialog = DialogService.Show<ModalGetNewComponent>($"New component for {entity.Name}", parameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            var componentFromModal = (ComponentViewModel) result.Data;
+            var response = await Http.PostAsJsonAsync("api/Component/", componentFromModal);
+            if (response.IsSuccessStatusCode)
+            {
+                var componentFromDb = await response.Content.ReadFromJsonAsync<ComponentViewModel>();
+                if (componentFromDb != null)
+                {
+                    var cache = entity.Components.ToList();
+                    cache.Add(componentFromModal);
+                    entity.Components = cache;
+                    Snackbar.Add($"Component {componentFromModal.Name} was added", Severity.Success);
+                }
+                else
+                    Snackbar.Add("An error occurred when adding to the database", Severity.Error);
+            }
+            else
+                Snackbar.Add("An error occurred", Severity.Error);
+        }
+    }
+}
+
+@code {
+    [Parameter]
+    public EntityViewModel Entity { get; set; }
+}

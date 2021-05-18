@@ -1,0 +1,159 @@
+{% extends 'base.twig' %}
+
+{% block title %} Emnekode ({{ course_code.getCourseCode }}) {% endblock %}
+
+{% block main %}
+    <div class="container" id="container">
+        {% if not insufficientRights %}
+
+
+
+        <div class="row justify-content-center">
+
+            <div class="col-7 text-left" style="padding-top: 20px">
+                <h1 class="text-left">{{ course_code.getCourseCode }}</h1>
+
+                <form action="updateData.php" method="post">
+                    <input name="course_code_id" value="{{ course_code.getIdCourseCode }}" hidden>
+                    <div class="form-group">
+                        <label class="form-control-plaintext" for="course_code">Emnekode (format: AAA-0000)</label>
+                        <input class="form-control" id="course_code" name="course_code" type="text"
+                               value="{{ course_code.getCourseCode }}" disabled>
+                    </div>
+                    <br>
+
+                    <!-- Course code names -->
+                    <h3>Emnekodenavn</h3>
+
+                    <div class="form-group">
+                        <label class="form-control-plaintext" for="course_name_nb_no">Norsk</label>
+                        <input class="form-control" id="course_name_nb_no" name="course_name_nb_no" type="text"
+                               value="{{ course_code.getNameNbNo }}" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-control-plaintext" for="course_name_nb_nn">Nynorsk</label>
+                        <input class="form-control" id="course_name_nb_nn" name="course_name_nb_nn" type="text"
+                               value="{{ course_code.getNameNbNn }}" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-control-plaintext" for="course_name_en_gb">Engelsk</label>
+                        <input class="form-control" id="course_name_en_gb" name="course_name_en_gb" type="text"
+                               value="{{ course_code.getNameEnGb }}" disabled>
+                    </div>
+                    <br>
+
+
+                    <!-- Course code information -->
+                    <h3>Generell info</h3>
+
+                    <!-- Degree -->
+                    <div class="form-group">
+                        <label class="form-control-plaintext" for="degree">Grad</label>
+                        <select id="degree" name="degree" class="form-control" disabled>
+                            {% for degree in degrees %}
+                                <option name="{{ degree.getDegree }}"
+                                        value="{{ degree.getIdDegree }}" {% if course_code.getDegreeIdDegree == degree.getIdDegree %}
+                                selected {% endif %}>{{ degree.getDegree }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- ECTS -->
+                    <div class="form-group">
+                        <label class="form-control-plaintext" for="ects">Studiepoeng</label>
+                        <select class="form-control" id="ects" name="ects" disabled>
+                            {% for study_points in all_study_points %}
+                                <option value="{{ study_points.getIdStudyPoints }}"{% if course_code.getStudyPointsIdStudyPoints == study_points.getIdStudyPoints %}
+                                selected {% endif %}>{{ study_points.getStudyPoints }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-control-plaintext" for="course_leader">Studieleder</label>
+                        <!-- TODO: Course leader needs rework. Currently only displaying all users for some sample data. Multiple course leaders? -->
+                        <select class="form-control" id="course_leader" name="course_leader" disabled>
+                            {% for user in users %}
+                                <option value="{{ user.getIdUser }}"
+                                        {% if user.getIdUser == course_leader.getUserIdUser %}
+                                selected
+                                        {% endif %}>{{ user.getFullName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Save changes -->
+                    <div class="row" style="padding-top: 1rem; padding-left: 0.75rem">
+                        <input type="submit" id="bt_save_changes" name="update_course_code"
+                               class="text-center btn btn-info Default-Bg-Color"
+                               value="Lagre endringer" hidden>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-4" style="padding: 20px">
+                <div class="rightSidebar">
+                    <button onclick="location.href='export.php?courseId={{ course_code.getIdCourseCode }}'" class="button" style="vertical-align:middle">
+                        <span>Eksporter</span>
+                    </button>
+                    <br>
+                    <br>
+                    <button class="button" style="vertical-align:middle" onclick="toggle_inputs()">
+                        <span>Rediger</span>
+                    </button>
+                    <div class="sideWithoutButton">
+                        <h4 class="versionHeader">Emnebeskrivelser</h4>
+                        {% for course_desc in course_descriptions %}
+                            <a href="courseDescription.php?id={{ course_desc.getIdCourse }}" class="courseVersion">
+                                {{ course_desc.getYear }} -
+                                {% if course_desc.isSemesterFall and course_desc.isSemesterSpring %}
+                                    Høst og vår
+                                {% elseif course_desc.isSemesterFall %}
+                                    Høst
+                                {% elseif course_desc.isSemesterSpring %}
+                                    Vår
+                                {% endif %}</a>
+                            <p class="lastChanged">Siste endret: {{ course_desc.getDateChanged }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- onClick JavaScript that toggles .disabled -->
+    <script>
+        let field_status = false;
+
+        function toggle_inputs() {
+            let btSave = document.getElementById("bt_save_changes");
+            let inputs = document.getElementById("container").getElementsByTagName('input');
+            let selects = document.getElementById("container").getElementsByTagName('select');
+
+            <!-- Toggle all fields -->
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].disabled = field_status;
+            }
+
+            for (let i = 0; i < selects.length; i++) {
+                selects[i].disabled = field_status;
+            }
+
+            btSave.hidden = field_status;
+
+            if (field_status) {
+                field_status = false;
+            } else {
+                field_status = true;
+            }
+        }
+    </script>
+
+    {% else %}
+    <h2>Du har ikke nødvendige rettigheter for å redigere en emnekode!</h2>
+    <h2>Kontakt administrator.</h2>
+    {% endif %}
+{% endblock %}

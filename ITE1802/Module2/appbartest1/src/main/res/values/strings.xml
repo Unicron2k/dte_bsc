@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AppBarTest1</string>
+    <string name="action_settings">Innstillinger</string>
+    <string name="action_mail">Mail</string>
+    <string name="action_quit">Avslutt</string>
+    <string name="action_upload">Last opp</string>
+</resources>

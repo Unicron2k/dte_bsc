@@ -1,0 +1,391 @@
+@using StarCake.Client.Services
+@using StarCake.Shared.Models.ViewModels
+@using StarCake.Shared.Models.ViewModels.Maintenance
+
+@inject ISnackbar _snackbar
+@inject HttpClient _http
+
+    <MudItem xs="12">
+        <MudPaper Class="d-flex align-center justify-center mud-width-full py-2" Style="background-color: #d7d1d1">
+            <h1>Register maintenance</h1>
+        </MudPaper>
+    </MudItem>
+
+<MudGrid>
+    <MudItem xs="12" sm="6" md="4">
+        <MudAutocomplete T="AutocompleteEntityViewModel" Label="Entity" Placeholder="Enter name or serial-number"  SearchFunc="@SearchEntities" ValueChanged="@UpdateAutocomplete" Value="_selectedEntity" ToStringFunc="@(e=> e==null?null : $"{e.Name} ({e.SerialNumber})")">
+            <ItemTemplate Context="e">
+                <MudText>@($"{e.Name} ({e.SerialNumber})")</MudText>
+            </ItemTemplate>
+            
+            <ItemSelectedTemplate Context="e">
+                <MudText>@($"{e.Name} ({e.SerialNumber})")</MudText>
+            </ItemSelectedTemplate>
+        </MudAutocomplete>
+    </MudItem>
+        
+    <MudItem class="row justify-content-center align-self-center">
+        <MudSwitch CheckedChanged="@((bool state) => UpdateMudSwitchEntityOnlyStates(state))" Checked ="_entityOnly" Label="Entity-maintenance" Color="Color.Primary"/>
+    </MudItem>
+        
+    <MudItem class="row justify-content-center align-self-center">
+        <MudSwitch CheckedChanged="@((bool state) => UpdateMudSwitchPendingStates(state))" Checked="_pending" Disabled="_entityOnly" Label="Pending" Color="Color.Primary"/>
+    </MudItem>
+        
+    <MudItem class="row justify-content-center align-self-center">
+        <MudSwitch CheckedChanged="@((bool state) => UpdateMudSwitchImmediateStates(state))" Checked="_immediateOnly" Disabled="@(!_pending || _entityOnly)" Label="Immediate only" Color="Color.Primary"/>
+    </MudItem>
+</MudGrid>
+
+@if (_entityOnly)
+{
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="12">
+            <MudTextField T="string" @bind-Value="_entityTask" Label="Task" Variant="Variant.Filled" Placeholder="Task to be performed" Lines="5"/>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="12">
+            <MudTextField T="string" @bind-Value="_entityCorrectiveAction" Label="Corrective action" Variant="Variant.Filled" Placeholder="Corrective action performed" Lines="5"/>
+        </MudItem>
+        <MudItem>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveNewEntityLog">Register Maintenance</MudButton>
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    if (_selectedEntity != null)
+    {
+        if (_components.Any())
+        {
+            <MudTable Items="@_components" Dense="true" Hover="true" ReadOnly="false" Filter="new Func<MaintenanceLogItemViewModel, bool>(TableFilterFunc)" @bind-SelectedItem="_selectedLogItem" SortLabel="Sort By" CommitEditTooltip="Commit Edit" OnCommitEditClick="@SaveNewComponentLog">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Components</MudText>
+                    <MudToolBarSpacer/>
+                    <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                </ToolBarContent>
+
+                <ColGroup>
+                    <col style="width:250px;"/>
+                    <col style="width:80px;"/>
+                    <col/>
+                    <col/>
+                </ColGroup>
+
+                <HeaderContent>
+                    <MudTh>
+                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<MaintenanceLogItemViewModel, object>(x => x.Name)">Name</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<MaintenanceLogItemViewModel, object>(x => x.SerialNumber)">SerialNumber</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<MaintenanceLogItemViewModel, object>(x => x.TaskDescription)">Task</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<MaintenanceLogItemViewModel, object>(x => x.ActionDescription)">Corrective Action</MudTableSortLabel>
+                    </MudTh>
+                </HeaderContent>
+
+                <RowTemplate>
+                    <MudTd DataLabel="Name">@context.Name</MudTd>
+                    <MudTd DataLabel="SerialNumber">@context.SerialNumber</MudTd>
+                    <MudTd DataLabel="Task">@context.TaskDescription</MudTd>
+                    <MudTd DataLabel="Corrective Action">@context.ActionDescription</MudTd>
+                </RowTemplate>
+
+                <RowEditingTemplate>
+                    <MudTd DataLabel="Name">@context.Name</MudTd>
+                    <MudTd DataLabel="SerialNumber">@context.SerialNumber</MudTd>
+                    <MudTd DataLabel="Task">
+                        <MudTextField @bind-Value="@context.TaskDescription"/>
+                    </MudTd>
+                    <MudTd DataLabel="Corrective Action">
+                        <MudTextField @bind-Value="@context.ActionDescription"/>
+                    </MudTd>
+                </RowEditingTemplate>
+
+                <PagerContent>
+                    <MudTablePager/>
+                </PagerContent>
+            </MudTable>
+        }
+        else
+        {
+            _snackbar.Add("No components found for current search-parameters");
+        }
+    }
+}
+
+@code {
+
+    [Parameter]
+    public string ItemSerialNumber { get; set; } = "";
+    [Parameter]
+    public bool EntityOnly { get; set; }
+    [Parameter]
+    public bool PendingOnly { get; set; }
+    [Parameter]
+    public bool ImmediateOnly { get; set; }
+    
+    private bool _pending;
+    private bool _immediateOnly;
+    private bool _entityOnly;
+    private string _searchString;
+    private string _entityTask;
+    private string _entityCorrectiveAction;
+    private AutocompleteEntityViewModel _selectedEntity;
+    private MaintenanceLogItemViewModel _selectedLogItem;
+    private List<AutocompleteEntityViewModel> _entities;
+    private List<MaintenanceLogItemViewModel> _components;
+    //private HashSet<MaintenanceLogItemViewModel> _selectedTableItems;
+    
+    protected override Task OnInitializedAsync()
+    {
+        _pending = true;
+        _entities = AppData.CurrentUser.CurrentDepartment.Entities.Select(AutocompleteEntityViewModel.ToModel).ToList();
+        _components = new List<MaintenanceLogItemViewModel>();
+        //_selectedTableItems = new HashSet<MaintenanceLogItemViewModel>();
+        
+        return base.OnInitializedAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrEmpty(ItemSerialNumber))
+        {
+            _selectedEntity = _entities.FirstOrDefault(e => e.SerialNumber.Contains(ItemSerialNumber));
+            if (EntityOnly)
+            {
+                _entityOnly = true;
+                _pending = false;
+                _immediateOnly = false;
+            }
+            else
+            {
+                _pending = true;
+                _immediateOnly = ImmediateOnly;
+            }
+            UpdateTable();
+        }
+        base.OnParametersSet();
+    }
+
+    private async Task<IEnumerable<AutocompleteEntityViewModel>> SearchEntities(string entity)
+    {
+    //We need this, because reasons....
+        await Task.Delay(5);
+
+        // if text is null or empty, show complete list
+        return string.IsNullOrEmpty(entity) ?
+            _entities.Select(e=> e) :
+            _entities.Where(e => e.Name.Contains(entity) || e.SerialNumber.Contains(entity)).Select(e=> e);
+    }
+
+    private void UpdateMudSwitchEntityOnlyStates(bool state)
+    {
+        _entityOnly = state;
+        if (_entityOnly)
+        {
+            _pending = false;
+            _immediateOnly = false;
+            return;
+        }
+        UpdateTable();
+    }
+    
+    private void UpdateMudSwitchPendingStates(bool state)
+    {
+        _pending = state;
+        if (!_pending)
+            _immediateOnly = false;
+        UpdateTable();
+    }
+
+    private void UpdateMudSwitchImmediateStates(bool state)
+    {
+        _immediateOnly = state;
+        UpdateTable();
+    }
+
+    private void UpdateAutocomplete(AutocompleteEntityViewModel entity)
+    {
+        _selectedEntity = entity;
+        UpdateTable();
+    }
+    
+    private void UpdateTable()
+    {
+        if (_selectedEntity == null) return;
+        if (_entityOnly)
+        {
+            //Reset selected values here and return
+            /*_components.Clear();
+            _selectedLogItem = new MaintenanceLogItemViewModel {ComponentId = 0, Name = "", SerialNumber = "", TaskDescription = "", ActionDescription = ""};
+            _selectedTableItems.Clear();*/
+            return;
+        }
+        if (_pending)
+        {
+            if (_immediateOnly)
+            {
+                _components = AppData.CurrentUser.CurrentDepartment.Entities
+                    .First(entity => entity.EntityId == _selectedEntity.EntityId).Components
+                    .Where(component => component.RequiresImmediateMaintenance)
+                    .Select(MaintenanceLogItemViewModel.ToModel)
+                    .ToList();
+
+            }
+            else
+            {
+                _components = AppData.CurrentUser.CurrentDepartment.Entities
+                    .First(entity => entity.EntityId == _selectedEntity.EntityId).Components
+                    .Where(component => component.RequiresMaintenance || component.RequiresImmediateMaintenance)
+                    .Select(MaintenanceLogItemViewModel.ToModel)
+                    .ToList();
+            }
+        }
+        else
+        {
+            _components = AppData.CurrentUser.CurrentDepartment.Entities
+                .First(entity => entity.EntityId == _selectedEntity.EntityId).Components
+                .Select(MaintenanceLogItemViewModel.ToModel)
+                .ToList();
+        }
+        StateHasChanged();
+    }
+
+    private bool TableFilterFunc(MaintenanceLogItemViewModel component)
+    {
+        return (string.IsNullOrWhiteSpace(_searchString)) ||
+               (component.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase)) ||
+               (component.SerialNumber.Contains(_searchString, StringComparison.OrdinalIgnoreCase));
+    }
+    
+    private async Task<HttpResponseMessage> SaveNewLog(MaintenanceLogItemViewModel log)
+    {
+        return await _http.PostAsJsonAsync("api/MaintenanceLog/", log);
+    }
+
+    private async Task SaveNewComponentLog()
+    {
+        if (string.IsNullOrEmpty(_selectedLogItem.TaskDescription) || string.IsNullOrEmpty(_selectedLogItem.ActionDescription))
+        {
+            _snackbar.Add("Task and Corrective action must be filled in", Severity.Warning);
+            return;
+        }
+        var response = await SaveNewLog(_selectedLogItem);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            _snackbar.Add("Maintenance-log was successfully saved: " + response.ReasonPhrase, Severity.Success);
+            //update in Appdata
+            UpdateComponentMaintenanceStatusInAppdata(_selectedLogItem);
+            
+            //Update table with remaining results
+            UpdateTable();
+            _selectedLogItem = new MaintenanceLogItemViewModel {EntityId = 0, ComponentId = 0, Name = "", SerialNumber = "", TaskDescription = null, ActionDescription = null};
+        }
+        else
+            _snackbar.Add("Unable to save maintenance-log: " + response.ReasonPhrase, Severity.Error);
+    }
+    
+    private async Task SaveNewEntityLog()
+    {
+        if (string.IsNullOrEmpty(_entityTask) || string.IsNullOrEmpty(_entityCorrectiveAction))
+        {
+            _snackbar.Add("Task and Corrective action must be filled in", Severity.Warning);
+            return;
+        }
+        var log = new MaintenanceLogItemViewModel {
+            EntityId = _selectedEntity.EntityId,
+            ComponentId = 0,
+            Name = _selectedEntity.Name,
+            SerialNumber = _selectedEntity.SerialNumber,
+            TaskDescription = _entityTask,
+            ActionDescription = _entityCorrectiveAction
+        };
+        
+        var response = await SaveNewLog(log);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            _snackbar.Add("Maintenance-log was successfully saved: " + response.ReasonPhrase, Severity.Success);
+            //update in Appdata
+
+            UpdateEntityMaintenanceDataInAppdata(log.EntityId);
+
+            _entityTask = "";
+            _entityCorrectiveAction = "";
+            
+            UpdateTable();
+            _selectedLogItem = new MaintenanceLogItemViewModel {EntityId = 0, ComponentId = 0, Name = "", SerialNumber = "", TaskDescription = null, ActionDescription = null};
+        }
+        else
+            _snackbar.Add("Unable to save maintenance-log: " + response.ReasonPhrase, Severity.Error);
+    }
+    
+    private void UpdateComponentMaintenanceStatusInAppdata(MaintenanceLogItemViewModel logItem)
+    {
+        var componentViewModel = AppData.CurrentUser.CurrentDepartment.Entities
+            .Find(e => e.EntityId == logItem.EntityId).Components
+            .First(c => c.ComponentId == logItem.ComponentId);
+        
+        AppData.CurrentUser.CurrentDepartment.Entities
+            .Find(e => e.EntityId == logItem.EntityId).Components
+            .Remove(componentViewModel);
+
+        componentViewModel.RequiresMaintenance = false;
+        componentViewModel.RequiresImmediateMaintenance = false;
+        componentViewModel.LastMaintenanceDate = DateTime.UtcNow; //close enough for our purposes...
+        componentViewModel.CyclesSinceLastMaintenance = 0;
+        componentViewModel.FlightSecondsSinceLastMaintenance = 0;
+        
+        AppData.CurrentUser.CurrentDepartment.Entities
+            .Find(e => e.EntityId == logItem.EntityId).Components
+            .Add(componentViewModel);
+    }
+    
+    private void UpdateEntityMaintenanceDataInAppdata(int entityId)
+    {
+        var entityViewModel = AppData.CurrentUser.CurrentDepartment.Entities
+            .Find(e => e.EntityId == entityId);
+        AppData.CurrentUser.CurrentDepartment.Entities
+            .Remove(entityViewModel);
+        
+        entityViewModel.RequiresMaintenance = false;
+        entityViewModel.RequiresImmediateMaintenance = false;
+        entityViewModel.LastMaintenanceDate = DateTime.UtcNow; //close enough for our purposes...
+        entityViewModel.CyclesSinceLastMaintenance = 0;
+        entityViewModel.FlightSecondsSinceLastMaintenance = 0;
+        entityViewModel.HasComponentRequiringMaintenance = false;
+
+        // Inefficient, but since it's an ICollection, we can operate on each individual element directly
+        // We can, of course, rewrite to use a List which supports indexed access, but that wil break a lot of other stuff...
+        var tmpList = entityViewModel.Components.ToList();
+        foreach (var component in tmpList)
+        {
+            entityViewModel.Components.Remove(component);
+            component.RequiresMaintenance = false;
+            component.RequiresImmediateMaintenance = false;
+            component.LastMaintenanceDate = DateTime.UtcNow; //close enough for our purposes...
+            component.CyclesSinceLastMaintenance = 0;
+            component.FlightSecondsSinceLastMaintenance = 0;
+            entityViewModel.Components.Add(component);
+        }
+        
+        AppData.CurrentUser.CurrentDepartment.Entities.Add(entityViewModel);
+    }
+
+    private class AutocompleteEntityViewModel
+    {
+        public int EntityId { get; set; }
+        public string Name { get; set; }
+        public string SerialNumber { get; set; }
+
+        public static AutocompleteEntityViewModel ToModel(EntityViewModel entity)
+        {
+            return new AutocompleteEntityViewModel {EntityId = entity.EntityId, Name = entity.Name, SerialNumber = entity.SerialNumber};
+        }
+    }
+
+}

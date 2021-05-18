@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+	<title>Etest, 2020</title>
+	<meta charset="UTF-8">
+</head>
+<body>
+
+
+
+
+
+
+<script id="vertex-shader-a" type="x-shader/x-vertex">
+	uniform vec4 mycolor;
+	uniform float colorWeight;
+	void main() {
+		gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+	}
+</script>
+
+<script id="fragment-shader-a" type="x-shader/x-fragment">
+	precision mediump float;
+	void main() {
+		gl_FragColor = mycolor * colorWeight;
+	}
+</script>
+
+
+
+
+
+
+<canvas id="webgl" >
+		Denne nettleseren støtter ikke canvas-elementet!
+	</canvas>
+	<script type="module">
+		'use strict';
+		import {ThreeTest0_OO} from "./js/ThreeTest0_OO.js";
+		let threeTest0_OO = new ThreeTest0_OO();
+		threeTest0_OO.main();
+	</script>
+
+
+
+
+
+
+
+</body>
+</html>

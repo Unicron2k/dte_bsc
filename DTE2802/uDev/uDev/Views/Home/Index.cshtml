@@ -1,0 +1,25 @@
+﻿@model IEnumerable<uDev.Models.Entity.Mission>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Available Missions</h1>
+</div>
+
+    <div class="card-columns">
+@foreach (var item in Model)
+{
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h4>
+                <h6 class="card-subtitle mb-2 text-muted">Type: @Html.DisplayFor(modelItem => item.Category.Content)</h6>
+                <p class="card-text">
+                    @Html.DisplayFor(model => item.Content)
+                </p>
+                <a asp-controller="Mission" asp-action="Details" asp-route-id="@item.MissionId" class="btn btn-primary">Se more info!</a>
+            </div>
+        </div>
+        }
+    </div>

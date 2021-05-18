@@ -1,0 +1,94 @@
+﻿@using StarCake.Shared.Models.ViewModels
+@using StarCake.Shared
+@using StarCake.Client.Services
+@inject ISnackbar Snackbar
+@inject HttpClient Http
+@inject AppData AppData
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer>
+            
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        @if (Component == null)
+        {
+            <MudItem xs="12">
+                <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+            </MudItem>
+        }
+        else
+        {
+            <AuthorizeView Roles="@($"{Roles.GetOrganizationMaintainerAndUp()}")">
+                <MudGrid Spacing="2" Justify="Justify.Center">
+                    <MudItem xs="6">
+                        <MudButton
+                            OnClick="Cancel"
+                            Variant="Variant.Filled"
+                            Color="Color.Success"
+                            FullWidth="true"
+                            EndIcon="@Icons.Material.Filled.Cancel">
+                            Cancel
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudButton
+                            OnClick="SubmitForm"
+                            Variant="Variant.Filled"
+                            Color="Color.Error"
+                            FullWidth="true"
+                            EndIcon="@Icons.Material.Filled.Delete">
+                            Archive
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </AuthorizeView>
+        }
+    </DialogActions>
+</MudDialog>
+
+
+
+
+@code {
+    // Rx parameter 
+    [Parameter]
+    public ComponentViewModel Component { get; set; }
+
+    // Tx parameter
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    async Task SubmitForm()
+    {
+        if (Component.EntityId != null)
+        {
+            var entityId = Component.EntityId.Value;
+            var toRemove = AppData.CurrentUser.CurrentDepartment.Entities.FirstOrDefault(x => x.EntityId == entityId)?.Components.FirstOrDefault(x => x.ComponentId == Component.ComponentId);
+            AppData.CurrentUser.CurrentDepartment.Entities.FirstOrDefault(x => x.EntityId == entityId)?.Components.Remove(Component);
+
+            Component.EntityId = null;
+            var response = await Http.PutAsJsonAsync("api/Component/" + Component.ComponentId, Component);
+            if (response.IsSuccessStatusCode)
+            {
+                var componentFromDb = await response.Content.ReadFromJsonAsync<ComponentViewModel>();
+                AppData.CurrentUser.CurrentDepartment.ArchivedComponents.Add(componentFromDb);
+                StateHasChanged();
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add($"{Component.Name} was archived!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"An error occurred", Severity.Error);
+                Component.EntityId = entityId;
+            }
+        } else
+            Snackbar.Add($"Component was already archived", Severity.Error);
+    }
+    
+    void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+    }
+}

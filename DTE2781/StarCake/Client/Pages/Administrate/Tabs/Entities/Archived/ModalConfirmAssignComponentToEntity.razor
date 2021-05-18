@@ -1,0 +1,142 @@
+﻿@inject HttpClient Http
+@inject AppData AppData
+@using StarCake.Client.Services
+@using StarCake.Shared.Models.ViewModels
+@inject ISnackbar Snackbar
+
+
+@code{
+
+    private List<EntityViewModel> GetEntities()
+    {
+        var entities = AppData.CurrentUser.CurrentDepartment.Entities
+            .OrderBy(x => x.EntityTypeId).ToList();
+        if (IncludeArchivedEntities)
+            return entities;
+        return entities.Where(x => !x.IsArchived).ToList();
+    }
+
+    private bool IncludeArchivedEntities = false;
+    private EntityViewModel SelectedEntity { get; set; }
+}
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="
+    position: relative;
+    display: table;  
+    overflow-y: auto;    
+    overflow-x: auto;
+    width: auto;
+    min-width: 300px; ">
+                <MudGrid Justify="Justify.Center">
+                    <MudItem xs="12">
+                        <MudGrid Spacing="1" Justify="Justify.Center">
+                            <MudItem>
+                                <MudButton OnClick="Cancel" Variant="Variant.Filled" Color="Color.Error">
+                                    Cancel
+                                </MudButton>
+                            </MudItem>
+                            <MudItem>
+                                @if (SelectedEntity == null)
+                                {
+                                    <MudButton Disabled="true" Variant="Variant.Filled" Color="Color.Success">
+                                        Select an entity first
+                                    </MudButton>
+                                }
+                                else
+                                {
+                                    <MudButton OnClick="SubmitForm" Variant="Variant.Filled" Color="Color.Success">
+                                        Assign to @SelectedEntity.Name
+                                    </MudButton>
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudGrid Justify="Justify.Center">
+                            <MudSwitch @bind-Checked="@IncludeArchivedEntities" Label="Include archived entities" Color="Color.Primary"/>
+                        </MudGrid>
+                        
+                      
+                        
+                            <MudGrid Justify="Justify.Center">
+                                @if (true)
+                                {
+                                    var entities = GetEntities();
+                                    foreach (var entityType in AppData.EntityTypes
+                                        .OrderBy(x => x.Name)
+                                        .Where(x => entities
+                                            .Select(e => e.EntityTypeId)
+                                            .ToList().Contains(x.EntityTypeId))
+                                        .ToList())
+                                    {
+                                        var entitiesInType = entities.Where(x => x.EntityTypeId == entityType.EntityTypeId);
+                                        <MudItem xs="10" sm="4">
+                                            <MudMenu 
+                                                Label="@entityType.Name"
+                                                EndIcon="@Icons.Filled.KeyboardArrowDown"
+                                                Color="Color.Primary" Variant="Variant.Filled" Direction="Direction.Bottom"
+                                                MaxHeight="200"
+                                                OffsetY="true"
+                                                FullWidth="true">
+                                                @foreach (var entity in entitiesInType)
+                                                {
+                                                    <MudMenuItem OnClick="() => SelectedEntity = entity">
+                                                        @entity.Name
+                                                    </MudMenuItem>
+                                                }
+                                            </MudMenu>
+                                        </MudItem>
+                                    }
+                                }
+                            </MudGrid>
+                    </MudItem>
+                </MudGrid>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
+
+
+@code {
+    // Rx parameter
+    [Parameter]
+    public ComponentViewModel Component { get; set; }
+
+    // Tx parameter
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    async Task SubmitForm()
+    {
+        if (SelectedEntity == null)
+            Snackbar.Add("Please select an entity to assign to", Severity.Error);
+        else
+        {
+            // Add componentFromDb to the given selectedEntity on success
+            Component.EntityId = SelectedEntity.EntityId;
+            AppData.CurrentUser.CurrentDepartment.ArchivedComponents.Remove(Component);
+            var response = await Http.PutAsJsonAsync("api/Component/" + Component.ComponentId, Component);
+            if (response.IsSuccessStatusCode)
+            {
+                var componentFromDb = await response.Content.ReadFromJsonAsync<ComponentViewModel>();
+                AppData.CurrentUser.CurrentDepartment.ArchivedComponents.Remove(Component);
+                SelectedEntity.Components.Add(componentFromDb);
+                StateHasChanged();
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add($"{SelectedEntity.Name} was added to {Component.Name}", Severity.Success, config => { config.VisibleStateDuration = 10; });
+            }
+            else
+            {
+                Snackbar.Add($"An error occurred", Severity.Error);
+                Component.EntityId = null;
+            }
+        }
+    }
+
+    void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+    }
+
+}

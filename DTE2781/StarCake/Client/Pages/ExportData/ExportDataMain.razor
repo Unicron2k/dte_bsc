@@ -1,0 +1,26 @@
+﻿@page "/Exportdata"
+@using StarCake.Client.Pages.ExportData.FlightLogs
+@using StarCake.Client.Pages.ExportData.MaintenanceLogs
+@using StarCake.Client.Services
+
+@inject NavigationManager _navigation
+
+@if (!AppData.IsLoaded)
+{
+    //Cheeky check done ;)
+    _navigation.NavigateTo(_navigation.BaseUri, forceLoad: true);
+}
+
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="Flight Logs" Icon="@Icons.Material.Filled.FlightTakeoff">
+        <FlightLogs/>
+    </MudTabPanel>
+    
+    <MudTabPanel Text="Users" Icon="@Icons.Filled.People">
+        <MudText>Content Two</MudText>
+    </MudTabPanel>
+    
+    <MudTabPanel Text="Maintenance-logs" Icon="@Icons.Filled.EventNote">
+        <MaintenanceLogs/>
+    </MudTabPanel>
+</MudTabs>

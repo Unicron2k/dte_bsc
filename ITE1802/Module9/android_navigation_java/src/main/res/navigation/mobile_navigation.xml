@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@+id/home_dest">
+    <fragment
+        android:id="@+id/home_dest"
+        android:name="com.example.android.codelabs.navigation.HomeFragment"
+        android:label="@string/home"
+        tools:layout="@layout/home_fragment"/>
+
+    <fragment
+        android:id="@+id/flow_step_one_dest"
+        android:name="com.example.android.codelabs.navigation.FlowStepFragment"
+        tools:layout="@layout/flow_step_one_fragment">
+        <argument
+            android:name="flowStepNumber"
+            app:argType="integer"
+            android:defaultValue="1"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/flow_step_two_dest"
+        android:name="com.example.android.codelabs.navigation.FlowStepFragment"
+        tools:layout="@layout/flow_step_two_fragment">
+
+        <argument
+            android:name="flowStepNumber"
+            app:argType="integer"
+            android:defaultValue="2"/>
+
+        <action
+            android:id="@+id/next_action"
+            app:popUpTo="@id/home_dest">
+        </action>
+    </fragment>
+
+    <!-- TODO STEP 4 Create a new navigation destination pointing to SettingsFragment -->
+    <!-- TODO END STEP 4 -->
+
+    <fragment
+        android:id="@+id/deeplink_dest"
+        android:name="com.example.android.codelabs.navigation.DeepLinkFragment"
+        android:label="@string/deeplink"
+        tools:layout="@layout/deeplink_fragment">
+
+        <argument
+            android:name="myarg"
+            android:defaultValue="Android!"/>
+        <!-- TODO STEP 12.1 - Add a deep link to www.example.com/{myarg}/ -->
+
+        <deepLink app:uri="www.example.com/{myarg}" />
+
+        <!-- TODO END STEP 12.1 -->
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.android.codelabs.navigation.SettingsFragment"
+        android:label="SettingsFragment" />
+</navigation>

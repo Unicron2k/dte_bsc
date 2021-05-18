@@ -1,0 +1,39 @@
+{% extends 'base.twig' %}
+
+{% block title %}Innboks{% endblock %}
+
+{% block main %}
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <!-- Heading -->
+            <div class="col-8">
+                <h1 class="text-left">Innboks</h1>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-8">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th class="w-25">Type</th>
+                        <th class="w-50">Tittel</th>
+                        <th class="w-25">Dato</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for message in messages %}
+                        <tr>
+                            <td class="w-25">{{ message.getName }}</td>
+                            <td class="w-50"><a href="inbox.php?id={{ message.getId }}">{{ message }}</a>
+                            </td>
+                            <td class="w-25">{{ message.getDate }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

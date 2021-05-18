@@ -1,0 +1,58 @@
+@model Assignment2Blog.Models.ViewModels.BlogPostViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+<div>
+    <h1><u>@Html.DisplayFor(model => model.Title) @if(Model.BlogPostLocked || Model.Blog.BlogLocked){<text> (Locked)</text>}</u></h1>
+    <h4>Written by @Html.DisplayFor(model => model.Owner.UserName), @Html.DisplayFor(model => model.PostDate)</h4>
+    
+    <p>
+        @Html.DisplayFor(model => model.Content)
+    </p>
+    <div>
+        @if (!(Model.BlogPostLocked || Model.Blog.BlogLocked))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.BlogPostId">Edit</a> <text> | </text>
+        }
+        <a asp-action="Index" asp-route-id="@Model.BlogId">Back to posts</a>
+    </div>
+    <hr />
+    <hr />
+</div>
+
+<div>
+    <br />
+    <h4>Comments</h4>
+    <hr />
+    @foreach (var item in Model.Comments)
+    {
+        <div>
+            @{
+                var commentRepliedTo = item.ReplyTo > 0 ? Model.Comments.Find(comment => comment.CommentId == item.ReplyTo) : null;
+                var replyTo = commentRepliedTo != null ? "replied to " + commentRepliedTo.Owner.UserName : "wrote";
+            <h6>On @Html.DisplayFor(modelItem => item.PostDate), @Html.DisplayFor(modelItem => item.Owner.UserName) @replyTo:</h6>
+            }
+            <p>
+                @Html.DisplayFor(modelItem => item.Content)
+            </p>
+             @if (!(Model.BlogPostLocked || Model.Blog.BlogLocked))
+             {
+                 <div>
+                @Html.ActionLink("Reply to", "Create", "Comment", new {id=Model.BlogPostId,replyTo=item.CommentId})
+                <text>|</text>
+                @Html.ActionLink("Edit", "Edit", "Comment", new {id=item.CommentId})
+                <text>|</text>
+                @Html.ActionLink("Delete", "Delete", "Comment", new {id=item.CommentId})
+            </div>
+             }
+        </div>
+        <hr />
+    }@if (!(Model.BlogPostLocked || Model.Blog.BlogLocked ))
+     {
+         @Html.ActionLink("Add comment", "Create", "Comment", new {id = Model.BlogPostId}) <text> | </text>
+     }
+    <a asp-action="Index" asp-route-id="@Model.BlogId">Back to posts</a>
+</div>
+
+

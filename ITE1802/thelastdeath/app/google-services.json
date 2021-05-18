@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "546135854356",
+    "firebase_url": "https://prosjektoppgave-ite1802.firebaseio.com",
+    "project_id": "prosjektoppgave-ite1802",
+    "storage_bucket": "prosjektoppgave-ite1802.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546135854356:android:4a3f283d3dd8fc51ea0601",
+        "android_client_info": {
+          "package_name": "com.example.thelastdeath"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "546135854356-u46nks8jqmmfich4u0aqlu23k88iqjtd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-qn7ZybVTJyAr7cCRGqJnfHdIHSHwJGM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "546135854356-u46nks8jqmmfich4u0aqlu23k88iqjtd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

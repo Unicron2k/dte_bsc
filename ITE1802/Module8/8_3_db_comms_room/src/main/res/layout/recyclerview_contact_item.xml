@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+
+    <TextView
+            android:text="@string/str_first_name"
+            style=""
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvFirstName"
+            android:layout_margin="2dp"/>
+
+    <TextView
+            android:text="@string/str_last_name"
+            style=""
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvLastName"
+            android:layout_margin="2dp"/>
+
+    <TextView
+            android:text="@string/str_phone_number"
+            style=""
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvPhoneNumber"
+            android:layout_weight="1"
+            android:layout_margin="2dp"/>
+
+</LinearLayout>

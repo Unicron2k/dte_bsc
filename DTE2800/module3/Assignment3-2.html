@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Assignment 3-2 - WebGL</title>
+</head>
+
+<body>
+	<canvas id="webgl" width="800" height="800">
+	Denne nettleseren støtter ikke "canvas"-elementet!
+	</canvas>
+	<div id="instructions">
+
+	</div>
+	<script src="../lib/webgl-utils.js"></script>
+	<script src="../lib/webgl-debug.js"></script>
+	<script src="../lib/cuon-utils.js"></script>
+	<script src="../lib/cuon-matrix.js"></script>
+	<script src="../lib/gl-matrix-min.js"></script>
+	<script src="../lib/wfa-helpers.js"></script>
+	<script src="js/Assignment3-2.js"></script>
+	<script src="js/Camera.js"></script>
+	<script src="js/Circle.js"></script>
+	<script src="js/Coord.js"></script>
+	<script src="js/Cube.js"></script>
+	<script src="js/Cylinder.js"></script>
+	<script src="js/Kickbike.js"></script>
+	<script src="js/Plane.js"></script>
+	<script src="js/Stack.js"></script>
+
+	<!-- SHADERS -->
+	<script id="vertex-shader" type="x-shader/x-vertex">
+		attribute vec3 a_Position;
+		attribute vec4 a_Color;
+		varying vec4 v_Color;
+		uniform mat4 u_modelviewMatrix;
+		uniform mat4 u_projectionMatrix;
+		void main() {
+			gl_Position = u_projectionMatrix * u_modelviewMatrix * vec4(a_Position,1.0);
+			v_Color = a_Color;
+		}
+	</script>
+	<script id="fragment-shader" type="x-shader/x-fragment">
+		precision mediump float;
+		varying vec4 v_Color;
+		void main() {
+			gl_FragColor = v_Color;
+		}
+	</script>
+	<script>
+		'use strict';
+		const application = new Application();
+		application.start();
+	</script>
+</body>  
+</html>

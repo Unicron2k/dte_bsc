@@ -1,0 +1,55 @@
+﻿@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Services
+@inject AppData _appData
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 80vh; overflow-y: scroll">
+            @code{private const string ErrorMessage = "Add values to all fields";}
+            <EditForm Model="@CountryToPost" OnValidSubmit="@SubmitForm" OnInvalidSubmit="() => _appData.ParentRoot.ShowSnackBar(ErrorMessage, Severity.Error)">
+                <DataAnnotationsValidator/>
+                <MudCard>
+                    <MudCardContent>
+                        <MudTextField
+                            Label="Name"
+                            @bind-value="@CountryToPost.Name"
+                            For="@(() => CountryToPost.Name)"/>
+                        <MudTextField
+                            Label="Country Code"
+                            @bind-value="@CountryToPost.CountryCode"
+                            For="@(() => CountryToPost.CountryCode)"/>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton
+                            ButtonType="ButtonType.Submit"
+                            Variant="Variant.Filled"
+                            Color="Color.Success"
+                            FullWidth="true"
+                            Class="ml-auto">
+                            Add country
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+                <ValidationSummary/>
+            </EditForm>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
+
+
+@code {
+    private CountryViewModel CountryToPost = new CountryViewModel();
+
+    // Tx parameter
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+    
+    void SubmitForm()
+    {
+        MudDialog.Close(DialogResult.Ok(CountryToPost));
+    }
+    void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+    }
+}

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.preference.PreferenceCategory
+            app:key="@string/pref_key_category_appearance"
+            app:title="@string/pref_title_category_appearance">
+
+    <androidx.preference.ListPreference
+            app:key="@string/pref_key_dark_mode"
+            app:title="@string/pref_dark_mode_enable_disable"
+            app:summary="@string/pref_dark_mode_drop_down_summary"
+            app:defaultValue="MODE_NIGHT_FOLLOW_SYSTEM"
+            app:entries="@array/pref_dark_mode_entries"
+            app:entryValues="@array/pref_dark_mode_values"
+            app:useSimpleSummaryProvider="true"/>
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+            app:key="@string/pref_key_category_notifications"
+            app:title="@string/pref_title_category_notifications">
+
+        <androidx.preference.SwitchPreference
+                app:key="@string/pref_key_notifications"
+                app:title="@string/pref_enable_notifications"/>
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+            app:key="@string/pref_key_category_help"
+            app:title="@string/pref_title_category_help">
+
+        <androidx.preference.Preference
+                app:key="@string/pref_key_feedback"
+                app:title="@string/pref_send_feedback"
+                app:summary="@string/pref_report_issues_suggestions"/>
+
+        <androidx.preference.Preference
+                app:key="@string/pref_key_delete_data"
+                app:title="@string/pref_delete_data"
+                app:summary="@string/pref_delete_data_summary"/>
+
+        <androidx.preference.Preference
+            app:key="@string/pref_key_about"
+            app:title="@string/pref_about"
+            app:summary="@string/pref_about_summary"/>
+
+    </androidx.preference.PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>

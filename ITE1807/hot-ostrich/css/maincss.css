@@ -1,0 +1,488 @@
+html {
+    min-height: 100%;
+    position: relative;
+}
+
+body {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 10pt;
+}
+
+/*** Hover the card-box ***/
+#hoverEffect:hover {
+    cursor: pointer;
+    background-color: lightgrey;
+}
+
+.box {
+    width: 100%;
+    border: 1px solid black;
+    box-sizing: border-box;
+    margin-top: 1em;
+}
+
+.center-elements {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+
+.Default-Bg-Color {
+    background-color: #00596f;
+}
+
+.Second-Bg-Color {
+    background-color: #2F81B7;
+}
+
+.InputFields {
+    display: inline;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 200;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid black;
+    border-radius: 0.25rem;
+}
+
+/**** Footer Style ***/
+
+.footer-home {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2.5rem;
+    background-color: #09596E;
+    color: antiquewhite;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    text-align: center;
+}
+
+.wrapFooter{
+    margin-bottom: 2em;
+
+}
+
+
+/***** Search bar *****/
+
+.navbar-custom {
+    background-color: #2F81B7;
+    width: 100%;
+    position: sticky;
+    align-items: center;
+    text-align: center;
+    padding-bottom: 1%;
+    z-index: 1;
+}
+
+.searchbar-custom {
+    padding: 6px;
+    border: thin solid black;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    margin-right: 16px;
+    font-size: 17px;
+    width: 50%;
+}
+
+
+
+/***** Grid view *****/
+.wrapperGrid {
+    display: grid;
+    grid-template-columns: 33.33% 33.33% 33.33%;
+    margin-top: 4%;
+    margin-left: 5%;
+    margin-right: 5%;
+    grid-gap: 10px;
+    background-color: #fff;
+    color: #444;
+}
+
+.box {
+    background-color: #F3F3F3;
+    color: black;
+    border: none;
+    padding: 20px;
+    font-size: 150%;
+    height: max-content;
+}
+
+.box .pGrid {
+    color: #09596E;
+    font-size: 15px;
+}
+
+
+/***** Overriding default values for the dropdown buttons *****/
+
+.btn-secondary {
+    color: black;
+    background-color: white;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    color: black;
+    background-color: white;
+    border-color: #545b62;
+}
+
+.btn-secondary:focus, .btn-secondary.focus {
+    color: black;
+    background-color: white;
+    border-color: #545b62;
+    box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.5);
+}
+
+
+.btn-secondary.disabled, .btn-secondary:disabled {
+    color: black;
+    background-color: white;
+    border-color: #6c757d;
+}
+
+.btn-secondary:not(:disabled):not(.disabled):active, .btn-secondary:not(:disabled):not(.disabled).active,
+.show > .btn-secondary.dropdown-toggle {
+    color: black;
+    background-color: white;
+    border-color: #4e555b;
+}
+
+.btn-secondary:not(:disabled):not(.disabled):active:focus, .btn-secondary:not(:disabled):not(.disabled).active:focus,
+.show > .btn-secondary.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.5);
+}
+
+/***** Dropdown menu *****/
+
+.regionNorway {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    font-style: italic;
+    font-size: small;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.dropdown-menu .regionNorway:hover {
+    background-color: #d3d9df;
+}
+
+.dropdown-custom {
+    display: inline
+}
+
+.buttonDropDown-custom {
+    background-color: white;
+    border: 1px solid black;
+}
+
+.dropdown-menu {
+    min-width: max-content;
+}
+
+
+.dropdown-menu a {
+    color: black;
+    text-decoration: none;
+    display: inline-block;
+    font-size: small;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.dropdown-menu li:hover {
+    background-color: rgb(225, 225, 225);
+}
+
+
+/***** CSS for right sidebar and other elements courseDescription page *****/
+
+.row{
+    overflow: auto;
+    text-align: center;
+}
+
+.courseDescriptionDiv{
+    background-color: #F3F3F3;
+    width: 60%;
+    padding: 1em;
+    display: inline-block;
+    text-align: left;
+
+
+}
+
+.rightSidebar {
+    display: inline-block;
+    margin: 2%;
+    width: content-box;
+    text-align: left;
+}
+
+
+.sideWithoutButton{
+    margin-top: 15%;
+    display: block;
+
+}
+
+.courseVersion{
+    font-size: 15px;
+    text-decoration: none;
+    color: black;
+}
+
+.courseVersion:hover{
+    text-decoration: none;
+}
+
+.versionHeader{
+    font-size: 22px;
+    border-bottom: 1px solid grey;
+}
+
+.lastChanged{
+    font-size: 10px;
+    border-bottom: 1px solid grey;
+}
+
+
+
+/* Page content. The value of the margin-left property should match the value of the sidebar's width property */
+div.content {
+    margin-left: 200px;
+    padding: 1px 16px;
+    height: 1000px;
+}
+
+/* On screens that are less than 700px wide, make the sidebar into a topbar */
+@media screen and (max-width: 700px) {
+    .rightSidebar{
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    .rightSidebar a {float: left;}
+    div.content {margin-left: 0;}
+}
+
+/* On screens that are less than 400px, display the bar vertically, instead of horizontally */
+@media screen and (max-width: 400px) {
+    .rightSidebar a {
+        text-align: center;
+        float: none;
+    }
+}
+
+.containerForDescription{
+    display: inline;
+}
+
+.heading {
+    text-align: center;
+    font-size: 2.0em;
+    letter-spacing: 1px;
+    padding: 20px;
+    color: #09596E;
+}
+
+.textAreaDiv{
+    border: black solid 1px;
+    min-width: content-box;
+    height: min-content;
+    padding: 1em;
+}
+
+
+
+.courseHeader{
+    border-bottom: 1px solid grey;
+}
+
+
+
+/***** Edit course description button *****/
+
+.button {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: #09596E;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 24px;
+    padding: 14px;
+    width: 160px;
+    transition: all 0.5s;
+    cursor: pointer;
+    
+}
+
+.button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+.button span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+}
+
+.button:hover span {
+    padding-right: 25px;
+}
+
+.button:hover span:after {
+    opacity: 1;
+    right: 0;
+}
+
+.editButton{
+    float: right;
+}
+
+.buttonCustom {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: #09596E;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 15px;
+    padding: 14px;
+    width: max-content;
+    transition-duration: 0.4s;
+}
+
+.buttonCustom:hover {
+    background-color: #228b94;
+}
+
+.buttonShow{
+    padding: 2px 5px 2px 5px;
+    width: 60px;
+    height: min-content;
+    font-size: inherit;
+}
+
+
+
+/***** homepage.twig ****/
+
+.page-title {
+    padding-top: 1em;
+    margin-bottom: 3em;
+    text-align: center;
+}
+/***** CSS for editStatus page *****/
+
+
+
+.acceptButton{
+
+    background-color: green;
+    border: green;
+}
+
+.declineButton{
+    background-color: darkred;
+    border: darkred;
+    margin-left: 5%;
+}
+
+.acceptButton:hover{
+      background-color: #359131;
+}
+
+.declineButton:hover{
+    background-color: #87241b;
+}
+
+
+
+/***** CSS for sending message when subject is not approved.  SOURCEE: www.w3schools.com  *****/
+/* Style inputs, select elements and textareas */
+input[type=text], select, textarea{
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+/* Style the label to display next to the inputs */
+label {
+    padding: 12px 12px 12px 0;
+    display: inline-block;
+}
+
+/* Style the submit button */
+input[type=submit] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+}
+
+/* Style the container */
+.containerMessage {
+    background-color: #f2f2f2;
+    margin: auto;
+    height: content-box;
+    width: 50%;
+    padding: 10px;
+}
+
+
+/* Floating column for inputs: 75% width */
+.col-75 {
+    float: left;
+    width: 100%;
+    margin-top: 6px;
+}
+
+/* Clear floats after the columns */
+.rowMessage:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+    .col-25, .col-75, input[type=submit] {
+        width: 100%;
+        margin-top: 0;
+    }
+}
+
+.sendMessage {
+    float: left;
+}
+
+#courseCodeButton {
+    float: left;
+    margin-top: 2em;
+    margin-bottom: 4em;
+}
+
+
+
+

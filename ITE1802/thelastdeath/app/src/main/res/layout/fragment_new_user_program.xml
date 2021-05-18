@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/fragmentTitle"
+        android:text="@string/newUserProgram_title" />
+
+
+    <!-- app_program_type_id -->
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/newUserProgram_appProgramType_title"/>
+    <Spinner
+        android:id="@+id/spinner_existing_app_program_type_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- name -->
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/newUserProgram_appProgramType_name"/>
+    <EditText
+        android:id="@+id/newuserprogram_name"
+        style="@style/TextView20spWithLeftPadding"
+        android:inputType="text"
+        android:maxLength="50"
+        android:hint="@string/newUserProgram_appProgramType_hint_name"
+        android:autofillHints="@string/newUserProgram_appProgramType_hint_name" />
+
+    <!-- description -->
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/newUserProgram_appProgramType_description"/>
+    <EditText
+        android:id="@+id/newuserprogram_description"
+        style="@style/TextView20spWithLeftPadding"
+        android:inputType="text"
+        android:maxLength="500"
+        android:hint="@string/newUserProgram_appProgramType_hint_description"
+        android:autofillHints="newUserProgram_appProgramType_hint_description" />
+
+    <!-- use_timing -->
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/newUserProgram_appProgramType_hint_useTiming_title"/>
+    <Switch
+        android:id="@+id/newuserprogram_useTiming"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:switchMinWidth="56sp"
+        android:layout_marginStart="50sp"
+        android:layout_marginTop="15sp"
+        android:text="@string/newUserProgram_appProgramType_hint_useTiming"
+        android:checked="true"
+        android:textOff="@string/newUserProgram_appProgramType_hint_hint_useTiming_no"
+        android:textOn="@string/newUserProgram_appProgramType_hint_hint_useTiming_yes"/>
+
+    <!-- POST_button -->
+    <Button
+        android:id="@+id/newUserProgram_button_post"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/newUserProgram_appProgramType_button_post"
+        android:layout_marginTop="20sp"
+        android:layout_gravity="center"/>
+
+</LinearLayout>
+
+
+
+

@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">InputProsjekt</string>
+    <string name="currDate">Current date: %1$s</string>
+</resources>

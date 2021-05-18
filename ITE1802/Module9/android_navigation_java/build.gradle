@@ -1,0 +1,48 @@
+apply plugin: 'com.android.application'
+apply plugin: 'androidx.navigation.safeargs'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId 'com.example.android.codelabs.navigation'
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            testCoverageEnabled false
+        }
+    }
+    buildFeatures {
+        dataBinding true
+    }
+    productFlavors {
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+}
+
+dependencies {
+
+    implementation "com.google.android.material:material:1.3.0-rc01"
+    implementation "androidx.appcompat:appcompat:1.2.0"
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+
+    implementation "androidx.constraintlayout:constraintlayout:2.0.4"
+
+    //Navigation
+    implementation "androidx.navigation:navigation-fragment:2.3.3"
+    implementation "androidx.navigation:navigation-ui:2.3.3"
+}

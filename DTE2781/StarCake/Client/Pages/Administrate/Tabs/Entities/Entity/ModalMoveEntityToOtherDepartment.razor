@@ -1,0 +1,115 @@
+﻿@inject AppData AppData
+@using StarCake.Client.Services
+@using StarCake.Shared.Models.ViewModels
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+@if (EntityCache != null)
+{
+    <MudDialog DisableSidePadding="true">
+        <DialogContent>
+            <MudContainer >
+                <MudGrid Justify="Justify.Center">
+                    <MudMenu
+                        Label="@($"Move to: {GetDepartmentName(CurrentCheckedDepartmentId)}")"
+                        EndIcon="@Icons.Filled.KeyboardArrowDown"
+                        Color="Color.Primary" Variant="Variant.Filled" Direction="Direction.Bottom"
+                        MaxHeight="200"
+                        OffsetY="true"
+                        FullWidth="true">
+                        @foreach (var department in AppData.CurrentUser.Departments)
+                        {
+                            <MudMenuItem OnClick="() => CurrentCheckedDepartmentId = department.DepartmentId">
+                                @department.Name
+                            </MudMenuItem>
+                        }
+                    </MudMenu>
+                </MudGrid>
+            </MudContainer>
+        </DialogContent>
+        <DialogActions>
+            <MudGrid Spacing="2" Justify="Justify.Center">
+                <MudItem xs="6">
+                    <MudButton
+                        OnClick="Cancel"
+                        Variant="Variant.Filled"
+                        Color="Color.Error"
+                        FullWidth="true"
+                        EndIcon="@Icons.Material.Filled.Cancel">
+                        Cancel
+                    </MudButton>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudButton
+                        OnClick="SubmitForm"
+                        Variant="Variant.Filled"
+                        Color="Color.Success"
+                        FullWidth="true"
+                        EndIcon="@Icons.Material.Filled.Save">
+                        Save
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </DialogActions>
+    </MudDialog>
+}
+
+
+@code {
+    // Local object to pass to database and bind values
+    private EntityViewModel EntityCache { get; set; }
+    
+    // Rx parameter
+    [Parameter]
+    public EntityViewModel EntityInAppData { get; set; }
+    
+    // Tx parameter
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+    
+    private int CurrentCheckedDepartmentId { get; set; }
+    protected override void OnInitialized()
+    {
+        EntityCache = EntityInAppData.Clone();
+        CurrentCheckedDepartmentId = EntityCache.DepartmentId;
+    }
+
+    
+    private string GetDepartmentName(int departmentId)
+    {
+        var department = AppData.CurrentUser.Departments.FirstOrDefault(x => x.DepartmentId == departmentId);
+        return department == null ? "Error N/A" : department.Name;
+    }
+
+    async Task SubmitForm()
+    {
+        // Update Entity's department and its components, if any
+        EntityCache.DepartmentId = CurrentCheckedDepartmentId;
+        if (EntityCache.Components != null)
+            foreach (var component in EntityCache.Components)
+                component.DepartmentId = CurrentCheckedDepartmentId;
+        
+        // Pass to database and update
+        var response = await Http.PutAsJsonAsync("api/EntityAPI/" + EntityCache.EntityId, EntityCache);
+        if (response.IsSuccessStatusCode)
+        {
+            var entityFromDb = await response.Content.ReadFromJsonAsync<EntityViewModel>();
+            if (entityFromDb != null)
+            {
+                if (entityFromDb.DepartmentId != AppData.CurrentUser.CurrentDepartment.DepartmentId)
+                    AppData.CurrentUser.CurrentDepartment.Entities.Remove(EntityInAppData);
+                AppData.ParentRoot.ShowSnackBar(
+                    $"{entityFromDb.Name} was moved to {GetDepartmentName(entityFromDb.DepartmentId)}",
+                    Severity.Success,
+                    7500);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+        }
+        else
+            AppData.ParentRoot.ShowSnackBar("Error: Could not save to database", Severity.Error);
+    }
+    private void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+    }
+}

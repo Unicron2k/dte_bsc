@@ -1,0 +1,350 @@
+﻿@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Services
+@using StarCake.Shared
+@using System.IO
+@inject ISnackbar Snackbar
+@inject HttpClient Http
+@inject AppData AppData
+@inject IDialogService _dialogService
+
+
+@if (AppData.IsEntityTypesNullOrEmpty())
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+}
+else
+{
+    <MudDialog DisableSidePadding="true">
+        <DialogContent>
+            <MudContainer Style="max-height: 80vh; overflow-y: scroll ">
+                <MudItem xs="12">
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.h5">
+                                    Entity
+                                </MudText>
+                            </MudItem>
+
+                            <EditForm Model="@_entityToPost" OnValidSubmit="SubmitForm" OnInvalidSubmit="ShowErrorSnack">
+                                <DataAnnotationsValidator/>
+                                <MudCard>
+                                    <MudCardContent>
+                                        <MudTextField
+                                            Label="Name"
+                                            @bind-value="@_entityToPost.Name"
+                                            For="@(() => _entityToPost.Name)"/>
+                                        <MudTextField
+                                            Label="Serial number"
+                                            @bind-value="@_entityToPost.SerialNumber"
+                                            For="@(() => _entityToPost.SerialNumber)"/>
+                                        <MudTextField
+                                            Label="Max cycles between maintenance"
+                                            @bind-value="@_entityToPost.MaxCyclesBtwMaintenance"
+                                            For="@(() => _entityToPost.MaxCyclesBtwMaintenance)"/>
+                                        <MudTextField
+                                            Label="Max days between maintenance"
+                                            @bind-value="@_entityToPost.MaxDaysBtwMaintenance"
+                                            For="@(() => _entityToPost.MaxDaysBtwMaintenance)"/>
+                                        <MudTextField
+                                            Label="Max hours flight-time between maintenance"
+                                            @bind-value="@_entityToPost.MaxFlightSecondsBtwMaintenance"
+                                            For="@(() => _entityToPost.MaxFlightSecondsBtwMaintenance)"/>
+
+                                        <MudItem Class="d-flex align-center justify-center mud-width-full py-8">
+                                            <MudButton
+                                                OnClick="AddComponentToEntity"
+                                                EndIcon="@Icons.Material.Filled.LibraryAdd"
+                                                ButtonType="ButtonType.Submit"
+                                                Variant="Variant.Filled"
+                                                Color="Color.Primary">
+                                                Add components
+                                            </MudButton>
+                                        </MudItem>
+
+                                        @code{
+                                            async Task AddComponentToEntity()
+                                            {
+                                                var parameters = new DialogParameters
+                                                {
+                                                    {nameof(ModalGetNewComponent.Entity), _entityToPost}
+                                                };
+                                                var dialog = _dialogService.Show<ModalGetNewComponent>($"New component", parameters);
+                                                var result = await dialog.Result;
+                                                if (!result.Cancelled)
+                                                {
+                                                    
+                                                    var data = result.Data;
+                                                    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(data));
+                                                    var componentFromModal = (ComponentViewModel) result.Data;
+                                                    if (componentFromModal != null)
+                                                    {
+                                                        _entityToPost.Components ??= new List<ComponentViewModel>();
+                                                        _entityToPost.Components.Add(componentFromModal);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        @code {
+                                            private readonly string _allowedImageExtensions = string.Join(", ", FileTypeEnums.FileUploads.ConstToAllowedExtensions(FileTypeEnums.FileUploads.ConstImage).ToArray());
+                                            private const string InputFileName = "ENTITY_IMAGE_FILE";
+                                            private IFileListEntry _file;
+                                            private string _base64File;
+                                            async Task HandleFileSelected(IFileListEntry[] files)
+                                            {
+                                                _file = files.FirstOrDefault();
+                                                if (_file == null)
+                                                    AppData.ParentRoot.ShowSnackBar("File was invalid, try again", Severity.Error);
+                                                else if (_file.Size > 5 * 1000000) // 5MB
+                                                {
+                                                    AppData.ParentRoot.ShowSnackBar("Max file size is 5MB, your picture was too large", Severity.Error, 7*1000);
+                                                    _file = null;
+                                                }
+                                                else
+                                                {
+                                                    // Extract image and display it
+                                                    var format = _file.Type;
+                                                    var imageData = await _file.ToImageFileAsync(_file.Type, 128, 128);
+                                                    var ms = new MemoryStream();
+                                                    await imageData.Data.CopyToAsync(ms);
+                                                    _base64File = Convert.ToBase64String(ms.ToArray());
+                                                    _imageDataUri = $"data:{format};base64,{_base64File}";
+                                                    AppData.ParentRoot.ShowSnackBar($"Image '{_file.Name}' was imported locally", Severity.Info);
+                                                    
+                                                    // Save the image to the Entity to POST
+                                                    imageData = await _file.ToImageFileAsync(_file.Type, 256, 256);
+                                                    ms = new MemoryStream();
+                                                    await imageData.Data.CopyToAsync(ms);
+                                                    _entityToPost.ImageBase64 = Convert.ToBase64String(ms.ToArray());
+                                                    _entityToPost.ImageContentType = format;
+                                                }
+                                            }
+                                            
+                                            string _imageDataUri;
+                                        }
+                                        <InputFile id="@InputFileName" OnChange="HandleFileSelected" hidden accept="@_allowedImageExtensions" />
+                                        <MudItem Class="d-flex align-center justify-center mud-width-full py-8">
+                                            <MudButton HtmlTag="label"
+                                                       Variant="Variant.Filled"
+                                                       Color="Color.Primary"
+                                                       EndIcon="@Icons.Filled.CloudUpload"
+                                                       for="@InputFileName">
+                                                Upload image
+                                            </MudButton>
+                                        </MudItem>
+                                        @if (!string.IsNullOrEmpty(_imageDataUri))
+                                        {
+                                            <MudItem Class="d-flex align-center justify-center mud-width-full py-8">
+                                                <img src="@_imageDataUri"/>
+                                            </MudItem>
+                                        }
+                                        
+                                        <MudSelect T="int" @bind-value="@_entityToPost.EntityTypeId" Label="Type" Strict="true" Variant="Variant.Outlined" Format="F2">
+                                            @foreach (var entityType in AppData.EntityTypes.Where(a=>a.IsActive).OrderBy(x => x.Name))
+                                            {
+                                                <MudSelectItem T="int" Value="@entityType.EntityTypeId">
+                                                    @entityType.Name
+                                                </MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                        <MudSelect Class="position: relative" T="int" @bind-value="@_entityToPost.ManufacturerId" Label="Manufacturer" Strict="true" Variant="Variant.Outlined" Format="F2">
+                                            @foreach (var manufacturer in AppData.Manufacturers
+                                                .Where(a => a.IsActive)
+                                                .OrderBy(x => x.ManufacturerId))
+                                            {
+                                                <MudSelectItem T="int" Value="@manufacturer.ManufacturerId">
+                                                    @manufacturer.Name
+                                                </MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudCardContent>
+                                    <MudItem Class="d-flex align-center justify-center mud-width-full py-8">
+                                        <MudCardActions>
+                                            <MudButton
+                                                EndIcon="@Icons.Material.Filled.FileUpload"
+                                                ButtonType="ButtonType.Submit"
+                                                Variant="Variant.Filled"
+                                                Color="Color.Success"
+                                                Class="ml-auto">
+                                                Add to database
+                                            </MudButton>
+                                        </MudCardActions>
+                                    </MudItem>
+                                </MudCard>
+                            </EditForm>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.h5">
+                                    Components
+                                </MudText>
+                            </MudItem>
+
+                            @functions{
+                                private bool IsComponentsNullOrEmpty()
+                                {
+                                    if (_entityToPost.Components == null)
+                                        return true;
+                                    return !_entityToPost.Components.Any();
+                                }
+                            }
+                            @if (IsComponentsNullOrEmpty())
+                            {
+                                <MudAlert Severity="Severity.Warning">No components added yet</MudAlert>
+                            }
+                            else
+                            {
+                                <MudPaper>
+                                    <MudExpansionPanels MultiExpansion="false" Dense="true">
+                                        @foreach (var componentType in AppData.ComponentTypes
+                                            .Where(x => _entityToPost.Components
+                                                .Select(c => c.ComponentTypeId)
+                                                .ToList().Contains(x.ComponentTypeId)).ToList())
+                                        {
+                                            <MudExpansionPanel Text="@componentType.Name">
+                                                <MudExpansionPanels MultiExpansion="false" Dense="false">
+                                                    @foreach (var component in _entityToPost.Components.Where(x => x.ComponentTypeId == componentType.ComponentTypeId).ToList())
+                                                    {
+                                                        <MudExpansionPanel Text="@component.Name">
+                                                            <MudList>
+                                                                <MudListItem Text="@("Manufacturer: " + AppData.Manufacturers.Where(x => x.ManufacturerId == component.ManufacturerId).Select(x => x.Name).FirstOrDefault())" Icon="@Icons.Material.Filled.Store"/>
+                                                                <MudListItem Text="@("Serial number: " + component.SerialNumber)" Icon="@Icons.Material.Filled.Tag"/>
+                                                                <MudListItem Text="@("Max cycles between maintenance: " + component.MaxCyclesBtwMaintenance)" Icon="@Icons.Material.Filled.Timeline"/>
+                                                                <MudListItem Text="@("Max days between maintenance: " + component.MaxDaysBtwMaintenance)" Icon="@Icons.Material.Filled.Timeline"/>
+                                                                <MudListItem Text="@("Max flight time between maintenance: " + TimeFormatting.SecondsToHMM(component.MaxFlightSecondsBtwMaintenance))" Icon="@Icons.Material.Filled.Timeline"/>
+                                                            </MudList>
+                                                            <MudItem xs="12" Class="d-flex align-center justify-center mud-width-full py-8">
+                                                                <MudButton OnClick="() => _entityToPost.Components.Remove(component)" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">
+                                                                    Remove
+                                                                </MudButton>
+                                                            </MudItem>
+                                                        </MudExpansionPanel>
+                                                    }
+                                                </MudExpansionPanels>
+                                            </MudExpansionPanel>
+                                        }
+                                    </MudExpansionPanels>
+                                </MudPaper>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+            </MudContainer>
+        </DialogContent>
+    </MudDialog>
+}
+
+@code {
+    /* Rx parameter */
+    private EntityViewModel _entityToPost;
+    // Tx parameter
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    async Task SubmitForm()
+    {
+        if (_entityToPost.EntityTypeId == 0)
+            Snackbar.Add("Select an entity type", Severity.Error);
+        else if (_entityToPost.ManufacturerId == 0)
+            Snackbar.Add("Select a manufacturer", Severity.Error);
+        else if (_file == null)
+            AppData.ParentRoot.ShowSnackBar("Please upload an image-file first", Severity.Error);
+        else
+        {
+            // Convert from hours to seconds
+            _entityToPost.MaxFlightSecondsBtwMaintenance = _entityToPost.MaxFlightSecondsBtwMaintenance * 60 * 60;
+            
+            // Save the entity to database
+            var entityResponse = await Http.PostAsJsonAsync("api/EntityAPI/", _entityToPost);
+                if (entityResponse.IsSuccessStatusCode)
+                {
+                    var entityFromDb = await entityResponse.Content.ReadFromJsonAsync<EntityViewModel>();
+                    entityFromDb.FlightLogs = new List<FlightLogViewModel>();
+                    
+                    // Add the new entity to AppData
+                    AppData.CurrentUser.CurrentDepartment.Entities.Add(entityFromDb);
+                    MudDialog.Close(DialogResult.Ok(true));
+                    Snackbar.Add($"{_entityToPost.Name} was added with {_entityToPost.Components.Count} components", Severity.Success);
+                }
+                else
+                    AppData.ParentRoot.ShowSnackBar($"Error, could not upload entity", Severity.Error);
+        }
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _entityToPost = new EntityViewModel()
+        {
+            EntityId = 0,
+            Components = new List<ComponentViewModel>(),
+            Name = "",
+            DepartmentId = AppData.CurrentUser.CurrentLoggedInDepartmentId,
+            CreationDate = DateTime.UtcNow,
+            TotalFlightCycles = 0,
+            TotalFlightDurationInSeconds = 0,
+            IsArchived = false
+        };
+        if (AppData.IsEntityTypesNullOrEmpty())
+            AppData.EntityTypes = await Http.GetFromJsonAsync<EntityTypeViewModel[]>("api/EntityType");
+    }
+
+    void ShowErrorSnack()
+    {
+        Snackbar.Add("Make sure to fill in all fields", Severity.Error);
+    }
+}
+
+
+
+
+
+@* DEPRECATED FILE-HANDLING *@
+            @*//Get file's data into a Stream and build a custom HTTP POST Header
+            var ms = new MemoryStream();
+            await _file.Data.CopyToAsync(ms);
+            var fileStream = new MemoryStream(ms.ToArray());
+            var streamContent = new StreamContent(fileStream, (int) fileStream.Length);
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue(_file.Type);
+            streamContent.Headers.ContentLength = fileStream.Length;
+            var content = new MultipartFormDataContent();
+            content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+            content.Add(streamContent, "file", _file.Name);
+
+            // Post content to Server and get its detail in return
+            var imageResponse = await Http.PostAsync($"api/Files/", content);
+            if (imageResponse.IsSuccessStatusCode)
+            {
+                var fileDetail = await imageResponse.Content.ReadFromJsonAsync<FileDetail>();
+                _entityToPost.FileDetailId = fileDetail.Id;
+            _entityToPost.FileDetail = fileDetail;
+
+                var entityResponse = await Http.PostAsJsonAsync("api/EntityAPI/", _entityToPost);
+                if (entityResponse.IsSuccessStatusCode)
+                {
+                    var entityFromDb = await entityResponse.Content.ReadFromJsonAsync<EntityViewModel>();
+                    entityFromDb.FileDetail = fileDetail;
+                    entityFromDb.FileDetail.FileBase64 = _base64File;
+                    AppData.CurrentUser.CurrentDepartment.Entities.Add(entityFromDb);
+
+                    MudDialog.Close(DialogResult.Ok(true));
+                    Snackbar.Add($"{_entityToPost.Name} was added with {_entityToPost.Components.Count} components", Severity.Success);
+                }
+                else
+                    AppData.ParentRoot.ShowSnackBar($"Error, could not upload entity", Severity.Error);
+            }
+            else
+                AppData.ParentRoot.ShowSnackBar($"Error, could not upload image", Severity.Error);
+
+
+     Post to database and get returned object
+    var response = await Http.PostAsJsonAsync("api/EntityAPI/", _entityToPost);
+    if (response.IsSuccessStatusCode)
+    {
+        var entityFromDb = await response.Content.ReadFromJsonAsync<EntityViewModel>();
+        if (entityFromDb != null)
+            AppData.CurrentUser.CurrentDepartment.Entities.Add(entityFromDb);
+        
+        MudDialog.Close(DialogResult.Ok(true));
+        Snackbar.Add($"{_entityToPost.Name} was added with {_entityToPost.Components.Count} components", Severity.Success);
+    }*@

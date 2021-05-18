@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bank.AppController">
+    <TabPane fx:id="tab_pane_main" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="2000.0" tabMaxWidth="2000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <Tab fx:id="tab_accounts" closable="false" text="Accounts">
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                <VBox layoutX="5.0" layoutY="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="5.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+                    <TableView fx:id="acc_tv_account_list" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="acc_tc_account_id" editable="false" minWidth="-1.0" prefWidth="-1.0" text="Account ID" />
+                            <TableColumn fx:id="acc_tc_account_name" editable="false" minWidth="-1.0" prefWidth="-1.0" text="Name" />
+                            <TableColumn fx:id="acc_tc_account_balance" editable="false" minWidth="-1.0" prefWidth="-1.0" text="Balance" />
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                        </columnResizePolicy>
+                    </TableView>
+                    <GridPane hgap="5.0" vgap="5.0" VBox.vgrow="SOMETIMES">
+                        <columnConstraints>
+                            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="75.0" minWidth="75.0" percentWidth="15.0" prefWidth="75.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" percentWidth="35.0" />
+                            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="75.0" minWidth="75.0" percentWidth="15.0" prefWidth="75.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" percentWidth="35.0" />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints minHeight="25.0" percentHeight="33.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="25.0" percentHeight="33.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="25.0" percentHeight="34.0" vgrow="SOMETIMES" />
+                        </rowConstraints>
+                        <TextField fx:id="acc_tf_first_name" GridPane.columnIndex="1" />
+                        <TextField fx:id="acc_tf_middle_name" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <TextField fx:id="acc_tf_last_name" GridPane.columnIndex="3" />
+                        <TextField fx:id="acc_tf_start_balance" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <Button fx:id="acc_btn_create_account" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#createAccountConfirmation" text="Create New Account" GridPane.columnSpan="2147483647" GridPane.rowIndex="2" />
+                        <Label text="First Name" />
+                        <Label text="Middle Name" GridPane.rowIndex="1" />
+                        <Label text="Last Name" GridPane.columnIndex="2" />
+                        <Label text="Balance" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                    </GridPane>
+                </VBox>
+            </AnchorPane>
+        </Tab>
+        <Tab fx:id="tab_add_transfers" closable="false" text="Add Transfer">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <VBox layoutX="14.0" layoutY="14.0" spacing="5.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+                    <GridPane hgap="5.0" vgap="5.0" VBox.vgrow="ALWAYS">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints minHeight="10.0" percentHeight="5.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" percentHeight="95.0" vgrow="SOMETIMES" />
+                        </rowConstraints>
+                        <Label text="Sender Account" />
+                        <Label text="Receiver Account" GridPane.columnIndex="1" />
+                        <TableView fx:id="trans_tv_account_from" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.rowIndex="1">
+                            <columns>
+                                <TableColumn fx:id="trans_tc_from_id" editable="false" minWidth="-1.0" prefWidth="-1.0" text="Account ID" />
+                                <TableColumn fx:id="trans_tc_from_name" editable="false" minWidth="-1.0" prefWidth="-1.0" text="Name" />
+                                <TableColumn fx:id="trans_tc_from_balance" editable="false" minWidth="-1.0" prefWidth="-1.0" text="Balance" />
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                        </TableView>
+                        <TableView fx:id="trans_tv_account_to" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <columns>
+                                <TableColumn fx:id="trans_tc_to_id" editable="false" minWidth="-1.0" prefWidth="-1.0" text="Account ID" />
+                                <TableColumn fx:id="trans_tc_to_name" editable="false" minWidth="-1.0" prefWidth="-1.0" text="Name" />
+                                <TableColumn fx:id="trans_tc_to_balance" editable="false" minWidth="-1.0" prefWidth="-1.0" text="Balance" />
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                        </TableView>
+                    </GridPane>
+                    <HBox maxWidth="1.7976931348623157E308" minHeight="25.0" spacing="5.0" VBox.vgrow="SOMETIMES">
+                        <Label minHeight="25.0" minWidth="50.0" text="Amount" />
+                        <TextField fx:id="trans_tf_transfer_amount" maxWidth="1.7976931348623157E308" minHeight="25.0" minWidth="5.0" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="trans_btn_transfer_money" minHeight="25.0" minWidth="100.0" mnemonicParsing="false" text="Transfer Money" />
+                    </HBox>
+                </VBox>
+            </AnchorPane>
+        </Tab>
+        <Tab fx:id="tab_execute_transfers" closable="false" text="Execute Transfers">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <VBox layoutX="14.0" layoutY="14.0" spacing="5.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+                    <TableView fx:id="ex_tv_transfer_list" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="ex_tc_sender_id" editable="false" minWidth="-1.0" prefWidth="-1.0" text="Sender Account" />
+                            <TableColumn fx:id="ex_tc_receiver_id" editable="false" minWidth="-1.0" prefWidth="-1.0" text="Receiver Account" />
+                            <TableColumn fx:id="ex_tc_transfer_amount" editable="false" minWidth="-1.0" prefWidth="-1.0" text="Transfer Amount" />
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                        </columnResizePolicy>
+                    </TableView>
+                    <Button fx:id="ex_btn_execute_pending_transfers" maxWidth="1.7976931348623157E308" minHeight="25.0" minWidth="200.0" mnemonicParsing="false" text="Execute Pending Transfers" VBox.vgrow="SOMETIMES" />
+                </VBox>
+            </AnchorPane>
+        </Tab>
+        <Tab fx:id="tab_error_logs" closable="false" text="Error Logs">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <VBox layoutX="14.0" layoutY="14.0" spacing="5.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+                    <TextArea fx:id="err_ta_error_log" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
+                    <Button fx:id="err_btn_refresh_error_log" maxWidth="1.7976931348623157E308" minHeight="25.0" minWidth="200.0" mnemonicParsing="false" text="Refresh Error Log" />
+                </VBox>
+            </AnchorPane>
+        </Tab>
+    </TabPane>
+</AnchorPane>

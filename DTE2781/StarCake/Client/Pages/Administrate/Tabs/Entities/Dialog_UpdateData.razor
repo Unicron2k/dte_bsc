@@ -1,0 +1,116 @@
+@using StarCake.Shared.Models.ViewModels
+@inject HttpClient Http
+@inject IJSRuntime Js
+
+
+@if (MudDialog.Title.Contains("Update Component Type"))
+{
+    <EditForm Model="@ComponentType" OnValidSubmit="@SubmitFormComponent">
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6"> Edit name of Entitytype</MudText>
+        </TitleContent>
+        <DialogContent>
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+            <div>
+                <div class="form-group">
+                    <label for="Name">Component type name</label>
+                    <input @bind="ComponentType.Name" type="text" class="form-control" placeholder="Name of component type" id="Name">
+                </div>
+            </div>
+        </DialogContent>
+        <DialogActions>
+            <button @onclick="SubmitFormComponent" class="btn btn-primary">Update component type</button>
+            <button @onclick="Cancel" class="btn btn-danger">Cancel</button>
+        </DialogActions>
+    </MudDialog>
+    </EditForm>
+}
+@if (MudDialog.Title.Contains("Update Manufacture"))
+{
+    <EditForm Model="@Manufacturer" OnValidSubmit="@SubmitFormManufacturer">
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6"> Edit name of Entitytype</MudText>
+        </TitleContent>
+        <DialogContent>
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+            <div>
+                <div class="form-group">
+                    <label for="Name">Manufacturer name</label>
+                    <input @bind="Manufacturer.Name" type="text" class="form-control" placeholder="Name of manufacturer" id="Name">
+                </div>
+            </div>
+        </DialogContent>
+        <DialogActions>
+            <button type="submit" class="btn btn-primary">Update manufacturer</button>
+            <button @onclick="Cancel" class="btn btn-danger">Cancel</button>
+        </DialogActions>
+    </MudDialog>
+     </EditForm>
+}
+
+@if (MudDialog.Title.Contains("Update Entity Type"))
+{
+    <EditForm Model="@EntityType" OnValidSubmit="@SubmitFormEntityType">
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6"> Edit name of Entitytype</MudText>
+        </TitleContent>
+        <DialogContent>
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+            <div>
+                <div class="form-group">
+                    <label for="Name">Entity Type name</label>
+                    <input @bind="EntityType.Name" type="text" class="form-control" placeholder="Name of Entity type">
+                </div>
+            </div>
+        </DialogContent>
+        <DialogActions>
+            <button type="submit" class="btn btn-primary">Update Entity type</button>
+            <button @onclick="Cancel" class="btn btn-danger">Cancel</button>
+        </DialogActions>
+    </MudDialog>
+     </EditForm>
+}
+
+
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+    
+    [Parameter]
+     public ComponentTypeViewModel ComponentType { get; set; }
+
+    [Parameter]
+    public EntityTypeViewModel EntityType { get; set; }
+
+    [Parameter]
+    public ManufacturerViewModel Manufacturer { get; set; }
+
+   
+    void SubmitFormComponent()
+    {
+        MudDialog.Close(DialogResult.Ok(ComponentType));
+    }
+
+    void SubmitFormManufacturer()
+    {
+        MudDialog.Close(DialogResult.Ok(Manufacturer));
+    }
+
+    void SubmitFormEntityType()
+    {
+        MudDialog.Close(DialogResult.Ok(EntityType));
+    }
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+}

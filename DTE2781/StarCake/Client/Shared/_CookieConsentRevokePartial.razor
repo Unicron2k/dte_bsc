@@ -1,0 +1,37 @@
+@using Microsoft.AspNetCore.Http;
+@using Microsoft.AspNetCore.Http.Features;
+@using StarCake.Client.Services
+
+@inject IHttpClientFactory _httpClientFactory
+@inject IJSRuntime _jsRuntime
+@inject HttpClient _http
+
+
+@if (AppData.CurrentUser is {CanTrack: true })
+{
+    <p>You have consented to tracking</p>
+    <button type="button" class="btn btn-danger" @onclick="Withdraw">
+        <span aria-hidden="true">Revoke Consent</span>
+    </button>
+}
+else
+{
+    <p>You have not consented to tracking.</p>
+}
+
+@code {
+    
+    private async Task Withdraw()
+    {
+        try
+        {
+            await _http.GetAsync("/consent/withdraw");
+            AppData.CurrentUser.CanTrack = false;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+}

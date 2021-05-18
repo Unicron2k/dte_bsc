@@ -1,0 +1,161 @@
+{% extends 'base.twig' %}
+
+{% block main %}
+
+
+    <div class="container">
+        <br>
+        <h1 class="courseHeader">ITE1807 Systemutvikling</h1>
+        <br>
+            <br>
+            <h5>Her vises Emnebeskrivelse som skal godkjennes når man trykkes på "Vis" fra courseToBeApproved.twig fil </h5>
+            <h5>Noe dummy data nå:</h5>
+            <br>
+
+
+            <h5>Emnenavn</h5>
+            <br>
+            <p>ITE1807</p>
+
+            <p>Enkteltemne/Kontinuering</p>
+
+
+            <!-- Semester -->
+            <h5>Termin</h5>
+            <p>Vår/Høst</p>
+
+
+            <!-- Teaching language -->
+            <label for="teaching_language" class="h5">Undervisningsspråk</label>
+            <br>
+            <p>Engelsk/Norsk/Nynorsk</p>
+
+
+            <!-- Exam type -->
+            <label for="exam_type" class="h5">Eksamensform</label>
+            <p>Muntlig/Skriftlig/etc</p>
+
+
+            <!-- Grade scale -->
+            <label for="grade_scale" class="h5">Karakterskala</label>
+            <p>Karakterskala (A-F) eller Bestått/Ikke bestått</p>
+
+
+            <!-- Teaching place -->
+            <h5>Undervisningssted</h5>
+            <p>Narvik, Tromsø, Alta, Bodø, Mo i Rana, Harstad, nettbasert</p>
+            <br>
+
+            <!-- Competence goals / What do you learn? -->
+
+            <h5>Hva lærer du?</h5>
+
+            <div class="textAreaDiv">
+                <p>
+                    Emnets læringsresultat skal være klart formulert, og beskrives punktvis under kategoriene kunnskaper og forståelse, ferdigheter og kompetanse. På små emner (10 stp) er kompetansebeskrivelsene ikke nødvendige. Læringsresultatmå formuleresslik at detkan etterprøves og det skalværetydelig sammenhengmellom emnets læringsresultat,undervisningsoppleggog eksamens-/vurderingsformer.Når språklig kompetanse er en del av læringsmålet, må dette tas inn i emnebeskrivelsene og studieplanene.
+                </p>
+                <br>
+                <p>Beskrivelsene skal følge følgende oppsett:</p>
+                <br>
+                <p>Etter bestått emne skal studentene ha følgende læringsresultat:</p>
+                <p>Kunnskaper og forståelse:</p>
+                -
+                -
+                <br>
+                <p>Ferdigheter:</p>
+                -
+                -
+                <br>
+                <p>Kompetanse:</p>
+                -
+                -
+
+            </div>
+            <br>
+            <br>
+
+
+            <!-- Academic content -->
+            <h5>Faglig innhold</h5>
+            <div class="textAreaDiv">
+                Beskrivelse av faglig innhold, maks 300 ord.
+
+            </div>
+            <br>
+            <br>
+
+
+            <!-- Learning methods -->
+            <h5>Læringsformer og aktiviteter</h5>
+            <div class="textAreaDiv">
+                Undervisningsomfang, undervisnings-og arbeidsform, samt undervisningsfrekvens skal beskrives. I tilfeller der det ikke gis undervisning i emnet hvert semester, bør emnebeskrivelsen
+                inneholde opplysninger om muligheten for å avlegge eksamen i undervisningsfrie semestre. Det skal være tydelig sammenheng mellom emnets forventede læringsutbytte
+                og de undervisnings- og arbeidsformer som er valgt for emnet.
+
+            </div>
+            <br>
+            <br>
+
+
+            <!-- Work requirements -->
+            <h5>Arbeidskrav, eksamen og vurdering</h5>
+            <div class="textAreaDiv">
+                <h6>Arbeidskrav</h6>
+                VIKTIG! Beskrivelsen skal inneholde følgende:
+                1. En beskrivelse av eventuelle arbeidskrav, f.eks. "Et muntlig framlegg, et notat og deltakelse på undervisning", omfanget av disse og hvilke som er obligatoriske, f.eks. forelesninger, metodekurs, øvinger, praksis, feltkurs, ekskursjoner, laboratoriearbeid, gruppeoppgaver, semesteroppgaver og andre skriftlige oppgaver.
+
+                NB! Det må være oppgitt eksakte tall på totalt antall, og hvor mange obligatoriske øvinger det er, altså hvor mange godkjente/ikke godkjente øvinger som vil bli levert til eksamenskontoret per student.
+                <br>
+                <h6>Eksamen og vurdering</h6>
+                Eksamensordning, prøve-og vurderingsform, herunder hvilke vurderinger som kommer på vitnemålet eller som inngår i beregningsgrunnlaget for en karakter som kommer på vitnemålet, skal angis.
+
+                <br>
+                <p>Vurderingsuttrykk skal angis (bokstavkarakter eller” bestått”/” ikke bestått”). Det skal være tydelig sammenheng mellom emnets forventede læringsutbytte og de eksamens-og vurderingsform(er) som er valgt for emnet.  </p>
+
+                <h6>VIKTIG! </h6>
+                Beskrivelsen skal være kort og inneholde følgende:
+                1.Hvilke eksamensformer som benyttes, f.eks. «Skriftlig skoleeksamen, 5timer", «Rapport», «Muntlig» ...
+                2.Hvilken karakterskala som benyttes, f.eks. "Det gis bokstavkarakterer fra
+
+            </div>
+            <br>
+            <br>
+
+
+            <div id="hidden_offers_online_students">
+                <h3>Tilbud for nettstudenter</h3>
+
+                <p>Strømming av forelesningene</p>
+
+                <p>Åpent nettmøte under forelesningene</p>
+
+                <p>Nettmøte med studentassistent på kveldstid</p>
+
+                <p>Oppfølging via telefon, epost og/eller Skype</p>
+
+                <p>Organisert opplegg i samlingsukene (lab, ekskursjon, felt,
+                    etc.)</p>
+
+                <h5>Annet</h5>
+                <div class="textAreaDiv">
+
+                </div>
+                <br>
+            </div>
+
+
+            <a><button type="button" class="btn btn-primary btn-lg acceptButton">Godkjenn</button></a>
+            <a {{ (current == 'editStatus') }} href="approvalPage.php"><button type="button" class="btn btn-primary btn-lg declineButton">Ikke godkjenn</button> </a>
+
+        <br>
+        <br>
+        <br>
+        
+        
+    </div>
+
+
+    
+
+
+{% endblock %}

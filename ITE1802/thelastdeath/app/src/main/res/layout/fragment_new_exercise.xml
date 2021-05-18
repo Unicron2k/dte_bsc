@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/fragmentTitle"
+        android:text="@string/newExercise_title" />
+
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/newExercise_name" />
+
+    <EditText
+        android:id="@+id/et_newExercise_name"
+        style="@style/TextView20spWithLeftPadding"
+        android:hint="@string/newExercise_hint_name"
+        android:inputType="text"
+        android:maxLength="50" />
+
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/newExercise_description" />
+
+    <EditText
+        android:id="@+id/et_newExercise_description"
+        style="@style/TextView20spWithLeftPadding"
+        android:hint="@string/newExercise_hint_description"
+        android:inputType="text"
+        android:maxLength="50" />
+
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/newExercise_icon" />
+
+    <Spinner
+        android:id="@+id/spinner_exercise_icon_png"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:entries="@array/exercise_chose_icon" />
+
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/newExercise_color" />
+
+    <Button
+        android:id="@+id/newExercise_button_color"
+        style="@style/TextView20spWithLeftPadding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/newAppProgramType_button_color_title" />
+
+    <Button
+        android:id="@+id/newExercise_button_post"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20sp"
+        android:text="@string/newExercise_button_post" />
+
+
+</LinearLayout>

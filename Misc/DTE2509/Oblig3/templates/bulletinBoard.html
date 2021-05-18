@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h1>BulletinBoard</h1>
+
+    {%if board %}
+        <div class="row">
+        <p>Sort by: </p>
+        {% if categories %}
+        <form action="{{ url_for('part1.index') }}" method="get" onchange="submit();">
+            <label for="categories">
+                <select id="categories" name="sort">
+                    <option value="">All</option>
+                    {% for category in categories %}
+                    <option value="{{ category[0] }}" {% if category[0] == selectedCategory %}selected{% endif %}>{{ category[1] }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </form>
+        {% endif %}
+        </div>
+
+        {% for entry in board %}
+        <div class="entry">
+            <div class="entry-header">
+                <p>{{ entry.category }}: {{ entry.title }}</p>
+            </div>
+            <hr />
+            <div class="entry-body">
+                <p>{{ entry.ingress }}</p>
+                <br />
+                <p><a href="{{ entry.id }}{% if selectedCategory %}?sort={{ selectedCategory }}{% endif %}">Read entry -></a></p>
+            </div>
+            <hr />
+            <div class="entry-footer">
+                <p>Posted on: {{ entry.date }} by {{ entry.user }} (seen {{ entry.hitcount }} times)</p>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No bulletins found!</p>
+    {% endif %}
+{% endblock %}

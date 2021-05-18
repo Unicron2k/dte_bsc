@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/primary">
+<!--        <item-->
+<!--            android:id="@id/programFragment"-->
+<!--            android:icon="@drawable/ic_home_white_24dp"-->
+<!--            android:title="@string/app_name" />-->
+
+        <item
+            android:id="@id/homeFragment"
+            android:icon="@drawable/ic_home_white_24dp"
+            android:title="@string/home" />
+        <item
+            android:id="@+id/userProfileFragment"
+            android:icon="@drawable/ic_person_white_24dp"
+            android:title="@string/userprofile"/>
+        <item
+            android:id="@+id/userStatsFragment"
+            android:icon="@drawable/ic_statistics_white_24dp"
+            android:title="@string/userstats_menu_title"/>
+        <item
+            android:id="@+id/settingsFragment"
+            android:icon="@drawable/ic_settings_white_24dp"
+            android:title="@string/settings" />
+        <item
+            android:id="@+id/LogOut"
+            android:icon="@drawable/ic_logout_white_24dp"
+            android:title="@string/log_out"/>
+
+    </group>
+</menu>

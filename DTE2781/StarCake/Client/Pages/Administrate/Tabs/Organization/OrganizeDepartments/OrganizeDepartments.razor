@@ -1,0 +1,247 @@
+@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Services
+@using ServiceStack
+@inject HttpClient Http
+@inject AppData AppData
+
+
+<MudGrid Class="justify-content-center my-3">
+    <MudItem xs="12" md="3" Class="justify-content-center">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText>Add new departments Organization info</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <EditForm Model="_departmentToPost" OnValidSubmit="SubmitForm">
+                <MudCardContent>
+                    <DataAnnotationsValidator/>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="6">
+                            <MudTextField
+                                @bind-Value="@_departmentToPost.Name"
+                                For="@(() => _departmentToPost.Name)"
+                                Label="Name"/>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="6">
+                            <MudTextField
+                                @bind-Value="@_departmentToPost.City"
+                                For="@(() => _departmentToPost.City)"
+                                Label="City"/>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="6">
+                            <MudTextField
+                                @bind-Value="@_departmentToPost.Address"
+                                For="@(() => _departmentToPost.Address)"
+                                Label="Address"/>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="12" md="6">
+                            <MudTextField
+                                @bind-Value="@_departmentToPost.ZipCode"
+                                For="@(() => _departmentToPost.ZipCode)"
+                                Label="Zipcode"
+                                InputType="InputType.Number"/>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="6">
+                            <MudTextField
+                                @bind-Value="@_departmentToPost.Email"
+                                For="@(() => _departmentToPost.Email)"
+                                Label="Email"
+                                InputType="InputType.Email"/>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="6">
+                            <MudTextField
+                                @bind-Value="@_departmentToPost.PhoneNumber"
+                                For="@(() => _departmentToPost.PhoneNumber)"
+                                Label="Phone number"
+                                InputType="InputType.Number"/>
+                        </MudItem>
+                    </MudGrid>
+
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Outlined" ButtonType="ButtonType.Submit" Class="ml-1">
+                        SAVE
+                    </MudButton>
+                </MudCardActions>
+            </EditForm>
+        </MudCard>
+    </MudItem>
+
+    <!-- TABLE of departmens -->
+    <MudItem xs="12" md="9">
+        <MudTable Items="AppData.CurrentUser.Departments" Hover="true" Dense="false" Bordered="true" Striped="true">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Current department you are member of</MudText>
+                <MudToolBarSpacer/>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>
+                    <b>Organization</b>
+                </MudTh>
+                <MudTh>
+                    <b>Departmente</b>
+                </MudTh>
+                <MudTh>
+                    <b>City</b>
+                </MudTh>
+                <MudTh>
+                    <b>Active</b>
+                </MudTh>
+                <MudTh>
+                    <b>Edit</b>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Organization name">@context.Organization.Name</MudTd>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="City">@context.City</MudTd>
+                <MudTd>
+                    <MudTooltip Text="@(context.IsActive ? "This is active" : "This not active")" Placement="Placement.Bottom" Delay="500">
+                        <MudToggleIconButton
+                            Toggled="@context.IsActive"
+                            ToggledChanged="@((bool val) => OnActiveChanged(val, context))"
+                            Icon="@Icons.Material.Filled.DisabledByDefault" Color="@Color.Error"
+                            ToggledIcon="@Icons.Material.Filled.Check" ToggledColor="@Color.Success"/>
+                    </MudTooltip>
+                </MudTd>
+                <MudTd>
+                    
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+
+
+        <MudTable Class="my-4" Items="AppData.AllDepartments" Hover="true" Dense="false" Bordered="true" Striped="true">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Available departments in your organization</MudText>
+                <MudToolBarSpacer/>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>
+                    <b>Organization</b>
+                </MudTh>
+                <MudTh>
+                    <b>Name</b>
+                </MudTh>
+                <MudTh>
+                    <b>City</b>
+                </MudTh>
+                <MudTh>
+                    <b>Active</b>
+                </MudTh>
+                <MudTh>
+                    <b>Edit</b>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                @if (AppData.CurrentUser.CurrentDepartment.OrganizationId == context.OrganizationId && !AppData.CurrentUser.Departments.Any(x => x.DepartmentId == context.DepartmentId))
+
+                {
+                    <MudTd DataLabel="Organization name">@context.Organization.Name</MudTd>
+                    <MudTd DataLabel="Name">@context.Name</MudTd>
+                    <MudTd DataLabel="City">@context.City</MudTd>
+                    <MudTd>
+                        <MudTooltip Text="@(context.IsActive ? "This is active" : "This not active")" Placement="Placement.Bottom" Delay="500">
+                            <MudToggleIconButton
+                                Toggled="@context.IsActive"
+                                ToggledChanged="@((bool val) => OnActiveChanged(val, context))"
+                                Icon="@Icons.Material.Filled.DisabledByDefault" Color="@Color.Error"
+                                ToggledIcon="@Icons.Material.Filled.Check" ToggledColor="@Color.Success"/>
+                        </MudTooltip>
+                    </MudTd>
+                }
+            </RowTemplate>
+        </MudTable>
+
+    </MudItem>
+</MudGrid>
+
+@code {
+    DepartmentViewModel _departmentToPost { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        createEmptyViewModel();
+    }
+
+    private async Task OnActiveChanged(bool toggled, DepartmentViewModel departmentViewModel)
+    {
+        var departmentToPut = departmentViewModel.Clone();
+        departmentToPut.IsActive = toggled;
+        var updated = await UpdateDepartment(departmentToPut);
+        if (updated != null)
+        {
+            departmentToPut.Update(updated);
+            AppData.AllDepartments.Where(x => x.DepartmentId == departmentToPut.DepartmentId)
+                .Select(s =>
+                {
+                    s.IsActive = departmentToPut.IsActive;
+                    return s;
+                }).ToList();
+            AppData.CurrentUser.Departments.Where(x => x.DepartmentId == departmentToPut.DepartmentId).Select(s =>
+            {
+                s.IsActive = departmentToPut.IsActive;
+                return s;
+            }).ToList();
+        }
+    }
+
+    private async Task<DepartmentViewModel> UpdateDepartment(DepartmentViewModel departmentCache)
+    {
+        if (departmentCache.DepartmentId == AppData.CurrentUser.CurrentDepartment.DepartmentId)
+        {
+            AppData.ParentRoot.ShowSnackBar("Cannot deativate own department", Severity.Error);
+        }
+        else{
+            var response = await Http.PutAsJsonAsync("api/DepartmentAPI/", departmentCache);
+        if (response.IsSuccessStatusCode)
+        {
+            var departmentFromDb = await response.Content.ReadFromJsonAsync<DepartmentViewModel>();
+            AppData.ParentRoot.ShowSnackBar($"Sucess, '{departmentFromDb.Name} was updated", Severity.Success);
+            return departmentFromDb;
+        }
+        AppData.ParentRoot.ShowSnackBar("Error, could not update component type to database!", Severity.Error);
+        
+    }
+        return null;
+}
+
+    async Task SubmitForm()
+    {
+        var currentOrganization = AppData.CurrentUser.CurrentDepartment.Organization.OrganizationId;
+        _departmentToPost.OrganizationId = currentOrganization;
+
+        var departmentResponse = await Http.PostAsJsonAsync("api/DepartmentAPI/", _departmentToPost);
+        if (departmentResponse.IsSuccessStatusCode)
+        {
+            AppData.AllDepartments = await Http.GetFromJsonAsync<List<DepartmentViewModel>>("api/DepartmentAPI/");
+            AppData.ParentRoot.ShowSnackBar("Added new department is sucessfully", Severity.Success);
+            createEmptyViewModel();
+        }
+        else
+        {
+            AppData.ParentRoot.ShowSnackBar("Something went wrong with add a new department", Severity.Error);
+        }
+    }
+
+    void createEmptyViewModel()
+    {
+        _departmentToPost = new DepartmentViewModel()
+        {
+            DepartmentId = 0,
+            Name = "",
+            City = "",
+            Address = "",
+            ZipCode = "",
+            Email = "",
+            PhoneNumber = "",
+            OrganizationId = AppData.CurrentUser.CurrentDepartment.OrganizationId,
+            DeltaCycles = 0,
+            DeltaDays = 0,
+            DeltaSeconds = 0
+        };
+    }
+
+}

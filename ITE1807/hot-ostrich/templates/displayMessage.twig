@@ -1,0 +1,17 @@
+{% extends 'base.twig' %}
+
+{% block title %}  {{ message_title }} {% endblock %}
+
+{% block main %}
+
+    <div class="container box center-elements">
+
+        <h1>{{ message_title }}</h1>
+
+        <p>
+            {{ message_description | raw }}
+        </p>
+
+    </div>
+
+{% endblock %}

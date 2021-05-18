@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>displayCatalogueExample</title>
+    <!--<link rel="stylesheet" href="../css/stylesheet-fileUpload.css" />-->
+</head>
+<body>
+
+{% if catalogues %}
+<form method="post" style="border: 1px solid #ccc">
+    <div class="container">
+        <h2>Legg til katalog</h2>
+
+        <!--Vi slet med visning av subKataloger, men klarte å legge det til. Har derfor slettet denne funksjonen inntil videre-->
+        <label for="Catalogue_CatalogueID">Velg eventuell overordnet katalog for din nye</label>
+        <select name="Catalogue_CatalogueID">
+                <option value="0">Ingen overordnet katalog</option>
+            {% for catalogue in catalogues %}
+                {{ catalogue.getName() }} <br />
+                {{ catalogue.getCatalogue_CatalogueID() }}
+                <option value="{{ catalogue.getCatalogue_CatalogueID() }}">{{ catalogue.getName }}</option>
+            {% endfor %} <br>
+        </select> <br>
+
+        <label for="catalogueName"><b>Katalogens navn: </b></label>
+        <input type="text" name="catalogueName" placeholder="Katalogens navn" maxlength="45" required> <br>
+
+        <label for="submit_catalogueUpload"><b>Legg til katalog: </b></label>
+        <input type="submit" name="submit_catalogueUpload" value="Legg til">
+    </div>
+</form>
+{% endif %}
+
+</body>
+</html>

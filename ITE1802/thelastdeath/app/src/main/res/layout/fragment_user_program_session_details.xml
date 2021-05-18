@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/fragmentTitle"
+        android:text="@string/userProgramSessionDetails_title" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <!-- user_program_id  -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    style="@style/Text20spWrap"
+                    android:text="Current program: " />
+                <TextView
+                    android:id="@+id/userProgramSessionDetails_tv_currentUserProgram"
+                    style="@style/Text20spWrap"
+                    android:text="Current program: " />
+            </LinearLayout>
+
+
+            <Spinner
+                android:id="@+id/userProgramSessionDetails_spinner_existing_user_program_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp" />
+
+            <!-- date -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        style="@style/Text20spWrap"
+                        android:text="Date: " />
+                    <TextView
+                        android:id="@+id/userProgramSessionDetails_TV_currentDate"
+                        style="@style/TextView20spWithLeftPadding"
+                        android:hint="@string/newUserProgramSession_date_tv_hint" />
+                    <Button
+                        android:id="@+id/userProgramSessionDetails_button_calendar"
+                        style="@style/TextView20spWithLeftPadding"
+                        android:text="@string/newUserProgramSession_date_button" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- time_spent -->
+            <TextView
+                style="@style/Text20spWrap"
+                android:text="@string/newUserProgramSession_numberpicker_title" />
+
+            <!-- time_spend -->
+            <LinearLayout
+                android:id="@+id/numberPickerLayout"
+                style="@style/newUserProgramSession_externalLinearLayout">
+                <LinearLayout
+                    style="@style/newUserProgramSession_internalLinearLayout">
+                    <TextView
+                        style="@style/newUserProgramSession_internalTV"
+                        android:text="@string/newUserProgramSession_numberpicker_hours"/>
+                    <NumberPicker
+                        android:id="@+id/newUserProgram_NumberPicker_hour"
+                        style="@style/newUserProgramSession_internalNumberPicker" />
+                </LinearLayout>
+                <LinearLayout
+                    style="@style/newUserProgramSession_internalLinearLayout">
+                    <TextView
+                        style="@style/newUserProgramSession_internalTV"
+                        android:text="@string/newUserProgramSession_numberpicker_minutes"/>
+                    <NumberPicker
+                        android:id="@+id/newUserProgram_NumberPicker_minute"
+                        style="@style/newUserProgramSession_internalNumberPicker" />
+                </LinearLayout>
+                <LinearLayout
+                    style="@style/newUserProgramSession_internalLinearLayout">
+                    <TextView
+                        style="@style/newUserProgramSession_internalTV"
+                        android:text="@string/newUserProgramSession_numberpicker_seconds"/>
+                    <NumberPicker
+                        android:id="@+id/newUserProgram_NumberPicker_second"
+                        style="@style/newUserProgramSession_internalNumberPicker" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- description -->
+            <TextView
+                style="@style/Text20spWrap"
+                android:text="@string/newUserProgramSession_description_title"/>
+            <EditText
+                android:id="@+id/newUserProgramSession_description_et"
+                style="@style/TextView20spWithLeftPadding"
+                android:inputType="text"
+                android:maxLength="500"
+                android:hint="@string/newUserProgramSession_description_hint"
+                android:autofillHints="@string/newUserProgramSession_description_hint" />
+
+            <!-- extra_json_data -->
+            <TextView
+                style="@style/Text20spWrap"
+                android:text="@string/newUserProgramSession_extrajsondata_title"/>
+            <EditText
+                android:id="@+id/newUserProgramSession_extrajsondata_et"
+                style="@style/TextView20spWithLeftPadding"
+                android:inputType="text"
+                android:maxLength="500"
+                android:hint="@string/newUserProgramSession_extrajsondata_button_text"
+                android:autofillHints="@string/newUserProgramSession_extrajsondata_button_text" />
+
+            <!-- PUT_button -->
+            <Button
+                android:id="@+id/newUserProgramSession_button_post"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Update session"
+                android:layout_marginTop="20sp"
+                android:layout_gravity="center"/>
+
+            <!-- DELETE_button -->
+            <Button
+                android:id="@+id/userProgramSessionDetails_delete_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/userProgramSessionDetails_delete_session"
+                android:layout_marginTop="20sp"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>

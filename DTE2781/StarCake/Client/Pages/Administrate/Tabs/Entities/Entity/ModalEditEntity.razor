@@ -1,0 +1,107 @@
+﻿@inject AppData AppData
+@using StarCake.Client.Services
+@using StarCake.Shared.Models.ViewModels
+@inject HttpClient Http
+
+
+@if (EntityToUpdate == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+}
+else
+{
+    const string errorMsg = "Make sure to fill in all fields";
+    <EditForm Model="@EntityToUpdate" OnValidSubmit="SubmitForm" OnInvalidSubmit="() => AppData.ParentRoot.ShowSnackBar(errorMsg, Severity.Error)">
+        <DataAnnotationsValidator/>
+        <MudCard>
+            <MudCardContent>
+                <MudTextField
+                    Label="Name"
+                    @bind-Value="@EntityToUpdate.Name"
+                    For="@(() => EntityToUpdate.Name)">
+                    <MudTextField
+                        Label="Serial number"
+                        @bind-value="@EntityToUpdate.SerialNumber"
+                        For="@(() => EntityToUpdate.SerialNumber)"/>
+                    <MudTextField
+                        Label="Max cycles between maintenance"
+                        @bind-value="@EntityToUpdate.MaxCyclesBtwMaintenance"
+                        For="@(() => EntityToUpdate.MaxCyclesBtwMaintenance)"/>
+                    <MudTextField
+                        Label="Max days between maintenance"
+                        @bind-value="@EntityToUpdate.MaxDaysBtwMaintenance"
+                        For="@(() => EntityToUpdate.MaxDaysBtwMaintenance)"/>
+                    <MudTextField
+                        Label="Max hours flight-time between maintenance"
+                        @bind-value="@EntityToUpdate.MaxFlightSecondsBtwMaintenance"
+                        For="@(() => EntityToUpdate.MaxFlightSecondsBtwMaintenance)"/>
+                </MudTextField>
+                <MudSelect T="int" @bind-value="@EntityToUpdate.EntityTypeId" Label="Type" Strict="true" Variant="Variant.Outlined" Format="F2">
+                    @foreach (var entityType in AppData.EntityTypes.OrderBy(x => x.Name))
+                    {
+                        <MudSelectItem T="int" Value="@entityType.EntityTypeId">
+                            @entityType.Name
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+                <MudSelect T="int" @bind-value="@EntityToUpdate.ManufacturerId" Label="Manufacturer" Strict="true" Variant="Variant.Outlined" Format="F2">
+                    @foreach (var manufacturer in AppData.Manufacturers.OrderBy(x => x.Name))
+                    {
+                        <MudSelectItem T="int" Value="@manufacturer.ManufacturerId">
+                            @manufacturer.Name
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+
+
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+                    Edit entity
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </EditForm>
+}
+
+
+
+@code {
+    // Local object to pass to database
+    private EntityViewModel EntityToUpdate { get; set; }
+
+    // Rx parameter
+    [Parameter]
+    public EntityViewModel EntityInAppData { get; set; }
+
+    // Tx parameter
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    protected override void OnInitialized()
+    {
+        EntityToUpdate = EntityInAppData.Clone();
+    }
+
+    async Task SubmitForm()
+    {
+        var response = await Http.PutAsJsonAsync("api/EntityAPI/" + EntityToUpdate.EntityId, EntityToUpdate);
+        if (response.IsSuccessStatusCode)
+        {
+            var entityFromDb = await response.Content.ReadFromJsonAsync<EntityViewModel>();
+
+            // Update entity in AppData
+            if (entityFromDb != null)
+            {
+                EntityInAppData.Update(entityFromDb);
+                AppData.ParentRoot.ShowSnackBar($"{entityFromDb.Name} is updated!", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+                AppData.ParentRoot.ShowSnackBar("Entity was updated, but could not update changes locally", Severity.Error);
+        }
+        else
+            AppData.ParentRoot.ShowSnackBar("Error, could  not update to database", Severity.Error);
+    }
+
+}

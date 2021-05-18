@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>fileUpload</title>
+    <!--<link rel="stylesheet" href="../css/stylesheet-fileUpload.css" />-->
+</head>
+<body>
+
+{% if catalogues %}
+<!--Må sjekke om bruker er logget inn før en kan laste opp-->
+<form method="post" enctype="multipart/form-data" style="border: 1px solid #ccc">
+    <div class="container">
+        <h1>Last opp fil</h1>
+        <p>Klikk 'Legg til fil' og 'Last opp' etter valgt fil</p>
+
+        <input type="hidden" name="MAX_FILE_SIZE" value="16777215">
+        <label for="fileToUpload"><b>Velg ønsket fil fra din PC: </b></label>
+        <input type="file" name="uploadedFile" placeholder="Velg fil" required> <br>
+
+        <label for="fileDescription"><b>Beskrivelse av fil: </b></label>
+        <input type="text" name="fileDescription" placeholder="Beskriv filen din" maxlength="45" required> <br>
+
+        <label for="fileCatalogue"><b>Velg ønsket katalog</b></label>
+        <select name="fileCatalogue">
+            {% for catalogue in catalogues %}
+                <option value="{{ catalogue.getCatalogueID }}">{{ catalogue.getName }}</option>
+            {% endfor %}
+        </select> <br>
+
+        <label for="fileTags"><b>Legg til tags separert med komma uten mellomrom</b></label>
+        <input type="text" name="fileTags" placeholder="Eksempel: (by,hund,katt,tog,vann)" maxlength=20 required> <br>
+
+        <label for="fileAccess"><b>Velg aksess for din fil</b></label>
+        <select name="fileAccess">
+            <option value="1">Tilgang KUN for innloggede brukere</option>
+            <option value="0">Tilgang for ALLE</option>
+        </select> <br>
+
+        <label for="submit_fileUpload"><b>Last opp</b></label>
+        <input type="submit" name="submit_fileUpload">
+    </div>
+</form>
+{% endif %}
+
+</body>
+</html>

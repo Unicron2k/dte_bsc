@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Tidsdifferanse</string>
+    <string name="dd_mm_yyyy">dd.mm.åååå</string>
+    <string name="calculate_no_of_days">Beregn Antall Dager</string>
+    <string name="noDate">0d 0t 0m</string>
+    <string name="bannerMsg">Beregner tidsdifferansen fra %1$s til…</string>
+    <string name="strDateDiff">%1$dd %2$dt %3$dm</string>
+</resources>

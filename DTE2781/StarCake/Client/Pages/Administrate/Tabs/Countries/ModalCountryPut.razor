@@ -1,0 +1,55 @@
+﻿@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Services
+@inject AppData AppData
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 80vh; overflow-y: scroll">
+            @code{private const string ErrorMessage = "Add values to all fields";}
+            <EditForm Model="@CountryToUpdate" OnValidSubmit="@SubmitForm" OnInvalidSubmit="() => AppData.ParentRoot.ShowSnackBar(ErrorMessage, Severity.Error)">
+                <DataAnnotationsValidator/>
+                <MudCard>
+                    <MudCardContent>
+                        <MudTextField
+                            Label="Name"
+                            @bind-Value="@CountryToUpdate.Name"
+                            For="@(() => CountryToUpdate.Name)"/>
+                        <MudTextField
+                            Label="Country Code"
+                            @bind-Value="@CountryToUpdate.CountryCode"
+                            For="@(() => CountryToUpdate.CountryCode)"/>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton
+                            ButtonType="ButtonType.Submit"
+                            Variant="Variant.Filled"
+                            Color="Color.Success"
+                            FullWidth="true"
+                            Class="ml-auto">
+                            Update country
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+                <ValidationSummary/>
+            </EditForm>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
+@code {
+    // Rx parameter
+    [Parameter]
+    public CountryViewModel CountryToUpdate { get; set; }
+    
+    // Tx parameter
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    void SubmitForm()
+    {
+        MudDialog.Close(DialogResult.Ok(CountryToUpdate));
+    }
+    void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+    }
+}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h1>New entry</h1>
+
+        <div class="entry">
+        {% if categories %}
+        <form action="{{ url_for('part2.new') }}" method="post">
+            <div class="row">
+                <div class="m2 textfield">
+                    <label for="title">Title:</label><br>
+                    <input class="textfield" type="text" id="title" name="title" placeholder="Title" minlength="3" maxlength="50" required><br>
+                </div>
+                <div class="m2">
+                    <label for="categories">Category:</label><br>
+                    <select id="categories" name="category" required>
+                        {% for category in categories %}
+                        <option value="{{ category[0] }}" {% if category[0] == selectedCategory %}selected{% endif %}>{{ category[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="m2">
+                <label for="user">Posted by:</label><br>
+                <input class="textfield" type="text" id="user" name="user" placeholder="Your name" minlength="2" maxlength="12" required><br>
+            </div>
+
+            <div class="m2">
+                <label for="ingress">Ingress</label><br>
+                <textarea class="m2 textbox"  id="ingress" name="ingress" placeholder="Short introduction of bulletin" minlength="20" required></textarea><br>
+            </div>
+
+            <div class="m2">
+                <label for="content">Content</label><br>
+                <textarea class="m2 textbox" id="content" name="content" placeholder="Your bulletin-text" minlength="50" required></textarea><br>
+            </div>
+            <div class="m3">
+                <input type="submit" value="Submit">
+            </div>
+        {% if invalid %}
+            <p>Invalid data. Please try again!</p>
+        {% endif %}
+        </form>
+        {% else %}
+            <p>Something went wrong. Please reload the page.</p>
+        {% endif %}
+        </div>
+{% endblock %}

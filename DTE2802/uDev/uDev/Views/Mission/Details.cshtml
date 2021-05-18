@@ -1,0 +1,102 @@
+﻿@using uDev.Models.Entity
+@model uDev.Models.ViewModels.MissionViewModel
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Mission-Details</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Created)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Created)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Content)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Content)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Modified)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Modified)
+        </dd>
+    </dl>
+</div>
+
+<div>
+    @if (Model.Owner.UserName == User.Identity.Name)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.MissionId">Edit</a>
+    }
+    @if (User.IsInRole("Freelancer") && !Model.Claimed)
+    {
+        <form asp-action="Claim">
+            <div class="form-group">
+                <input type="hidden" asp-for="MissionId"/>
+                <input type="submit" value="Take this mission!" class="btn btn-primary"/>
+            </div>
+        </form>
+    }
+    <a asp-action="Index">Back to List</a>
+</div>
+<br>
+<hr />
+<br>
+<!-- display comments -->
+@foreach (var item in Model.Comments)
+        {
+            <div>
+                <p>
+                    <h6>On @Html.DisplayFor(modelItem => item.Created), @Html.DisplayFor(modelItem => item.Owner.UserName) wrote:</h6>
+                    @Html.DisplayFor(modelItem => item.Content)
+                </p>
+
+            </div>
+            <hr/>
+        }
+<!-- end display comments -->
+
+<!-- display comment-box -->
+@{
+    //TODO: Move this crap to the controller...?
+    var comment = new Comment {MissionId = Model.MissionId};
+    var user = UserManager.GetUserAsync(User).Result;
+    var claimer = Model.Claimers.Count > 0 ? Model.Claimers.Last().ApplicationUser : null;
+
+    var isOwner = user == Model.Owner;
+    var isClaimer = user == claimer;
+
+    if (SignInManager.IsSignedIn(User) && !Model.Completed  && (isOwner || (isClaimer&&Model.Claimed)))
+    {
+        <div class="row">
+            <div class="col-md-4">
+                <form asp-controller="Comment" asp-action="NewComment">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="@comment.MissionId"/>
+                    <div class="form-group">
+                        <textarea asp-for="@comment.Content" rows="12" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn btn-primary"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+}
+<!-- end display comment-box -->

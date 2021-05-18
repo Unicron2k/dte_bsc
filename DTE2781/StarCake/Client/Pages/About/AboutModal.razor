@@ -1,0 +1,32 @@
+﻿<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 300px; overflow-y: scroll">
+            <MudText Style="white-space: pre-wrap;">@BodyMessage</MudText>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudLink Href="@WebsiteUrl" Target="_blank">
+            <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Language" Color="Color.Primary">
+                @($"Website")
+            </MudButton>
+        </MudLink>
+        <MudButton Color="Color.Primary" OnClick="Ok">Accept</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public string BodyMessage { get; set; }
+
+    [Parameter]
+    public string WebsiteUrl { get; set; }
+
+    private void Ok()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+}

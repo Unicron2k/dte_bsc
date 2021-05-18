@@ -1,0 +1,15 @@
+<link rel="stylesheet" href="../css/login.css">
+<div>
+    <div class="login-page">
+        {% if loggedIn==true %}
+            <p style="text-align: center;">
+            <h4 style="display: inline;">Name:     </h4> {{ user.getName() }} <br />
+            <h4 style="display: inline;">Username: </h4> {{ user.getUserName() }} <br />
+            <h4 style="display: inline;">E-Mail:   </h4> {{ user.getEmail() }} <br />
+            <h4 style="display: inline;">UserID:   </h4> {{ user.getUserID() }} <br />
+            </p>
+        {% else %}
+            <p style="text-align: center; color: #9b0000;">You need to log in to view this page!</p>
+        {% endif %}
+    </div>
+</div>

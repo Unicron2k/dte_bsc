@@ -1,0 +1,98 @@
+{% extends 'base.twig' %}
+
+{% block main %}
+    <div class="container">
+
+        <!-- Call to Action Well -->
+        <div class="card text-white Second-Bg-Color my-5 py-4 text-center">
+            <div class="card-body">
+                <h3><a href="courseCodeOverview.php" class="stretched-link text-white">Gå til oversikt over alle emnekoder</a></h3>
+            </div>
+        </div>
+
+        <!-- Content Row -->
+        <div class="row">
+            <div class="col-md-4 mb-5">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">Ny emnekode</h2>
+                        <p class="card-text">Opprett en ny emnekode i portalen.</p>
+                    </div>
+                    <div class="card-footer Second-Bg-Color">
+                        <a href="createCourseCode.php" class="text-white stretched-link Second-Bg-Color btn-sm">Opprett
+                            emnekode</a>
+                    </div>
+                </div>
+            </div>
+            <!-- /.col-md-4 -->
+            <div class="col-md-4 mb-5">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">Ny emnebeskrivelse</h2>
+                        <p class="card-text">Opprett en ny emnebeskrivelse i portalen.</p>
+                    </div>
+                    <div class="card-footer Second-Bg-Color">
+                        <a href="createCourseDescription.php" class="text-white stretched-link Second-Bg-Color btn-sm">Opprett
+                            emnebeskrivelse</a>
+                    </div>
+                </div>
+            </div>
+            <!-- /.col-md-4 -->
+            <div class="col-md-4 mb-5">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">Innboks</h2>
+                        <p class="card-text">Oversikt over diverse varsler og endringer som har blitt gjort i emnekoder og
+                            beskrivelser.</p>
+                    </div>
+                    <div class="card-footer Second-Bg-Color">
+                        <a href="inbox.php" class="text-white stretched-link Second-Bg-Color btn-sm">Innboks</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-5">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">Statistikk</h2>
+                        <p class="card-text">Få en oversikt over diverse statistikk om portalen.</p>
+                    </div>
+                    <div class="card-footer Second-Bg-Color">
+                        <a href="statistics.php" class="text-white stretched-link Second-Bg-Color btn-sm">Vis statistikk</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-5">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">Profil</h2>
+                        <p class="card-text">Informasjon om min brukerkonto.</p>
+                    </div>
+                    <div class="card-footer Second-Bg-Color">
+                        <a href="profile.php" class="text-white stretched-link Second-Bg-Color btn-sm">Vis min profil</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-5">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">Rediger roller</h2>
+                        <p class="card-text">Administrer rettigheter for samtlige roller.</p>
+                    </div>
+                    <div class="card-footer Second-Bg-Color">
+                        <a href="editRolesAndFakultet.php" class="text-white stretched-link Second-Bg-Color btn-sm">Rediger
+                            roller</a>
+                    </div>
+                </div>
+            </div>
+            <!-- /.col-md-4 -->
+
+        </div>
+        <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+
+{% endblock main %}

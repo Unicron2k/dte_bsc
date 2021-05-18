@@ -1,0 +1,489 @@
+{% extends 'base.twig' %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="./css/maincss.css">
+{% endblock %}
+
+{% block main %}
+    <div class="container-fluid" id="container" style="margin-top: 0.75rem">
+        <div class="row justify-content-center">
+            <div class="col-7 text-left">
+                <a class="h1" href="courseCode.php?id={{ courseCode.getIdCourseCode }}">{{ courseCode }}
+                    ({{ courseDesc.getSemester }} {{ courseDesc.getYear }})</a>
+
+                <form method="post" action="updateData.php" id="form" name="update_course_desc">
+                    <input name="course_desc_id" value="{{ courseDesc.getIdCourse }}" hidden>
+                    <input name="course_code_id" value="{{ courseCode.getIdCourseCode }}" hidden>
+                    <!-- Valid year for course overview -->
+                    <div class="form-group">
+                        <label class="h5" for="course_overview_year">Gjeldende år for emnebeskrivelsen</label>
+                        <input class="form-control" type="text" id="course_overview_year" name="year"
+                               value="{{ courseDesc.getYear }}" disabled>
+                    </div>
+
+                    <!-- Single course? Continuation?-->
+                    <div class="form-check" style="margin-bottom: 15px">
+                        <input class="form-check-input" type="checkbox" value="1" id="single_course_checkbox"
+                               name="single_course" {% if courseDesc.isSingleCourse %} checked {% endif %}disabled>
+                        <label class="form-check-label" style="padding: 0;"
+                               for="single_course_checkbox">Enkeltemne</label>
+                        <br>
+
+                        <input class="form-check-input" type="checkbox" id="continuation_checkbox" value="1"
+                               name="continuation" {% if courseDesc.isContinuation %} checked {% endif %} disabled>
+                        <label class="form-check-label" style="padding: 0;"
+                               for="continuation_checkbox">Kontinuering</label>
+                    </div>
+
+
+                    <!-- Semester -->
+                    <div class="form-group">
+                        <h5>Termin</h5>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="spring" name="semester_spring"
+                                   value="1"{% if courseDesc.isSemesterSpring %} checked {% endif %} disabled>
+                            <label class="form-check-label" style="padding: 0;" for="spring">Vår</label>
+                            <br>
+
+                            <input class="form-check-input" type="checkbox" id="fall" name="semester_fall"
+                                   value="1"{% if courseDesc.isSemesterFall %} checked {% endif %} disabled>
+                            <label class="form-check-label" style="padding: 0;" for="fall">Høst</label>
+                        </div>
+                    </div>
+
+
+                    <!-- Teaching language -->
+                    <div class="form-group">
+                        <label for="teaching_language" class="h5">Undervisningsspråk</label>
+                        <select class="form-control" name="teaching_language" id="teaching_language" disabled>
+                            {% for language in teachingLanguages %}
+                                <option name="{{ language.getLanguage }}" {% if language.getIdLanguage == courseDesc.getLanguageIdLanguage %}
+                                        selected
+                                        {% endif %}value="{{ language.getIdLanguage }}">{{ language.getLanguage }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+
+                    <!-- Exam type -->
+                    <div class="form-group">
+                        <label for="exam_type" class="h5">Eksamensform</label>
+                        <br>
+                        <select class="form-control" id="exam_type" name="exam_type" disabled>
+                            {% for type in examType %}
+                                <option name="{{ type.getExamType }}" {% if type.getIdExamType == courseDesc.getExamTypeIdExamType %}
+                                        selected
+                                        {% endif %}value="{{ type.getIdExamType }}">{{ type.getExamType }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+
+                    <!-- Grade scale -->
+                    <div class="form-group">
+                        <label for="grade_scale" class="h5">Karakterskala</label>
+                        <br>
+                        <select class="form-control" id="grade_scale" name="grade_scale" disabled>
+                            {% for grade in gradeScale %}
+                                <option name="{{ grade.getScale }}"{% if grade.getIdGradeScale == courseDesc.getGradeScaleIdGradeScale %} selected{% endif %}
+                                        value="{{ grade.getIdGradeScale }}">{{ grade.getScale }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <br>
+
+
+                    <!-- Teaching place -->
+                    <h5 class="text-left">Undervisningssted</h5>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Tromsø</th>
+                            <th>Narvik</th>
+                            <th>Bodø</th>
+                            <th>Alta</th>
+                            <th>Mo i Rana</th>
+                            <th>Nettbasert</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr>
+                            <td><input type="checkbox" id="tromso" name="tromso"
+                                       value="1"{% if teachingLocations.getTromso == 1 %} checked{% endif %} disabled>
+                            </td>
+                            <td><input type="checkbox" id="narvik" name="narvik"
+                                       value="1"{% if teachingLocations.getNarvik == 1 %} checked{% endif %} disabled>
+                            </td>
+                            <td><input type="checkbox" id="bodo" name="bodo"
+                                       value="1"{% if teachingLocations.getBodo == 1 %} checked{% endif %} disabled>
+                            </td>
+                            <td><input type="checkbox" id="alta" name="alta"
+                                       value="1"{% if teachingLocations.getAlta == 1 %} checked{% endif %} disabled>
+                            </td>
+                            <td><input type="checkbox" id="mo_i_rana" name="mo_i_rana"
+                                       value="1"{% if teachingLocations.getMoIRana == 1 %} checked{% endif %} disabled>
+                            </td>
+                            <td><input type="checkbox" id="online" name="online"
+                                       value="1"{% if teachingLocations.getWebBased == 1 %} checked{% endif %} disabled>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <br>
+
+
+                    <!-- TODO: input fields for what do you learn, academic content, work requirements, learning methods etc-->
+
+
+                    <!-- Offers online students -->
+                    <div class="form-group" id="offers_online_students">
+                        <h5>Tilbud for nettstudenter</h5>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="streaming" name="streaming"
+                                   value="1"{% if onlineOffers.getStreaming == 1 %} checked{% endif %} disabled>
+                            <label class="form-check-label" style="padding: 0;" for="streaming">Strømming av
+                                forelesningene</label>
+                            <br>
+
+                            <input class="form-check-input" type="checkbox" id="web_meeting_lecture"
+                                   name="web_meeting_lecture"
+                                   value="1"{% if onlineOffers.getWebMeetingLecture == 1 %} checked{% endif %} disabled>
+                            <label class="form-check-label" style="padding: 0;" for="web_meeting_lecture">Åpent nettmøte
+                                under forelesningene</label>
+                            <br>
+
+                            <input class="form-check-input" type="checkbox" id="web_meeting_evening"
+                                   name="web_meeting_evening"
+                                   value="1"{% if onlineOffers.getWebMeetingEvening == 1 %} checked{% endif %} disabled>
+                            <label class="form-check-label" style="padding: 0;" for="web_meeting_evening">Nettmøte med
+                                studentassistent på kveldstid</label>
+                            <br>
+
+                            <input class="form-check-input" type="checkbox" id="followup" name="followup"
+                                   value="1"{% if onlineOffers.getFollowUp == 1 %} checked{% endif %} disabled>
+                            <label class="form-check-label" style="padding: 0;" for="followup">Oppfølging via telefon,
+                                epost og/eller Skype</label>
+                            <br>
+
+                            <input class="form-check-input" type="checkbox" id="organized_arrangements"
+                                   name="organized_arrangements"
+                                   value="1"{% if onlineOffers.getOrganizedArrangements == 1 %} checked{% endif %}
+                                   disabled>
+                            <label class="form-check-label" style="padding: 0;" for="organized_arrangements">Organisert
+                                opplegg i samlingsukene (lab, ekskursjon, felt, etc.)</label>
+                            <br>
+                            <br>
+                        </div>
+                        <textarea rows="3" cols="100" class="form-control" id="online_other" name="online_other"
+                                  placeholder="Annet."
+                                  required disabled>{{ onlineOffers.getOther }}</textarea>
+                    </div>
+
+                    <!-- CourseCoordinators -->
+                    <div class="form-group">
+                        <h5>Studiekoordinatorer</h5>
+                        <div id="course_coordinator_container">
+                            <div class="row text-left">
+                                <div class="col-5">
+                                    <strong>Fullt navn</strong>
+                                </div>
+
+                                <div class="col-5">
+                                    <strong>Område</strong>
+                                </div>
+                            </div>
+                            {% for coordinator in courseCoordinators %}
+                                <div class="row" id="course_coordinator_item" style="padding-bottom: 0.5rem">
+                                    <div class="col-5">
+                                        <select class="form-control" id="coordinators"
+                                                name="coordinators[{{ loop.index - 1 }}]" disabled>
+                                            {% for user in users %}
+                                                <option name="coordinator"
+                                                        value="{{ user.getIdUser }}"{% if user.getIdUser == coordinator.getIdUser %} selected="selected"{% endif %}>{{ user.getFullName }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-5">
+                                        <input class="form-control" name="coordinator_field[{{ loop.index - 1 }}]"
+                                               type="text" value="{{ coordinator.getCoursePart }}"
+                                               disabled>
+                                    </div>
+
+                                    <div class="col-2">
+                                        <a class="h6 btn btn-info Default-Bg-Color" style="color: white"
+                                           onclick="removeCourseCoordinator(this.parentElement.parentElement)" hidden>Fjern
+                                            koordinator</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <a class="h6 btn btn-info Default-Bg-Color" style="color: white" id="addPrerequisite"
+                           onclick="addCourseCoordinator()" hidden>Ny studiekoordinator</a>
+                    </div>
+
+
+                    <!-- Prerequisites -->
+                    <!-- TODO: Bug with associated label for prerequisites -->
+                    <div class="form-group">
+                        <h5>Forkunnskapskrav</h5>
+                        <div id="prerequisite_container">
+                            {% for prerequisite in prerequisites %}
+                                <div class="row" id="prerequisite_item" style="padding-bottom: 0.5rem">
+                                    <div class="col-6">
+                                        <select class="form-control" id="prerequisites[{{ loop.index - 1 }}]"
+                                                name="prerequisites[{{ loop.index - 1 }}]" disabled>
+                                            {% for course_code in course_codes %}
+                                                <option name="prerequisite"
+                                                        value="{{ course_code.getIdCourseCode }}"{% if course_code.getIdCourseCode ==  prerequisite.getCourseCodeIdCourseCode %} selected="selected"{% endif %}>{{ course_code }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-3 align-middle">
+                                        <input class="form-check-input" type="checkbox"
+                                               id="prerequisites_required[{{ loop.index - 1 }}]"
+                                               name="prerequisites_required[{{ loop.index - 1 }}]"
+                                               value="1"{% if prerequisite.getRequired %} checked="checked"{% endif %}
+                                               disabled>
+                                        <label class="form-check-label"
+                                               id="prerequisites_required_label[{{ loop.index - 1 }}]"
+                                               style="padding: 0;" for="prerequisites_required[{{ loop.index - 1 }}]">Obligatorisk</label>
+                                    </div>
+                                    <div class="col-3 form-check">
+                                        <a class="h6 btn btn-info Default-Bg-Color" style="color: white"
+                                           onclick="removePrerequisite(this.parentElement.parentElement)" hidden>Fjern
+                                            krav</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <a class="h6 btn btn-info Default-Bg-Color" style="color: white" id="addPrerequisite"
+                           onclick="addPrerequisite()" hidden>Nytt forkunnskapskrav</a>
+                    </div>
+
+
+                    <!-- Competence goals / What do you learn? -->
+                    <div class="form-group">
+                        <label for="competence_goals" class="h5">Hva lærer du?</label>
+                        <textarea rows="5" cols="100" class="form-control" id="competence_goals" name="competence_goals"
+                                  placeholder="Kompetansemål..."
+                                  required disabled>{{ competenceGoals.getCompetenceGoals }}</textarea>
+                    </div>
+
+
+                    <!-- Academic content -->
+                    <div class="form-group">
+                        <label for="academic_content" class="h5">Faglig innhold</label>
+                        <textarea rows="5" cols="100" class="form-control" id="academic_content" name="academic_content"
+                                  placeholder="Beskrivelse av faglig innhold, maks 300 ord."
+                                  required disabled>{{ academicContent.getAcademicContent }}</textarea>
+                    </div>
+
+
+                    <!-- Learning methods -->
+                    <div class="form-group">
+                        <label for="learning_methods" class="h5">Læringsformer og aktiviteter</label>
+                        <textarea rows="5" cols="100" class="form-control" id="learning_methods" name="learning_methods"
+                                  placeholder="Læringsformer og aktiviteter..."
+                                  required disabled>{{ learningMethods.getLearningMethods }}</textarea>
+                    </div>
+
+
+                    <!-- Work requirements -->
+                    <div class="form-group">
+                        <label for="work_requirements" class="h5">Arbeidskrav, eksamen og vurdering</label>
+                        <textarea rows="5" cols="100" class="form-control" id="work_requirements"
+                                  name="work_requirements"
+                                  placeholder="Arbeidskrav, eksamen og vurdering..."
+                                  required disabled>{{ workRequirements.getWorkRequirements }}</textarea>
+                    </div>
+
+
+                    <!-- Post form update_course_desc -->
+                    <input class="btn btn-info Default-Bg-Color justify-content-center" type="submit"
+                           id="bt_update" name="update_course_desc" value="Oppdater" hidden>
+                </form>
+
+                <div class="versionHeader"><h3>Kommentarer</h3></div>
+                <br>
+
+                <form action="comments.php" method="POST">
+                    <div class="form-group" id="add_comment_div">
+                        <input type="text" value="{{ courseDesc.getIdCourse }}" name="course_description_id" hidden>
+                        <input type="text" class="form-control" name="comment_title" placeholder="Tittel">
+                        <br>
+                        <textarea class="form-control" name="comment_description" id="mainComment" placeholder="Beskrivelse"
+                                  rows="4"></textarea>
+
+                        <input id="post_comment_button" type="submit" style="float: right; margin-top: 2%"
+                               name="post_comment" value="Legg til" class="btn btn-primary">
+                        <br>
+                    </div>
+
+                    <br>
+                    <br>
+                </form>
+                <br>
+
+                {% if AC.Access_Comments == true %}
+                <div class="userComments">
+
+                    {% for comment in comments %}
+                        <form action="comments.php" method="post">
+                            <input type="text" value="{{ courseDesc.getIdCourse }}" name="course_description_id" hidden>
+                            <input name="comment_id" value="{{ comment.getIdComment }}" hidden>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">{{ comment.getTitle }}</h4>
+
+                                    <h6 class="card-subtitle mb-2 text-muted">Postet av #{{ comment.getUserIdUser }}
+                                        <span class="badge badge-primary">{{ comment.getDate }}</span></h6>
+
+                                    <p class="card-text">{{ comment.getContent }}</p>
+
+                                    {% if AC.Access_Administrator or (comment.getUserIdUser == user.getIdUser) %}
+                                        <button type="submit" class="btn btn-link" name="delete_comment">Slett
+                                            kommentar
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <br>
+                        </form>
+                    {% endfor %}
+                    <br>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="col-4">
+                <div class="rightSidebar">
+
+                    <button onclick="location.href='export.php?courseId={{ courseDesc.getIdCourse }}'" class="button"
+                            style="vertical-align:middle">
+                        <span>Eksporter</span>
+                    </button>
+                    <br>
+                    <br>
+                    <button class="button" style="vertical-align:middle" onclick="toggle_inputs()">
+                        <span>Rediger</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Empty item used by "add coordinator" button -->
+    <div class="row" id="course_coordinator_item_empty" style="padding-bottom: 0.5rem" hidden>
+        <div class="col-5">
+            <select class="form-control" id="coordinators" name="coordinators[]">
+                {% for user in users %}
+                    <option name="coordinator" value="{{ user.getIdUser }}">{{ user.getFullName }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-5">
+            <input class="form-control" type="text" placeholder="Ansvarlig område">
+        </div>
+
+        <div class="col-2">
+            <a class="h6 btn btn-info Default-Bg-Color" style="color: white"
+               onclick="removeCourseCoordinator(this.parentElement.parentElement)">Fjern
+                koordinator</a>
+        </div>
+    </div>
+
+    <!-- Empty item used by "new prerequisite" button -->
+    <div class="row" id="prerequisite_item_empty" style="padding-bottom: 0.5rem" hidden>
+
+        <div class="col-6">
+            <select class="form-control" id="prerequisites[]" name="prerequisites[]">
+                {% for course_code in course_codes %}
+                    <option name="prerequisite"
+                            value="{{ course_code.getIdCourseCode }}">{{ course_code }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-3 align-middle">
+            <input class="form-check-input" type="checkbox" id="prerequisites_required[]"
+                   name="prerequisites_required[]" value="1">
+            <label class="form-check-label" id="prerequisites_required_label"
+                   style="padding: 0;"
+                   for="prerequisites_required[]">Obligatorisk</label>
+        </div>
+
+        <div class="col-3 form-check">
+            <a class="h6 btn btn-info Default-Bg-Color" style="color: white"
+               onclick="removePrerequisite(this.parentElement.parentElement)">Fjern krav</a>
+        </div>
+
+    </div>
+
+    <!-- onClick JavaScript that toggles .disabled -->
+
+
+    <script>
+        let input_disabled = false;
+        let inputs = document.getElementById("form").getElementsByTagName('input');
+        let selects = document.getElementById("form").getElementsByTagName('select');
+        let textAreas = document.getElementById("form").getElementsByTagName('textarea');
+        let URLs = document.getElementById("form").getElementsByTagName('a');
+        let btUpdate = document.getElementById("bt_update");
+
+        function toggle_inputs() {
+            <!-- Toggle all fields -->
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].disabled = input_disabled;
+            }
+
+            for (let i = 0; i < selects.length; i++) {
+                selects[i].disabled = input_disabled;
+            }
+
+            for (let i = 0; i < textAreas.length; i++) {
+                textAreas[i].disabled = input_disabled;
+            }
+
+            for (let i = 0; i < URLs.length; i++) {
+                URLs[i].hidden = input_disabled;
+            }
+            btUpdate.hidden = input_disabled;
+            input_disabled = !input_disabled;
+        }
+
+        function addCourseCoordinator() {
+            let container = document.getElementById("course_coordinator_container");
+            let courseCoordinatorItem = document.getElementById("course_coordinator_item_empty");
+            const clonedCourseCoordinator = courseCoordinatorItem.cloneNode(true);
+            clonedCourseCoordinator.hidden = false;
+            container.appendChild(clonedCourseCoordinator);
+        }
+
+        function removeCourseCoordinator(element) {
+            let container = document.getElementById("course_coordinator_container");
+            container.removeChild(element);
+        }
+
+        function addPrerequisite() {
+            let container = document.getElementById("prerequisite_container");
+            let prerequisiteItem = document.getElementById("prerequisite_item_empty");
+            const clonedPrerequisite = prerequisiteItem.cloneNode(true);
+            clonedPrerequisite.hidden = false;
+            container.appendChild(clonedPrerequisite);
+        }
+
+        function getCurrentIndex() {
+            return document.getElementById("prerequisite_container").childElementCount;
+        }
+
+        function removePrerequisite(element) {
+            let container = document.getElementById("prerequisite_container");
+            container.removeChild(element);
+        }
+    </script>
+{% endblock %}

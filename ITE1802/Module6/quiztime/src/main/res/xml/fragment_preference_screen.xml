@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditTextPreference
+        android:id="@+id/etp_number_of_questions"
+        android:defaultValue="10"
+        android:icon="@drawable/ic_number_of_questions"
+        android:key="questions"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/number_of_questions"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
+        android:id="@+id/lp_select_category"
+        android:entries="@array/category_entries"
+        android:entryValues="@array/category_entry_values"
+        android:icon="@drawable/ic_select_category"
+        android:key="category"
+        android:title="@string/select_category"
+        app:defaultValue="ANY"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
+        android:id="@+id/lp_select_difficulty"
+        android:entries="@array/difficulty_entries"
+        android:entryValues="@array/difficulty_values"
+        android:icon="@drawable/ic_select_difficulty"
+        android:key="difficulty"
+        android:title="@string/select_difficulty"
+        app:defaultValue="ANY"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
+        android:id="@+id/lp_select_type"
+        android:entries="@array/type_entries"
+        android:entryValues="@array/type_values"
+        android:icon="@drawable/ic_select_type"
+        android:key="type"
+        android:title="@string/select_type"
+        app:defaultValue="ANY"
+        app:useSimpleSummaryProvider="true" />
+
+</PreferenceScreen>

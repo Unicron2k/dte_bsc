@@ -1,0 +1,135 @@
+@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Services
+@using ServiceStack.Text
+@using StarCake.Client.Pages.About
+@using StarCake.Shared.Models.ViewModels.Maintenance
+
+@inject AppData _appData
+@inject HttpClient _http
+@inject NavigationManager _navigation
+
+
+<h3>Maintenance Status: </h3>
+<MudPaper Class="pa-4 ma-1">
+    <MudList Clickable="true">
+        @if (_hasPendingMaintenance)
+        {
+            <MudListSubheader>
+                There is upcoming maintenance for the following Entities/Components:
+            </MudListSubheader>
+            foreach (var entity in AppData.CurrentUser.CurrentDepartment.Entities)
+            {
+                @if (!entity.HasComponentRequiringMaintenance)
+                {
+                    if (!entity.RequiresMaintenance) continue;
+                    <MudListItem>
+                        @(entity.Name + (entity.RequiresMaintenance ? " - " + (entity.RequiresImmediateMaintenance ? "Requires immediate" : "Upcoming general") + " maintenance" : ""))
+                        <MudIconButton Variant="Variant.Filled" Size="Size.Small" Icon="@Icons.Material.Filled.ArrowForward" OnClick="@(() => Navigate(entity.SerialNumber))"/>
+                    </MudListItem>
+                    <MudDivider/>
+                }
+                else
+                {
+                    <MudListItem>
+                        <ChildContent>
+                        @(entity.Name + (entity.RequiresMaintenance ? " - " + (entity.RequiresImmediateMaintenance ? "Requires immediate" : "Upcoming general") + " maintenance" : ""))
+                        <MudIconButton Variant="Variant.Filled" Size="Size.Small" Icon="@Icons.Material.Filled.ArrowForward" OnClick="@(() => Navigate(entity.SerialNumber))"/>
+                        </ChildContent>
+                        <NestedList>
+                            <MudDivider/>
+                            @foreach (var component in entity.Components)
+                            {
+                                if (!component.RequiresMaintenance) continue;
+                                <MudListItem>
+                                    @(component.Name + " (" + component.SerialNumber + ") - " + (component.RequiresImmediateMaintenance ? "Requires immediate" : "Upcoming") + " maintenance")
+                                    <MudIconButton Variant="Variant.Filled" Size="Size.Small" Icon="@Icons.Material.Filled.ArrowForward" OnClick="@(() => Navigate(entity.SerialNumber, false, component.RequiresImmediateMaintenance))"/>
+                                </MudListItem>
+                            }
+                        </NestedList>
+                    </MudListItem>
+                    <MudDivider/>
+                }
+            }
+        }
+        else
+        {
+            <MudListSubheader>
+                There are no upcoming maintenance-tasks!
+            </MudListSubheader>
+        }
+    </MudList>
+</MudPaper>
+
+@code {
+    private bool _hasPendingMaintenance = false;
+    private int _deltaCycles;
+    private int _deltaDays;
+    private int _deltaSeconds; 
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        //AppData.CurrentUser.CurrentDepartment.Entities = await _http.GetFromJsonAsync<List<EntityViewModel>>("api/EntityAPI/GetAllInDepartment/" + AppData.CurrentUser.CurrentDepartment.DepartmentId);
+         _deltaCycles = AppData.CurrentUser.CurrentDepartment.DeltaCycles;
+         _deltaDays = AppData.CurrentUser.CurrentDepartment.DeltaDays;
+         _deltaSeconds = AppData.CurrentUser.CurrentDepartment.DeltaSeconds;
+        
+        if (AppData.CurrentUser.CurrentDepartment.Entities != null)
+        {
+            CheckEntityMaintenanceCycles();
+        }
+    }
+
+    private  void CheckEntityMaintenanceCycles()
+    {
+
+    //TODO: Add checks for stored components.
+        foreach (var entity in AppData.CurrentUser.CurrentDepartment.Entities)
+        {
+            //Skip checks if component is archived
+            if(entity.IsArchived) continue;
+            
+            var entityRequiresMaintenance =
+                (entity.CyclesSinceLastMaintenance + _deltaCycles >= entity.MaxCyclesBtwMaintenance ||
+                 DateTime.UtcNow - entity.LastMaintenanceDate + TimeSpan.FromDays(_deltaDays) >= TimeSpan.FromDays(entity.MaxDaysBtwMaintenance)||
+                 entity.FlightSecondsSinceLastMaintenance + _deltaSeconds >= entity.MaxFlightSecondsBtwMaintenance);
+
+            var entityRequiresImmediateMaintenance =
+                (entity.CyclesSinceLastMaintenance >= entity.MaxCyclesBtwMaintenance ||
+                 DateTime.UtcNow - entity.LastMaintenanceDate >= TimeSpan.FromDays(entity.MaxDaysBtwMaintenance) ||
+                 entity.FlightSecondsSinceLastMaintenance >= entity.MaxFlightSecondsBtwMaintenance);
+
+
+            var hasComponentRequiringMaintenance = false;
+            _hasPendingMaintenance = entityRequiresMaintenance || _hasPendingMaintenance;
+            AppData.CurrentUser.CurrentDepartment.Entities.Find(e => e.EntityId == entity.EntityId).RequiresMaintenance = entityRequiresMaintenance;
+            AppData.CurrentUser.CurrentDepartment.Entities.Find(e => e.EntityId == entity.EntityId).RequiresImmediateMaintenance = entityRequiresImmediateMaintenance;
+            
+            foreach (var component in entity.Components)
+            {
+                var componentRequiresMaintenance =
+                    (component.CyclesSinceLastMaintenance + _deltaCycles >= component.MaxCyclesBtwMaintenance ||
+                     DateTime.UtcNow - component.LastMaintenanceDate + TimeSpan.FromDays(_deltaDays) >= TimeSpan.FromDays(component.MaxDaysBtwMaintenance) ||
+                     component.FlightSecondsSinceLastMaintenance + _deltaSeconds >= component.MaxFlightSecondsBtwMaintenance);
+
+                var componentRequiresImmediateMaintenance =
+                    (component.CyclesSinceLastMaintenance >= component.MaxCyclesBtwMaintenance ||
+                     DateTime.UtcNow - component.LastMaintenanceDate >= TimeSpan.FromDays(component.MaxDaysBtwMaintenance)||
+                     component.FlightSecondsSinceLastMaintenance >= component.MaxFlightSecondsBtwMaintenance);
+
+                hasComponentRequiringMaintenance = componentRequiresMaintenance || hasComponentRequiringMaintenance;
+                _hasPendingMaintenance = hasComponentRequiringMaintenance || _hasPendingMaintenance;
+                AppData.CurrentUser.CurrentDepartment.Entities.Find(e => e.EntityId == entity.EntityId).HasComponentRequiringMaintenance = hasComponentRequiringMaintenance;
+                AppData.CurrentUser.CurrentDepartment.Entities.Find(e => e.EntityId == entity.EntityId).Components.First(c => c.ComponentId == component.ComponentId).RequiresMaintenance = componentRequiresMaintenance;
+                AppData.CurrentUser.CurrentDepartment.Entities.Find(e => e.EntityId == entity.EntityId).Components.First(c => c.ComponentId == component.ComponentId).RequiresImmediateMaintenance = componentRequiresImmediateMaintenance;
+            }
+        }
+    }
+
+    private EventCallback Navigate(string itemSerialNumber, bool entityOnly = true, bool immediateOnly = false)
+    {
+        _navigation.NavigateTo($"/Maintenance/{itemSerialNumber}/{entityOnly}/{immediateOnly}");
+        return default;
+    }
+
+}

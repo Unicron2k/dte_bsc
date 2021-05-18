@@ -1,0 +1,286 @@
+@using StarCake.Shared.Models.ViewModels
+@using StarCake.Shared
+@using System.ComponentModel
+
+@code {
+    // Rx parameter
+    [Parameter]
+    public List<FlightLogViewModelTable> SelectedFlightLogs { get; set; }
+    
+    // Tx parameter
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+    private void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+    }
+}
+
+@code{
+    private int _currentYear;
+    private List<int> _availableYears;
+    private int _currentMonth = 1;
+    private List<int> _availableMonths;
+
+    private readonly string[] _months = CalendarStringEnums.Month.Shortened;
+
+    private readonly ChartOptions _chartOptions = new ChartOptions
+    {
+        YAxisTicks = 2,
+        YAxisLines = true,
+        XAxisLines = false
+    };
+
+    private GraphEnums _currentGrouping = GraphEnums.All;
+    private enum GraphEnums
+    {
+        [Description("All")] All,
+        [Description("Pilot")] PropPilot,
+        [Description("Logged by")] PropLoggedBy,
+        [Description("Type of Operation")] PropTypeOfOperation,
+        [Description("Entity")] Entity
+    }
+
+    protected override void OnInitialized()
+    {
+        _availableYears = SelectedFlightLogs.Select(x => x.Date.Year).ToList().Distinct().ToList().OrderBy(x=>x).ToList();
+        UpdateAvailableMonths();
+        _currentYear = _availableYears.First();
+        _currentMonth = SelectedFlightLogs.Where(x => x.Date.Year == _currentYear).Select(x => x.Date.Month).First();
+        _showAllMonths = true;
+        UpdateGraph(_currentGrouping);
+    }
+
+    private void UpdateGraph(GraphEnums graphEnum)
+    {
+        if (graphEnum!=GraphEnums.All)
+            InterpolationEnabled = false;
+        
+        _chartOptions.InterpolationOption = InterpolationEnabled ? InterpolationOption.EndSlope : InterpolationOption.Straight;
+        if (InterpolationEnabled)
+        
+
+        _currentGrouping = graphEnum;
+        _series = new List<ChartSeries>();
+        UpdateAvailableMonths();
+        var flightLogsToLoop = SelectedFlightLogs.Where(x => x.Date.Year == _currentYear).ToList();
+        
+        if (_showAllMonths)
+            _xAxisLabels = _months;
+        else
+        {
+            var days = new List<string>();
+            for (var i = 1; i <= DateTime.DaysInMonth(_currentYear, _currentMonth); i++)
+                days.Add(i.ToString());
+            _xAxisLabels = days.ToArray();
+            flightLogsToLoop = flightLogsToLoop.Where(x => x.Date.Month == _currentMonth).ToList();
+        }
+
+        void AppendToSeries(string name, int index, int step = 1)
+        {
+            if (_series.All(x=>x.Name != name))
+                _series.Add(new ChartSeries{Name = name, Data = new double[_xAxisLabels.Length]});
+            _series.First(x => x.Name == name).Data[index] += step;
+        }
+        foreach (var flightLog in flightLogsToLoop)
+        {
+            var enumNames = new List<string>();
+            switch (graphEnum)
+            {
+                case GraphEnums.All:
+                    enumNames.Add("FlightLog");
+                    break;
+                case GraphEnums.PropPilot:
+                    enumNames.Add(flightLog.ApplicationUserPilotedNameFormal);
+                    break;
+                case GraphEnums.PropLoggedBy:
+                    enumNames.Add(flightLog.ApplicationUserLoggedNameFormal);
+                    break;
+                case GraphEnums.PropTypeOfOperation:
+                    enumNames.AddRange(flightLog.FlightLogTypeOfOperations.Select(typeOfOperation => typeOfOperation.TypeOfOperation.Name));
+                    break;
+                case GraphEnums.Entity:
+                    enumNames.Add(flightLog.EntityName);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(graphEnum), graphEnum, null);
+            }
+            foreach (var name in enumNames)
+            {
+                if (_showAllMonths)
+                    AppendToSeries(name, flightLog.Date.Month - 1);
+                else
+                    AppendToSeries(name, flightLog.Date.Day - 1);
+            }
+        }
+        _series = _series.OrderBy(x => x.Name).ToList();
+        StateHasChanged();
+    }
+
+    private List<ChartSeries> _series = new List<ChartSeries>();
+    private string[] _xAxisLabels;
+    private bool _showAllMonths = true;
+}
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer>
+            @if (_availableYears != null || _availableMonths != null)
+            {
+                @functions{
+                    string GetHeader()
+                    {
+                        var str = "Statistics in ";
+                        if (!_showAllMonths)
+                            str += CalendarStringEnums.Month.Default[_currentMonth-1];
+                        return str + $" {_currentYear}";
+                    }
+                }
+                <MudGrid Justify="Justify.Center">
+                    <MudText Typo="Typo.h4">@GetHeader()</MudText>
+                </MudGrid>
+                <MudDivider DividerType="DividerType.Middle" Class="my-3"/>
+                <MudGrid Justify="Justify.Center" Spacing="2">
+                    <MudItem>
+                        <MudSwitch
+                            Label="All months" Checked="@_showAllMonths" Color="Color.Secondary"
+                            CheckedChanged="@((bool val) => EnableShowAllMonths(val))"/>
+                    </MudItem>
+                    <MudItem>
+                        <MudMenu
+                            Label="@($"{_currentYear}")" Size="Size.Medium"
+                            EndIcon="@Icons.Filled.KeyboardArrowDown" Color="Color.Transparent" Variant="Variant.Filled"
+                            Direction="Direction.Bottom" OffsetY="true" FullWidth="true" MaxHeight="300">
+                            @foreach (var year in _availableYears)
+                            {
+                                <MudMenuItem OnClick="() => UpdateYear(year)">@year</MudMenuItem>
+                            }
+                        </MudMenu>
+                    </MudItem>
+                    <MudItem>
+                        <MudItem>
+                            <MudSwitch
+                                Label="Grouping" Checked="@GroupingEnabled" Color="Color.Secondary"
+                                CheckedChanged="@((bool val) => EnableGrouping(val))"/>
+                        </MudItem>
+
+                        @code {
+                            private bool GroupingEnabled { get; set; }
+                            void EnableGrouping(bool val)
+                            {
+                                if (!val)
+                                    _currentGrouping = GraphEnums.All;
+                                StateHasChanged();
+                                UpdateGraph(_currentGrouping);
+                                GroupingEnabled = !GroupingEnabled;
+                            }
+                        }
+                    </MudItem>
+                    @if (GroupingEnabled)
+                    {
+                        <MudItem>
+                            <MudMenu
+                                EndIcon="@Icons.Filled.KeyboardArrowDown"
+                                Label="@($"Group by: {Enums.GetEnumDescription(_currentGrouping)}")"
+                                Color="Color.Primary" Variant="Variant.Filled" Direction="Direction.Bottom"
+                                OffsetY="true" FullWidth="true" MaxHeight="200">
+                                @* Loop through available OrderValues using reflection *@
+                                @foreach (var name in (GraphEnums[]) Enum.GetValues(typeof(GraphEnums)))
+                                {
+                                    <MudMenuItem OnClick="() => UpdateGraph(name)">@Enums.GetEnumDescription(name)</MudMenuItem>
+                                }
+                            </MudMenu>
+                        </MudItem>
+                    }
+                    @if (_currentGrouping == GraphEnums.All)
+                    {
+                        <MudItem>
+                            <MudTooltip Text="Interpolation" Placement="Placement.Bottom" Delay="250">
+                                <MudToggleIconButton
+                                    Size="Size.Medium"
+                                    Toggled="@InterpolationEnabled" ToggledChanged="EnableInterpolation"
+                                    Icon="@Icons.Material.Filled.Waves" Color="@Color.Error"
+                                    ToggledIcon="@Icons.Material.Filled.Waves" ToggledColor="@Color.Success"/>
+                            </MudTooltip>
+                        </MudItem>
+                        @code {
+                            private bool InterpolationEnabled { get; set; }
+                            void EnableInterpolation(bool val)
+                            {
+                                InterpolationEnabled = val;
+                                _chartOptions.InterpolationOption = InterpolationEnabled ? InterpolationOption.EndSlope : InterpolationOption.Straight;
+                            }
+                        }
+                    }
+                </MudGrid>
+                
+                
+                <MudGrid Justify="Justify.Center" Spacing="2">
+                    @if (!_showAllMonths)
+                    {
+                        <MudItem>
+                            @foreach (var month in _availableMonths)
+                            {
+                                <MudButton OnClick="() => UpdateMonth(month)">
+                                    @($"{CalendarStringEnums.Month.Default[month-1]}")
+                                </MudButton>
+                            }
+                        </MudItem>
+                    }
+                </MudGrid>
+                @functions {
+                    void UpdateMonth(int month)
+                    {
+                        _currentMonth = month;
+                        UpdateGraph(_currentGrouping);
+                    }
+                    void UpdateYear(int year)
+                    {
+                        _currentYear = year;
+                        UpdateGraph(_currentGrouping);
+                    }
+                    void EnableShowAllMonths(bool val)
+                    {
+                        _showAllMonths = val;
+                        UpdateAvailableMonths();
+                        if (_showAllMonths)
+                        {
+                            UpdateMonth(_availableMonths.First());
+                            EnableInterpolation(false);
+                        }
+                        
+                        UpdateGraph(_currentGrouping);
+                    }
+
+                    void UpdateAvailableMonths()
+                    {
+                        _availableMonths = SelectedFlightLogs
+                            .Where(x => x.Date.Year == _currentYear)
+                            .Select(x => x.Date.Month).Distinct().ToList();
+                        _availableMonths = _availableMonths.OrderBy(x => x).ToList();
+                    }
+                }
+
+                <MudChart
+                    Class="align-items-center"
+                    ChartType="ChartType.Line"
+                    ChartSeries="@_series"
+                    XAxisLabels="@_xAxisLabels"
+                    Width="100%"
+                    Height="100%"
+                    ChartOptions="_chartOptions"/>
+            }
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudGrid Justify="Justify.Center">
+            <MudButton
+                OnClick="Cancel"
+                Variant="Variant.Filled"
+                Color="Color.Error"
+                FullWidth="true">
+                Close
+            </MudButton>
+        </MudGrid>
+    </DialogActions>
+</MudDialog>

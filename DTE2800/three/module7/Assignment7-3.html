@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Assignment 7-3 - Three.js</title>
+	<meta charset="UTF-8">
+</head>
+
+<body>
+<script src="../lib/ammo/ammo.js"></script>
+<script type="module">
+	import {MarbleGame} from "./js/Assignment7-3.js";
+
+	// Ammojs initialisering:
+	Ammo().then( startApp() );
+	function startApp(){
+		let marbleGame = new MarbleGame();
+		marbleGame.start();
+	}
+</script>
+</body>
+</html>

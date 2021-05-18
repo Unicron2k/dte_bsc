@@ -1,0 +1,65 @@
+{% extends 'base.twig' %}
+
+{% block main %}
+    <div class="container">
+    <!-- Page title -->
+        <div class="page-title">
+            <h2>Emner for godkjenning</h2>
+        </div>
+
+
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Emnekode</th>
+                <th>Beskrivelse</th>
+                <th>Studiepoeng</th>
+                <th>Grad</th>
+                <th>Semester</th>
+                <th>Frist for godkjenning</th>
+                <th></th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <th scope="row">ITE1807</th> <!-- Coursecode -->
+                    <td>Systemutvikling</td>       <!-- Course name -->
+                    <td>10</td>    <!-- Course point -->
+                    <td>Bachelor</td>     <!-- Course degree -->
+                    <td>Vår</td> <!-- Course semester -->
+                    <td>31.10.2020</td>     <!-- Deadline for approval -->
+                    <td><a{{ (current == 'courseToBeApproved') }} href="editStatus.php"><button class="button buttonShow" style="vertical-align:middle"><span>Vis </span></button></a></td>
+
+                </tr>
+
+                <tr>
+                    <th scope="row">ITE1802</th> <!-- Coursecode -->
+                    <td>Mobilprogrammering</td>       <!-- Course name -->
+                    <td>10</td>    <!-- Course point -->
+                    <td>Bachelor</td>     <!-- Course degree -->
+                    <td>Vår</td> <!-- Course semester -->
+                    <td>31.10.2020</td>     <!-- Deadline for approval -->
+                    <td><a{{ (current == 'courseToBeApproved') }} href="editStatus.php"><button class="button buttonShow" style="vertical-align:middle"><span>Vis </span></button></a></td>
+                </tr>
+
+                <tr>
+                    <th scope="row">ITE1805</th> <!-- Coursecode -->
+                    <td>Webapplikasjoner og databaser</td>       <!-- Course name -->
+                    <td>10</td>    <!-- Course point -->
+                    <td>Bachelor</td>     <!-- Course degree -->
+                    <td>Vår</td> <!-- Course semester -->
+                    <td>31.10.2020</td>    <!-- Deadline for approval -->
+                    <td><a{{ (current == 'courseToBeApproved') }} href="editStatus.php"><button class="button buttonShow" style="vertical-align:middle"><span>Vis </span></button></a></td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+
+    </div>
+
+
+{% endblock %}

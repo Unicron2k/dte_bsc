@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Tower Of Hanoi</string>
+    <string name="str_heading">How fast can you move the rings from tower 1 to tower 3?</string>
+    <string name="str_start">Start</string>
+    <string name="str_status">Moves: %1$d Time: %2$.2fs</string>
+    <string name="str_stop">Stop</string>
+</resources>

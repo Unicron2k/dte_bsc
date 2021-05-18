@@ -1,0 +1,174 @@
+@using StarCake.Client.Services
+@using StarCake.Shared.Models.ViewModels
+@inject AppData AppData
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+@if (AppData.CurrentUser.CurrentDepartment == null || _departmentViewModel == null)
+{
+    <MudProgressCircular Class="my-3 justify-content-center" Color="Color.Default" Indeterminate="true"/>
+    <MudText>"Appdata.CurrentUser.CurrentDepartment and _departmentViewModel is NULL</MudText>
+}
+else
+{
+    <MudGrid Class="justify-content-center my-3">
+        <MudItem xs="12" md="8"  Class="justify-content-center">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText>Change department info</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <EditForm Model="_departmentViewModel" OnValidSubmit="SubmitForm">
+                    <MudCardContent>
+                        <DataAnnotationsValidator/>
+                        <MudGrid>
+                            <MudItem xs="12" md="6">
+                                <MudTextField
+                                    @bind-Value="@_departmentViewModel.Name"
+                                    For="@(() => _departmentViewModel.Name)"
+                                    Label="Name"/>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField
+                                    @bind-Value="@_departmentViewModel.City"
+                                    For="@(() => _departmentViewModel.City)"
+                                    Label="City"/>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField
+                                    @bind-Value="@_departmentViewModel.Address"
+                                    For="@(() => _departmentViewModel.Address)"
+                                    Label="Address"/>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField
+                                    @bind-Value="@_departmentViewModel.ZipCode"
+                                    For="@(() => _departmentViewModel.ZipCode)"
+                                    Label="Zipcode"
+                                    InputType="InputType.Number"/>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField
+                                    @bind-Value="@_departmentViewModel.Email"
+                                    For="@(() => _departmentViewModel.Email)"
+                                    Label="Email"
+                                    InputType="InputType.Email"/>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField
+                                    @bind-Value="@_departmentViewModel.PhoneNumber"
+                                    For="@(() => _departmentViewModel.PhoneNumber)"
+                                    Label="Phone number"
+                                    InputType="InputType.Number"/>
+                            </MudItem>
+
+                        </MudGrid>
+
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Outlined" ButtonType="ButtonType.Submit" Class="ml-1">
+                            SAVE
+                        </MudButton>
+                    </MudCardActions>
+                </EditForm>
+            </MudCard>
+        </MudItem>
+        
+        <MudItem xs="12" md="4" Class="justify-content-center">
+             <MudCard>
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText>Change maintenance status for department</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <EditForm Model="_departmentViewModel" OnValidSubmit="SubmitForm">
+                                <MudCardContent>
+                                    <DataAnnotationsValidator/>
+                                    <MudGrid>
+                                        <MudItem xs="12" md="6">
+                                            <MudTextField
+                                                @bind-Value="@_departmentViewModel.DeltaDays"
+                                                For="@(() => _departmentViewModel.DeltaDays)"
+                                                Label="Delta days"/>
+                                        </MudItem>
+                                        <MudItem xs="12" md="6">
+                                            <MudTextField
+                                                @bind-Value="@_departmentViewModel.DeltaCycles"
+                                                For="@(() => _departmentViewModel.DeltaCycles)"
+                                                Label="Delta Cycles"/>
+                                        </MudItem>
+                                        <MudItem xs="12" md="6">
+                                            <MudTextField
+                                                @bind-Value="@_departmentViewModel.DeltaSeconds"
+                                                For="@(() => _departmentViewModel.DeltaSeconds)"
+                                                Label="Delta Seconds"/>
+                                        </MudItem>
+                                    </MudGrid>
+            
+                                </MudCardContent>
+                                <MudCardActions>
+                                    <MudButton Variant="Variant.Outlined" ButtonType="ButtonType.Submit" Class="ml-1">
+                                        SAVE
+                                    </MudButton>
+                                </MudCardActions>
+                            </EditForm>
+                        </MudCard>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+
+    private DepartmentViewModel _departmentViewModel { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var department = AppData.CurrentUser.CurrentDepartment;
+        _departmentViewModel = new DepartmentViewModel
+        {
+            DepartmentId = department.DepartmentId,
+            Name = department.Name,
+            City = department.City,
+            Address = department.Address,
+            ZipCode = department.ZipCode,
+            Email = department.Email,
+            PhoneNumber = department.PhoneNumber,
+            OrganizationId = department.OrganizationId,
+            DeltaCycles = department.DeltaCycles,
+            DeltaDays = department.DeltaDays,
+            DeltaSeconds = department.DeltaSeconds
+        };
+    }
+
+    async Task SubmitForm()
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
+        var response = await Http.PutAsJsonAsync("api/DepartmentAPI/" + _departmentViewModel.DepartmentId, _departmentViewModel);
+        if (response.IsSuccessStatusCode)
+        {
+            var departmentInfoFromDb = await response.Content.ReadFromJsonAsync<DepartmentViewModel>();
+            var department = AppData.CurrentUser.CurrentDepartment;
+
+            department.DepartmentId = departmentInfoFromDb.DepartmentId;
+            department.Name = departmentInfoFromDb.Name;
+            department.City = departmentInfoFromDb.City;
+            department.Address = departmentInfoFromDb.Address;
+            department.ZipCode = departmentInfoFromDb.ZipCode;
+            department.Email = departmentInfoFromDb.Email;
+            department.PhoneNumber = departmentInfoFromDb.PhoneNumber;
+            department.OrganizationId = departmentInfoFromDb.OrganizationId;
+            department.DeltaCycles = departmentInfoFromDb.DeltaCycles;
+            department.DeltaDays = departmentInfoFromDb.DeltaDays;
+            department.DeltaSeconds = departmentInfoFromDb.DeltaSeconds;
+
+            Snackbar.Add("Department Updated", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Something went wrong", Severity.Error);
+        }
+    }
+
+}

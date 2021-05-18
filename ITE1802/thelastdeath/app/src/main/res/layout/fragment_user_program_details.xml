@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <!-- title -->
+    <TextView
+        style="@style/fragmentTitle"
+        android:text="@string/userProgramsDetails_title" />
+
+    <!-- description -->
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/userProgramsDetails_details_title" />
+    <TextView
+        android:id="@+id/UserProgramDetails_tv_description"
+        style="@style/TextView20spWithLeftPadding"/>
+
+    <!-- use_timing -->
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/userProgramsDetails_useTiming_title" />
+    <TextView
+        android:id="@+id/UserProgramDetails_tv_useTiming"
+        style="@style/TextView20spWithLeftPadding"/>
+
+    <!-- app_program_type -->
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/userProgramsDetails_appProgramType_title" />
+    <TextView
+        android:id="@+id/UserProgramDetails_tv_appProgramType"
+        style="@style/TextView20spWithLeftPadding"/>
+
+
+    <TextView
+        style="@style/Text20spWrap"
+        android:text="@string/userProgramsDetails_listView_title" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <!-- user_program_exercises -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="0.5">
+            <TextView
+                android:id="@+id/userProgramDetails_alert_exercises"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/userProgramsDetails_tv_Exercises"/>
+
+            <ListView
+                android:id="@+id/userProgramExercisesListView"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"/>
+
+        </LinearLayout>
+
+
+        <!-- user_program_sessions -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="0.5">
+            <TextView
+                android:id="@+id/userProgramDetails_alert_sessions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/userProgramsDetails_tv_Sessions"
+                android:layout_gravity="center"/>
+            <ListView
+                android:id="@+id/userProgramSessionsListView"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- DELETE -->
+
+    <Button
+        android:id="@+id/userProgramDetails_button_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/userProgarmDetails_button_delete_title"/>
+
+    <Button
+        android:id="@+id/userProgramDetails_button_addExercise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/userProgramDetails_button_add_exercise" />
+
+
+</LinearLayout>

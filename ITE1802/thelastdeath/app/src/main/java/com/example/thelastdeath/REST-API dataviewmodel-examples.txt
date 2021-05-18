@@ -1,0 +1,203 @@
+ - NB: Metodene kjøres i onViewCreated()-metoden i ønskelig fragment
+ - Bruk apiResponse.getXXXX(..params..); for å hente ut objekt når nedlastet ved GET forespørsler
+ - Toast vises automatisk i gitt Activity
+________________________________________________________________________________________________________
+/app_program_types/
+    - GET (specific rid)
+        /**
+         * GET specific AppProgramType from server
+         *      Use 'apiResponse.getAppProgramType();' in subscribeToApiResponse() to get it
+         * @param rid rid-value for given AppProgramType
+         */
+        private void getAppProgramTypeFromServer(String rid) {
+            dataViewModel.getAppProgramTypeFromRid(getActivity(), rid, false);
+        }
+
+    - GET (all)
+        /**
+         * GET all AppProgramTypes from server
+         *      Use 'apiResponse.getAllAppProgramTypes();' in subscribeToApiResponse();
+         */
+        private void getAllAppProgramTypesFromServer() {
+            dataViewModel.getAllAppProgramTypes(getActivity(), false);
+        }
+
+    - POST
+        /**
+         * POST a new AppProgramType to server
+         */
+        private void postAppProgramTypeToServer(String description, String icon, String back_color) {
+            dataViewModel.postAppProgramType(getActivity(), description, icon, back_color);
+        }
+
+    - PUT
+        /**
+         * PUT existing AppProgramType to server
+         */
+        private void putAppProgramToServer(String rid, String description, String icon, String back_color) {
+            dataViewModel.putAppProgramType(getActivity(), rid, description, icon, back_color);
+        }
+
+    - DELETE
+        /**
+         * DELETE existing AppProgramType to server
+         */
+        private void deleteAppProgramType(String rid) {
+            dataViewModel.deleteAppProgramType(getActivity(), rid);
+        }
+________________________________________________________________________________________________________
+/user_stats/
+    - GET
+        /**
+         * GET - UserStats from server
+         */
+        private void getUserStatsFromServer() {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser != null)
+                dataViewModel.getUserStats(getActivity(), firebaseUser.getUid(), false);
+            else
+                displayToast(getActivity(), getString(R.string.warning_firebase_not_logged_in));
+        }
+________________________________________________________________________________________________________
+/app_exercises/
+    - GET (all)
+        /**
+         * GET all AppExercises from server
+         *      Use 'apiResponse.getAllAppAxercises();' in subscribeToApiResponse();
+         */
+        private void getAllAppExercisesFromServer(boolean force_download) {
+            dataViewModel.getAllAppExercises(getActivity(), force_download);
+        }
+    - GET (specific rid)
+        /**
+         * GET specific AppExercise from server
+         *      Use 'apiResponse.getAppExercise();' in subscribeToApiResponse() to get it
+         * @param rid rid-value for given AppExercise
+         */
+        private void getAppExerciseFromServer(String rid, boolean force_Download) {
+            dataViewModel.getAppExercise(getActivity(), rid, force_Download);
+        }
+    - POST
+        /**
+         * Post a new AppExercise to server
+         */
+        private void postAppExerciseToServer(String name, String description, String icon, String infobox_color) {
+            dataViewModel.postAppExercise(getActivity(), name, description, icon, infobox_color);
+        }
+    - PUT
+        /**
+         * PUT existing AppExercise to server
+         */
+        private void putAppExerciseToServer(String rid, String name, String description, String icon, String infobox_color) {
+            dataViewModel.putAppExercise(getActivity(), rid, name, description, icon, infobox_color);
+        }
+    - DELETE
+        /**
+         * DELETE existing AppExercise from server
+         * @param rid
+         */
+        private void deleteAppExercise(String rid) {
+            dataViewModel.deleteAppExercise(getActivity(), rid);
+        }
+________________________________________________________________________________________________________
+/users/
+    - GET (expanded children)
+        /**
+         * GET user and all expanded children
+         */
+        private void getUserChildrenExpandedFromServer(boolean forceDownload) {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser != null)
+                dataViewModel.getUserExpandedchildren(getActivity(), firebaseUser.getUid(), forceDownload);
+        }
+________________________________________________________________________________________________________
+/user_programs/
+    - GET (specific rid)
+        /**
+         * GET specific UserProgram from server
+         */
+        private void getUserProgramFromServer(String rid, boolean forceDownload) {
+            dataViewModel.getUserProgram(getActivity(), rid, forceDownload);
+        }
+    - POST
+        /**
+         * POST UserProgram to server
+         */
+        private void postUserProgramToServer(long app_program_type_id, long user_id, String name, String description, int use_timing) {
+            dataViewModel.postUserProgram(getActivity(), app_program_type_id, user_id, name, description, use_timing);
+        }
+    - PUT
+        /**
+         * PUT UserProgram
+         */
+        private void putUserProgramToServer(String rid, long user_id, long app_program_type_id, String name, String description, int use_timing) {
+            dataViewModel.putUserProgram(getActivity(), rid, user_id, app_program_type_id, name, description, use_timing);
+        }
+    - DELETE
+        /**
+         * DELETE UserProgram
+         */
+        private void deleteUserProgramFromServer(String rid) {
+            dataViewModel.deleteUserProgram(getActivity(), rid);
+        }
+________________________________________________________________________________________________________
+/user_program_sessions/
+    - GET
+        /**
+         * GET UserProgramSession
+         */
+        private void getUserProgramSession(String rid, boolean forceDownload) {
+            dataViewModel.getUserProgramSession(getActivity(), rid, forceDownload);
+        }
+    - POST
+        /**
+         * POST UserProgramSession
+         */
+        private void postUserProgramSessionToServer(long user_program_id, String date, int time_spent, String description, String extra_json_data) {
+            dataViewModel.postUserProgramSession(getActivity(), user_program_id, date, time_spent, description, extra_json_data);
+        }
+    - PUT
+        /**
+         * PUT UserProgramSession
+         */
+        private void putUserProgramSessionToServer(String rid, long user_program_id, String date, int time_spent, String description, String extra_json_data) {
+            dataViewModel.putUserProgramSession(getActivity(), rid, user_program_id, date, time_spent, description, extra_json_data);
+        }
+    - DELETE
+        /**
+         * DELETE UserProgramSession
+         */
+        private void deleteUserProgramSessionFromServer(String rid) {
+            dataViewModel.deleteUserProgramSession(getActivity(), rid);
+        }
+________________________________________________________________________________________________________
+/user_program_exercises/
+    - GET
+        /**
+         * GET UserProgramExercise
+         */
+        private void getUserProgramExercise(String rid, boolean forceDownload) {
+            dataViewModel.getUserProgramExercise(getActivity(), rid, forceDownload);
+        }
+    - POST
+        /**
+         * POST UserProgramExercise
+         */
+        private void postUserProgramExercise(long user_program_id, long app_exercise_id) {
+            dataViewModel.postUserProgramExercise(getActivity(), user_program_id, app_exercise_id);
+        }
+    - PUT
+        /**
+         * PUT UserProgramExercise
+         */
+        private void putUserProgramExerciseToServer(String rid, long user_program_id, long app_exercise_id) {
+            dataViewModel.putUserProgramExerciseToServer(getActivity(), rid, user_program_id, app_exercise_id);
+        }
+    - DELETE
+        /**
+         * DELETE UserProgramExercise
+         */
+        private void deleteUserProgramExerciseFromServer(String rid) {
+            dataViewModel.deleteUserProgramExercise(getActivity(), rid);
+        }
+

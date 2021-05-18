@@ -1,0 +1,47 @@
+{% extends 'base.twig' %}
+
+{% block main %}
+
+    <div class="container">
+
+        <div class="box center-elements">
+            <h5>Login her: </h5>
+            <form method="post">
+                <div class="form-group">
+                    <input class="InputFields" type="text" name="usernameEmail" placeholder="Username or Email"
+                           required>
+                    <input class="InputFields" type="password" name="password" placeholder="Password" size="5" id="pwd"
+                           required>
+
+                    <button type="button" class="btn btn" id="eye">
+                        <img src="https://cdn0.iconfinder.com/data/icons/feather/96/eye-16.png" alt="eye"/>
+                    </button>
+                    <input class="btn btn-info Default-Bg-Color" type="submit" name="login" value="Login" style="margin-top:0.5rem">
+                </div>
+            </form>
+        </div>
+
+        <div class="box center-elements">
+            <h5>Har du ikke bruker? Registrer deg!</h5>
+            <form method="post" autocomplete="off">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="username" placeholder="Username" required>
+                    <input class="form-control" type="password" name="password" id="password" placeholder="Password"
+                           required onchange='check_pass();'>
+                    <input class="form-control" type="password" name="confirm_password" id="confirm_password"
+                           placeholder="Verify password" required onchange='check_pass();'>
+                    <span id='message'></span>
+                    <input class="form-control" type="email" name="email" placeholder="Email" required>
+                    <input class="form-control" type="text" name="firstname" placeholder="Firstname" required>
+                    <input class="form-control" type="text" name="lastname" placeholder="Lastname" required></br>
+                    <input class="btn btn-light Default-Bg-Color" type="submit" id="register" name="register"
+                           value="Register">
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock main %}
+
+    {% block javascript %}
+    <script src="./js/pwcheck.js"></script>
+    {% endblock javascript %}

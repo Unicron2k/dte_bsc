@@ -1,0 +1,52 @@
+@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Services
+@inject AppData AppData
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 80vh; overflow-y: scroll">
+            @code{private const string ErrorMessage = "Add values to all fields";}
+            <EditForm Model="@TypeOfOperationToUpdate" OnValidSubmit="@SubmitForm" OnInvalidSubmit="() => AppData.ParentRoot.ShowSnackBar(ErrorMessage, Severity.Error)">
+                <DataAnnotationsValidator/>
+                <MudCard>
+                    <MudCardContent>
+                        <MudTextField
+                            Label="Name"
+                            @bind-Value="@TypeOfOperationToUpdate.Name"
+                            For="@(() => TypeOfOperationToUpdate.Name)"/>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton
+                            ButtonType="ButtonType.Submit"
+                            Variant="Variant.Filled"
+                            Color="Color.Success"
+                            FullWidth="true"
+                            Class="ml-auto">
+                            Update Type Of Operation
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+                <ValidationSummary/>
+            </EditForm>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    // Rx parameter
+    [Parameter]
+    public TypeOfOperationViewModel TypeOfOperationToUpdate { get; set; }
+
+    // Tx parameter
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+    
+    void SubmitForm()
+    {
+        MudDialog.Close(DialogResult.Ok(TypeOfOperationToUpdate));
+    }
+    void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+    }
+}

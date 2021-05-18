@@ -1,0 +1,419 @@
+@using System.Net.Http.Json
+@using StarCake.Shared.Models.ViewModels
+@inject HttpClient _http
+@inject ISnackbar _snackbar
+@using StarCake.Client.Services
+@using System.Globalization
+@using MudBlazor.Utilities
+@using System.ComponentModel.DataAnnotations
+@using StarCake.Shared
+@using StarCake.Shared.Models
+@using System.Collections.Specialized
+@using ServiceStack
+@inject AppData _appData
+
+@code {
+        private const Typo HeaderTypo = Typo.body2;
+        private const Justify HeaderJustify = Justify.Center;
+        private const int InternalSpacing = 0;
+        private const string BorderStyle = "border: solid #545b62;";
+
+    private List<FlightLogViewModel> _pendingFlightLogs = new List<FlightLogViewModel>();
+}
+
+@if (!_pendingFlightLogs.Any())
+{
+    <MudAlert Severity="Severity.Info" Variant="Variant.Filled">No FlightLogs added yet</MudAlert>
+}
+else
+{
+    <table style="width:100%; table-layout: fixed" class="table table-bordered">
+        <tr>
+            <th>PILOT</th>
+            <th>LOGGED</th>
+            <th>TYPE OF OPERATIONS</th>
+            <th>ENTITY</th>
+            <th>TAKEOFF DATE</th>
+            <th>TAKEOFF TIME</th>
+            <th>COUNTRY</th>
+            <th>TAKEOFF PLACE</th>
+            <th>TAKEOFF POSITION</th>
+            <th>FLIGHT DURATION</th>
+            <th>LANDING PLACE</th>
+            <th>LANDING POSITION</th>
+            <th>REMARKS</th>
+            <th>DELETE</th>
+        </tr>
+        @foreach (var flightLog in _pendingFlightLogs.OrderBy(x=>x.DateTakeOff).ToList())
+        {
+            @code{
+                private string style = "overflow: hidden; word-wrap: break-word";
+            }
+            <tr>
+                <td style="@style">
+                    @flightLog.UserPiloted.GetNameFormal()
+                </td>
+                <td style="@style">
+                    @flightLog.UserLogged.GetNameFormal()
+                </td>
+                <td style="@style">
+                    @flightLog.TypeOfOperationsCommaSeparated()
+                </td>
+                <td style="@style">
+                    @flightLog.EntityName
+                </td>
+                <td style="@style">
+                    @flightLog.DateTakeOffyymmdd()
+                </td>
+                <td style="@style">
+                    @flightLog.DateTakeOffClock()
+                </td>
+                <td style="@style">
+                    @GetCountryCode(flightLog.CountryId)
+                </td>
+                <td style="@style">
+                    @flightLog.AddressTakeOff
+                </td>
+                <td style="@style">
+                    <MudGrid Spacing="0">
+                        @foreach (var coordinate in new List<decimal?> {flightLog.LatitudeTakeOff, flightLog.LongitudeTakeOff})
+                        {
+                            <MudItem xs="12">
+                                @coordinate
+                            </MudItem>
+                        }
+                    </MudGrid>
+                </td>
+                <td style="@style">
+                    @TimeFormatting.SecondsToHMM(flightLog.SecondsFlown)
+                </td>
+                <td style="@style">
+                    @flightLog.AddressLanding
+                </td>
+                <td style="@style">
+                    <MudGrid Spacing="0">
+                        @foreach (var coordinate in new List<decimal?> {flightLog.LatitudeLanding, flightLog.LongitudeLanding})
+                        {
+                            <MudItem xs="12">
+                                @coordinate
+                            </MudItem>
+                        }
+                    </MudGrid>
+                </td>
+                <td style="@style">
+                    @flightLog.Remarks
+                </td>
+                <td style="@style">
+                    <MudIconButton
+                        OnClick="() => _pendingFlightLogs.Remove(flightLog)"
+                        Size="Size.Small"
+                        Icon="@Icons.Material.Filled.Delete"
+                        Color="Color.Error">
+                    </MudIconButton>
+                </td>
+            </tr>
+        }
+    </table>
+    
+    <MudGrid Justify="Justify.FlexEnd">
+        <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Success" EndIcon="@Icons.Material.Filled.Add" OnClick="PostFlightLogs">
+            SAVE ALL FLIGHTLOGS IN LIST
+        </MudButton>
+    </MudGrid>
+}
+
+
+
+<MudDivider DividerType="DividerType.Middle" Class="my-6"/>
+@code {
+    private async Task PostFlightLogs()
+    {
+        if (!_pendingFlightLogs.Any())
+        {
+            _appData.ParentRoot.ShowSnackBar("Add some FlightLogs first", Severity.Error);
+            return;
+        }
+        var flightLogsToRemove = new List<FlightLogViewModel>();
+        // Add all the FlightLogs to the Server
+        foreach (var flightLog in _pendingFlightLogs)
+        {
+            flightLog.DepartmentId = AppData.CurrentUser.CurrentDepartment.DepartmentId;
+            var response = await _http.PostAsJsonAsync("api/FlightLogAPI/", flightLog);
+            if (response.IsSuccessStatusCode)
+            {
+                // Get FlightLog returned from Server
+                var flightLogFromDb = await response.Content.ReadFromJsonAsync<FlightLogViewModel>();
+                // Add the FlightLog to the given Entity
+                AppData.CurrentUser.CurrentDepartment.Entities.FirstOrDefault(x => x.EntityId == flightLog.EntityId)?.FlightLogs.Add(flightLogFromDb);
+                _appData.ParentRoot.RefreshApp();
+                // Add the old FlightLog to the list to later Remove
+                flightLogsToRemove.Add(flightLog);
+            }
+            else
+                _appData.ParentRoot.ShowSnackBar("There was an error uploading a FlightLog to the database", Severity.Error);
+        }
+        // Show status and delete from PendingFlightLogs table
+        _appData.ParentRoot.ShowSnackBar($"{flightLogsToRemove.Count} FlightLogs was SAVED!", Severity.Success);
+        foreach (var flightLog in flightLogsToRemove)
+            _pendingFlightLogs.Remove(flightLog);
+    }
+    
+    private string GetCountryCode(int countryId)
+    {
+        return _appData.Countries.FirstOrDefault(x => x.CountryId == countryId)?.CountryCode;
+    }
+    private string ImageUriInEntity(int entityId)
+    {
+        return AppData.CurrentUser.CurrentDepartment.Entities.FirstOrDefault(x => x.EntityId == entityId)?.ImageAsDataUriBase64();
+    }
+}
+
+
+<EditForm Model=@FlightLogViewModelForm OnValidSubmit="SubmitForm">
+    <DataAnnotationsValidator/>
+    <MudCard>
+        <MudCardContent>
+            <MudGrid Spacing="0">
+                <MudItem xs="12">
+                    <table style="width:100%; border-collapse: collapse" class="table table-bordered">
+                        <tr>
+                            <th>PILOT</th>
+                            <th>LOGGED</th>
+                            <th>TYPE OF OPERATIONS</th>
+                            <th>ENTITY</th>
+                            <th>TAKEOFF DATE</th>
+                            <th>TAKEOFF TIME</th>
+                            <th>COUNTRY</th>
+                            <th>TAKEOFF PLACE</th>
+                            <th>TAKEOFF POSITION</th>
+                            <th>FLIGHT DURATION</th>
+                            <th>LANDING PLACE</th>
+                            <th>LANDING POSITION</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <MudAutocomplete Dense="true" T="ApplicationUserViewModel" @bind-Value="FlightLogViewModelForm.UserPilot" SearchFunc="@SearchUsers" ToStringFunc="@(e => e == null ? null : $"{e.FirstName} {e.LastName}")"/>
+                            </td>
+                            <td>
+                                <MudAutocomplete Dense="true" T="ApplicationUserViewModel" @bind-Value="FlightLogViewModelForm.UserLogged" SearchFunc="@SearchUsers" ToStringFunc="@(e => e == null ? null : $"{e.FirstName} {e.LastName}")"/>
+                            </td>
+                            <td>
+                                <MudSelect Dense="true" Direction="Direction.Top" T="TypeOfOperationViewModel" MultiSelection="true"
+                                           ToStringFunc="@_typeOfOperationConverter"
+                                           @bind-SelectedValues="@FlightLogViewModelForm.SelectedTypeOfOperations">
+                                    @foreach (var typeOfOperation in _appData.TypeOfOperations.Where(x => x.IsActive))
+                                    {
+                                        <MudSelectItem T="TypeOfOperationViewModel" Value="@typeOfOperation">@typeOfOperation.Name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </td>
+                            <td>
+                                <MudAutocomplete Dense="true" T="EntityViewModel" @bind-Value="FlightLogViewModelForm.CurrentEntity" SearchFunc="@SearchEntities" ToStringFunc="@(e => e == null ? null : $"{e.Name}")"/>
+                            </td>
+                            <td>
+                                <MudTextField @bind-Value="@FlightLogViewModelForm.DateTakeOff" Format="@DateValidation" Label="@DateValidation"/>
+                            </td>
+                            <td>
+                                <MudTextField @bind-Value="@FlightLogViewModelForm.DateTakeOffClock" Format="@FlightLogViewModelForm.DateTakeOffClockFormat" Label="@FlightLogViewModelForm.DateTakeOffClockFormat"/>
+                            </td>
+                            <td>
+                                <MudAutocomplete Dense="true" T="CountryViewModel" @bind-Value="FlightLogViewModelForm.CurrentCountry" SearchFunc="@SearchCountries" ToStringFunc="@(e => e == null ? null : $"{e.CountryCode}")"/>
+                            </td>
+                            <td>
+                                <MudGrid Spacing="0">
+                                    <MudItem xs="12">
+                                        <MudTextField @bind-Value="@FlightLogViewModelForm.AddressTakeOff"/>
+                                    </MudItem>
+                                    <MudItem xs="12">
+                                        <MudTooltip Text="Get LAT+LONG coordinate from PLACE" Placement="Placement.End" Delay="500">
+                                            <MudIconButton
+                                                OnClick="GeoLocateTakeoffForwardTakeOff"
+                                                Icon="@Icons.Material.Filled.GpsFixed"/>
+                                        </MudTooltip>
+
+                                        @code {
+
+                                            async Task GeoLocateTakeoffForwardTakeOff()
+                                            {
+                                                if (FlightLogViewModelForm.AddressTakeOff == null)
+                                                    _appData.ParentRoot.ShowSnackBar("Insert an address first", Severity.Info);
+                                                else
+                                                {
+                                                    var openCageResponseForward = await GetForwardOpenGageResponse(FlightLogViewModelForm.AddressTakeOff);
+                                                    if (openCageResponseForward != null)
+                                                    {
+                                                        FlightLogViewModelForm.LatitudeTakeOff = "0.0";
+                                                        FlightLogViewModelForm.LongitudeTakeOff = "0.0";
+                                                        FlightLogViewModelForm.LatitudeTakeOff = openCageResponseForward.Latitude.ToString(CultureInfo.InvariantCulture);
+                                                        FlightLogViewModelForm.LongitudeTakeOff = openCageResponseForward.Longitude.ToString(CultureInfo.InvariantCulture);
+                                                        _appData.ParentRoot.ShowSnackBar("Coordinates was found", Severity.Success, snackBarVariant: Variant.Outlined);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </MudItem>
+                                </MudGrid>
+                            </td>
+                            <td>
+                                <MudGrid Spacing="0">
+                                    <MudItem xs="12">
+                                        <MudTextField Label="LAT (DD.DDDDDD)" @bind-Value="@FlightLogViewModelForm.LatitudeTakeOff"/>
+                                    </MudItem>
+                                    <MudItem xs="12">
+                                        <MudTextField Label="LONG (DDD.DDDDDD)" @bind-Value="@FlightLogViewModelForm.LongitudeTakeOff"/>
+                                    </MudItem>
+                                </MudGrid>
+                            </td>
+                            <td>
+                                <MudTextField
+                                    @bind-Value="@FlightLogViewModelForm.MinutesFlown"
+                                    InputType="InputType.Number"
+                                    Placeholder="0"
+                                    Label="Minutes flown"/>
+                            </td>
+                            <td>
+                                <MudGrid Spacing="0">
+                                    <MudItem xs="12">
+                                        <MudTextField @bind-Value="@FlightLogViewModelForm.AddressLanding" Label="Empty if Takeoff"/>
+                                    </MudItem>
+                                    <MudItem xs="12">
+                                        <MudTooltip Text="Get LAT+LONG coordinate from PLACE" Placement="Placement.End" Delay="500">
+                                            <MudIconButton
+                                                OnClick="GeoLocateTakeoffForwardLanding"
+                                                Icon="@Icons.Material.Filled.GpsFixed"/>
+                                        </MudTooltip>
+
+                                        @code {
+
+                                            async Task GeoLocateTakeoffForwardLanding()
+                                            {
+                                                if (FlightLogViewModelForm.AddressLanding == null)
+                                                    _appData.ParentRoot.ShowSnackBar("Insert an address first", Severity.Info);
+                                                else
+                                                {
+                                                    var openCageResponseForward = await GetForwardOpenGageResponse(FlightLogViewModelForm.AddressLanding);
+                                                    if (openCageResponseForward != null)
+                                                    {
+                                                        FlightLogViewModelForm.LatitudeLanding = "0.0";
+                                                        FlightLogViewModelForm.LongitudeLanding = "0.0";
+                                                        FlightLogViewModelForm.LatitudeLanding = openCageResponseForward.Latitude.ToString(CultureInfo.InvariantCulture);
+                                                        FlightLogViewModelForm.LongitudeLanding = openCageResponseForward.Longitude.ToString(CultureInfo.InvariantCulture);
+                                                        _appData.ParentRoot.ShowSnackBar("Coordinates was found", Severity.Success, snackBarVariant: Variant.Outlined);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </MudItem>
+                                </MudGrid>
+                            </td>
+                            <td>
+                                <MudGrid Spacing="0">
+                                    <MudItem xs="12">
+                                        <MudTextField Label="Empty if Takeoff" @bind-Value="@FlightLogViewModelForm.LatitudeLanding"/>
+                                    </MudItem>
+                                    <MudItem xs="12">
+                                        <MudTextField Label="Empty if Takeoff" @bind-Value="@FlightLogViewModelForm.LongitudeLanding"/>
+                                    </MudItem>
+                                </MudGrid>
+                            </td>
+                        </tr>
+                    </table>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudGrid Spacing="0">
+                        <MudItem xs="4">
+                            <MudText Color="@Color.Error">
+                                <ValidationSummary/>
+                            </MudText>
+                        </MudItem>
+                        <MudItem xs="8">
+                            <table style="width:100%; border-collapse: collapse" class="table table-bordered">
+                                <tr><th>REMARKS</th></tr>
+                                <tr>
+                                    <MudTextField
+                                        HelperText="Can be empty"
+                                        InputType="InputType.Text"
+                                        For="@(() => FlightLogViewModelForm.Remarks)"
+                                        @bind-Value="@FlightLogViewModelForm.Remarks"
+                                        Lines="4" Variant="Variant.Outlined"/>
+                                </tr>
+                            </table>
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+                ADD FLIGHTLOG TO LIST
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+    
+</EditForm>
+
+
+
+@code {
+    async Task<OpenCageResponseForward> GetForwardOpenGageResponse(string address)
+    {
+        const string queryPrefix = "api/FlightLogAPI/GetCoordinateFromAddress/";
+        var nvc = new NameValueCollection
+        {
+            {"address", address},
+            {"openCageApiKey", AppData.CurrentUser.CurrentDepartment.Organization.ApiKeyOpenCageData}
+        };
+        var geocoderResponse = await _http.GetFromJsonAsync<OpenCageResponseForward>(queryPrefix + Coding.Query.ToQueryString(nvc));
+        return geocoderResponse;
+    }
+    private void GetGeoLocation()
+    {
+        _appData.ParentRoot.ShowSnackBar("GPS NOT IMPLEMENTED", Severity.Error);
+    }
+    
+    Func<TypeOfOperationViewModel,string> _typeOfOperationConverter = p => p?.Name;
+}
+
+@code {
+        const string DateValidation = "yyMMdd";
+    private void SubmitForm()
+    {
+        _pendingFlightLogs.Add(FlightLogViewModelForm.FormToViewModel());
+    }
+}
+
+@code {
+    private FlightLogViewModelForm FlightLogViewModelForm { get; set; }
+    protected override void OnInitialized()
+    {
+        FlightLogViewModelForm = new FlightLogViewModelForm
+        {
+            UserLogged = AppData.CurrentUser
+        };
+    } 
+}
+
+
+
+
+@* Search functions *@
+@functions {
+    private async Task<IEnumerable<ApplicationUserViewModel>> SearchUsers(string value)
+    {
+        await Task.Delay(5);
+        var allUsers = AppData.CurrentUser.CurrentDepartment.DepartmentApplicationUsers.Select(x => x.ApplicationUser).ToList();
+        return string.IsNullOrEmpty(value) ? allUsers : allUsers.Where(x => $"{x.FirstName} {x.LastName}".Contains(value, StringComparison.OrdinalIgnoreCase));
+    }
+    private async Task<IEnumerable<EntityViewModel>> SearchEntities(string value)
+    {
+        await Task.Delay(5);
+        var allEntities = AppData.CurrentUser.CurrentDepartment.Entities.Where(x => !x.IsArchived).ToList();
+        return string.IsNullOrEmpty(value) ? allEntities : allEntities.Where(x => $"{x.Name}".Contains(value, StringComparison.OrdinalIgnoreCase));
+    }
+    private async Task<IEnumerable<CountryViewModel>> SearchCountries(string value)
+    {
+        await Task.Delay(5);
+        var allCountries = _appData.Countries;
+        return string.IsNullOrEmpty(value) ? allCountries : allCountries.Where(x => $"{x.CountryCode}".Contains(value, StringComparison.OrdinalIgnoreCase));
+    }
+}

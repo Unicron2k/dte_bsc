@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Mode ListPreference -->
+    <string-array name="pref_dark_mode_entries">
+        <item>@string/disabled</item>
+        <item>@string/enabled</item>
+        <item>@string/system_specified</item>
+        <item>@string/system_auto_battery</item>
+    </string-array>
+
+    <string-array name="pref_dark_mode_values">
+        <item>MODE_NIGHT_NO</item>
+        <item>MODE_NIGHT_YES</item>
+        <item>MODE_NIGHT_FOLLOW_SYSTEM</item>
+        <item>MODE_NIGHT_AUTO_BATTERY</item>
+    </string-array>
+
+    <string-array name="feedback_categories">
+        <item>@string/review_positive</item>
+        <item>@string/review_negative</item>
+        <item>@string/feature_request</item>
+        <item>@string/bug</item>
+    </string-array>
+
+    <!-- Spinner value for new Exercises -->
+    <string-array name="exercise_choose_color">
+        <item name="Orange">#FF6633</item>
+        <item name="Pink">#FFB399</item>
+    </string-array>
+
+    <string-array name="exercise_chose_icon">
+        <item>icons8-acrobatics.png</item>
+        <item>icons8-back_extensors_filled.png</item>
+        <item>icons8-back_muscles.png</item>
+    </string-array>
+</resources>

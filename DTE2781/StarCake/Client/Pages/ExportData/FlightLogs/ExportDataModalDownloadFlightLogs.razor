@@ -1,0 +1,173 @@
+﻿@using System.Collections.Specialized
+@using System.Reflection
+@using StarCake.Shared
+@inject IJSRuntime _js
+@inject HttpClient _http
+@inject NavigationManager _navigation
+@using StarCake.Client.Services
+@using StarCake.Shared.Models.ViewModels
+
+@if (IsOrderingStarted)
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <MudText>Sorting...</MudText>
+        </MudItem>
+    </MudGrid>
+    <MudGrid>
+        <MudItem xs="12">
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7"/>
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <MudGrid Justify="Justify.Center">
+        <MudItem xs="12">
+            <MudGrid Spacing="1" Justify="Justify.Center">
+                <MudMenu
+                    EndIcon="@Icons.Filled.KeyboardArrowDown"
+                    Label="@($"Order by: {_currentOrdering}")"
+                    Color="Color.Primary" Variant="Variant.Filled" Direction="Direction.Bottom"
+                    OffsetY="true" FullWidth="true" MaxHeight="200">
+                    @* Loop through available OrderValues using reflection *@
+                    @foreach (var propName in typeof(FlightLogOrderEnums).GetFields(BindingFlags.Static | BindingFlags.Public))
+                    {
+                        var value = propName.GetValue(null).ToString();
+                        <MudMenuItem OnClick="() => OrderFlightLogs(value)">@value</MudMenuItem>
+                    }
+                </MudMenu>
+            </MudGrid>
+        </MudItem>
+        <MudItem xs="12">
+            <MudGrid Spacing="1" Justify="Justify.Center">
+                <MudItem><MudFab OnClick="@(async () => await DownloadFile(FileTypeEnums.FlightLogGenerator.FileExcel))" Icon="@Icons.Material.Filled.FilePresent" Label="Excel"/></MudItem>
+                <MudItem><MudFab OnClick="@(async () => await DownloadFile(FileTypeEnums.FlightLogGenerator.FileCsv))" Icon="@Icons.Material.Filled.FilePresent" Label="Csv"/></MudItem>
+                <MudItem><MudFab OnClick="@(async () => await DownloadFile(FileTypeEnums.FlightLogGenerator.FilePdf))" Icon="@Icons.Material.Filled.FilePresent" Label="Pdf"/></MudItem>
+                <MudItem><MudFab OnClick="@(async () => await DownloadFile(FileTypeEnums.FlightLogGenerator.FileJson))" Icon="@Icons.Material.Filled.FilePresent" Label="Json"/></MudItem>
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+    
+}
+
+
+
+
+
+<MudGrid>
+    <MudItem xs="12" Class="d-flex align-center justify-center mud-width-full py-8">
+        @if (IsDownloadStarted == 1) {
+            <MudProgressCircular Color="Color.Primary" Size="Size.Medium" Indeterminate="true" />
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7"/>
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-10"/>
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-12"/>
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-14"/>
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-15"/>
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-17"/>
+        }
+        else if (IsDownloadStarted == 2) {
+            <MudIcon Color="Color.Success" Size="Size.Large" Icon="@Icons.Material.Filled.CheckCircleOutline" />
+        }
+    </MudItem>
+</MudGrid>
+
+@code {
+    private string _currentOrdering = FlightLogOrderEnums.PropDate;
+    
+    protected override void OnInitialized()
+    {
+        OrderFlightLogs(_currentOrdering);
+    }
+
+    private static class FlightLogOrderEnums
+    {
+        public const string PropDate = "Date";
+        public const string PropEntityName = "Entity Name";
+        public const string PropPilot = "Pilot";
+        public const string PropPlace = "Place";
+        public const string PropSTART = "START";
+        public const string PropACC = "ACC";
+        public const string PropLoggedBy = "Logged by";
+        public const string PropRemarks = "Remarks";
+    }
+
+    private bool IsOrderingStarted { get; set; }
+    async Task OrderFlightLogs(string flightLogOrderEnum)
+    {
+        IsOrderingStarted = true;
+        var iOrderEnum = flightLogOrderEnum switch
+        {
+            FlightLogOrderEnums.PropDate => SelectedFlightLogs.OrderBy(x => x.Date),
+            FlightLogOrderEnums.PropEntityName => SelectedFlightLogs.OrderBy(x => x.EntityName),
+            FlightLogOrderEnums.PropPilot => SelectedFlightLogs.OrderBy(x => x.ApplicationUserPilotedNameFormal),
+            FlightLogOrderEnums.PropPlace => SelectedFlightLogs.OrderBy(x => x.GetPlace()),
+            FlightLogOrderEnums.PropSTART => SelectedFlightLogs.OrderBy(x => x.DateToHHMM()),
+            FlightLogOrderEnums.PropACC => SelectedFlightLogs.OrderBy(x => x.ACCOfEntityAtFlightInSeconds),
+            FlightLogOrderEnums.PropLoggedBy => SelectedFlightLogs.OrderBy(x => x.ApplicationUserLoggedNameFormal),
+            FlightLogOrderEnums.PropRemarks => SelectedFlightLogs.OrderBy(x => x.Remarks),
+            _ => SelectedFlightLogs.OrderBy(x => x.Date)
+            };
+        SelectedFlightLogs = iOrderEnum.ToList();
+        IsOrderingStarted = false;
+        _currentOrdering = flightLogOrderEnum;
+        
+        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(SelectedFlightLogs));
+    }
+    
+
+
+    
+    /* Rx parameters */
+    [Parameter]
+    public List<FlightLogViewModelTable> SelectedFlightLogs { get; set; }
+    [Parameter]
+    public List<int> FlightLogIds { get; set; }
+    [Parameter]
+    public DateTime DateStart { get; set; }
+    [Parameter]
+    public DateTime DateEnd { get; set; }
+    [Parameter]
+    public string ApplicationUserId { get; set; }
+
+
+    private int IsDownloadStarted { get; set; }
+    private async Task DownloadFile(string fileTypeFromConst)
+    {
+        IsDownloadStarted = 1;
+        StateHasChanged();
+        
+        var fileName = $"FlightLogs - {DateStart:yyyy-MM-dd}_to_{DateEnd:yyyy-MM-dd}";
+        var query = $"api/ExportDataAPI/FlightLogs/";
+        switch (fileTypeFromConst)
+        {
+            case FileTypeEnums.FlightLogGenerator.FileExcel:
+                fileName += ".xlsx";
+                break;
+            case FileTypeEnums.FlightLogGenerator.FileCsv:
+                fileName += ".csv";
+                break;
+            case FileTypeEnums.FlightLogGenerator.FilePdf:
+                fileName += ".pdf";
+                break;
+            case FileTypeEnums.FlightLogGenerator.FileJson:
+                fileName += ".json";
+                break;
+            
+        }
+        
+        var nvc = new NameValueCollection
+        {
+            {"base64FlightLogIds", Coding.Base64.ToBase64(SelectedFlightLogs.Select(x=>x.FlightLogId).ToList())},
+            {"base64ApplicationUserId", Coding.Base64.ToBase64(AppData.CurrentUser.Id)},
+            {"base64DepartmentId", Coding.Base64.ToBase64(AppData.CurrentUser.CurrentDepartment.DepartmentId)},
+            {"base64FileType", Coding.Base64.ToBase64(fileTypeFromConst)}
+        };
+        var response = await _http.GetAsync(query+Coding.Query.ToQueryString(nvc));
+
+        response.EnsureSuccessStatusCode();
+        var fileBytes = await response.Content.ReadAsByteArrayAsync();
+        await _js.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
+        IsDownloadStarted = 2;
+    }
+}

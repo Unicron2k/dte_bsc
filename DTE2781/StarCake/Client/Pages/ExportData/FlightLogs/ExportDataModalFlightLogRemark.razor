@@ -1,0 +1,27 @@
+﻿@inject HttpClient _http
+
+<MudGrid>
+    <MudItem xs="12" Class="d-flex align-center justify-center mud-width-full py-8">
+        @if (_remark == null)
+        {
+            <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+        }
+        else
+        {
+            <h3>@_remark</h3>
+        }
+    </MudItem>
+</MudGrid>
+
+@code {
+    /* Rx parameters */
+
+    [Parameter]
+    public int FlightLogId { get; set; }
+    private string _remark;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _remark = await _http.GetStringAsync("api/ExportDataAPI/FlightLogRemark/" + FlightLogId);
+    }
+}

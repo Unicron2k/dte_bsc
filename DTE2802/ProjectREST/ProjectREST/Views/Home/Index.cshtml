@@ -1,0 +1,63 @@
+@model IEnumerable<ProjectREST.Models.Entities.Blog>
+
+@{
+    ViewData["Title"] = "Available Blogs";
+}
+
+<h1>Blogs</h1>
+
+<p>
+    <a asp-action="Create">Create New Blog</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Owner)
+            </th>
+            <th>
+                Created
+            </th>
+            <th>
+                Actions
+            </th>
+            <th>
+                Locked
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.ActionLink(item.Name, "Index", "Blog", new {id=item.BlogId})
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Owner.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreationDate)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.BlogId">Details</a>
+                <text> | </text>
+                <a asp-action="Edit" asp-route-id="@item.BlogId">Edit</a>
+                <text> | </text>
+                <a asp-action="Delete" asp-route-id="@item.BlogId">Delete</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BlogLocked)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

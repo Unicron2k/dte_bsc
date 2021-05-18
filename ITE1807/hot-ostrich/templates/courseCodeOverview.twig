@@ -1,0 +1,104 @@
+{% extends 'base.twig' %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="./css/maincss.css">
+{% endblock %}
+
+{% block main %}
+    <nav class="navbar-custom">
+        <br>
+        <div class="dropdown dropdown-custom">
+            <div class="btn-group">
+                <button class="btn btn-secondary btn-sm" type="button">
+                    Velg undervisningsted
+                </button>
+                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li><a href="#">Alle steder</a></li>
+                    <li class="regionNorway">Finnmark</li>
+                    <li><a href="#">Alta</a></li>
+                    <li><a href="#">Hammerfest</a></li>
+                    <li><a href="#">Kirkenes</a></li>
+                    <li class="regionNorway">Troms</li>
+                    <li><a href="#">Tromsø</a></li>
+                    <li><a href="#">Bardufoss</a></li>
+                    <li><a href="#">Harstad</a></li>
+                    <li class="regionNorway">Nordland</li>
+                    <li><a href="#">Narvik</a></li>
+                    <li><a href="#">Bodø</a></li>
+                    <li><a href="#">Mo i Rana</a></li>
+                    <li class="regionNorway">Andre steder</li>
+                    <li><a href="#">Svalbard</a></li>
+                    <li><a href="#">Nettbasert</a></li>
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="dropdown dropdown-custom">
+            <div class="btn-group">
+                <button class="btn btn-secondary btn-sm buttonDropDown-custom" type="button">
+                    Velg grad
+                </button>
+                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    {#                {% for i in degreeItems %}#}
+                    {#                <li><a href="#">{{ user.firstName }}</a></li>#}
+                    {#                {% endfor %}#}
+                    <li><a href="#">Alle grad</a></li>
+                    <li><a href="#">Forkurs</a></li>
+                    <li><a href="#">Bachelor</a></li>
+                    <li><a href="#">Master</a></li>
+                    <li><a href="#">Doktor</a></li>
+                    <li><a href="#">Ingen</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="dropdown dropdown-menu-right dropdown-custom">
+            <div class="btn-group">
+                <button class="btn btn-secondary btn-sm" type="button">
+                    Velg fagområde
+                </button>
+                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li><a href="#">Alle fagområder</a></li>
+                    <li><a href="#">Humanistiske fag, mediefag</a></li>
+                    <li><a href="#">Ingeniør, sivilingeniør</a></li>
+                    <li><a href="#">Kunst- musikkfag</a></li>
+                    <li><a href="#">Lærereutdanninger og utdanninger i pedagogikk</a></li>
+                    <li><a href="#">Marine fag</a></li>
+                    <li><a href="#">Medisin, odontologi, helse- og sosialfag</a></li>
+                    <li><a href="#">Naturvitenskapelige- og teknologiske fag</a></li>
+                    <li><a href="#">Reiselivsfag, Idrett og friluftsliv</a></li>
+                    <li><a href="#">Samfunnsfag og juridiske fag</a></li>
+                    <li><a href="#">Sikkerthetsfag</a></li>
+                    <li><a href="#">Språk og litteratur</a></li>
+                    <li><a href="#">Økonomiske og administrative fag</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="wrapperGrid">
+            {% for course in courseCode %}
+                <div class="box">{{ course.getCourseCode() }} - {{ course.getNameNbNo() }}
+                    <p class="pGrid">Sist endret. Dato, navn</p>
+                    <a href="courseCode.php?id={{ course.getIdCourseCode() }}">
+                        <button class="buttonCustom" style="vertical-align:middle">Vis emnekode</button>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+

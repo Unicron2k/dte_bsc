@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="first_name">Fornavn</string>
+    <string name="last_name">Etternavn</string>
+    <string name="post_code">Postnummer</string>
+    <string name="birthyear">Fødselsår</string>
+</resources>

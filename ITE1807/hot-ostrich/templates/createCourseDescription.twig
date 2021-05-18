@@ -1,0 +1,422 @@
+{% extends 'base.twig' %}
+
+{% block title %} Ny emnebeskrivelse {% endblock %}
+
+{% block main %}
+    <div class="container">
+        <div class="row" style="padding-bottom: 2em;">
+            <div class="col-md-8">
+                {% if courseCreated %}
+                    <h2>Emnebeskrivelsen ble opprettet!</h2>
+                    {% elseif insufficientRights %}
+                    <h2>Du har ikke nødvendige rettigheter for å opprette en ny emnebeskrivelse!</h2>
+                    <h2>Kontakt administrator.</h2>
+                {% else %}
+                    <h2>Opprett ny emnebeskrivelse</h2>
+                {% if storedPostVars.error %}<h4 style="color: darkred">En feil oppstod! Kontroller alle
+                    data!</h4>{% endif %}
+
+
+                    <form method="post" action="createCourseDescription.php" class="text-left">
+
+                        <div class="form-group">
+                            <!-- Course -->
+                            <label class="h5" for="idCourseCode">Kurs: </label>
+                            <select name="idCourseCode" class="custom-select" id="idCourseCode">
+                                {% for courseCode in courseCodes %}
+                                    <option value="{{ courseCode.getIdCourseCode }}"{% if courseCode.getIdCourseCode == storedPostVars.idCourseCode %} selected="selected" {% endif %}>{{ courseCode.getCourseCode }}
+                                        - {{ courseCode.getNameNbNo }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <!-- Valid year for course overview -->
+                            <label class="h5" for="course_overview_year">År:</label>
+                            <input name="course_overview_year" type="number" class="form-control"
+                                   id="course_overview_year"
+                                   value="{% if storedPostVars.course_overview_year %}{{ storedPostVars.course_overview_year }}{% else %}2020{% endif %}"
+                                   maxlength="4" min="2020" max="2100" required>
+                        </div>
+
+                        <!-- Single course? -->
+                        <div class="form-check form-check-inline">
+                            <input name="single_course" type="checkbox"
+                                   {% if storedPostVars.single_course %}checked="checked" {% endif %}value="1"
+                                   class="form-check-input" id="single_course_checkbox">
+                            <label for="single_course_checkbox" class="form-check-label">Enkeltemne</label>
+                        </div>
+
+
+                        <!-- Continuation? -->
+                        <div class="form-check form-check-inline">
+                            <input name="continuation" type="checkbox"
+                                   {% if storedPostVars.continuation %}checked="checked" {% endif %}value="1"
+                                   class="form-check-input" id="continuation_checkbox">
+                            <label for="continuation_checkbox" class="form-check-label">Kontinuering</label>
+                        </div>
+
+
+                        <!-- Semester -->
+                        <br>
+                        <h5>Termin</h5>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="spring" name="semester_spring"
+                                   {% if storedPostVars.semester_fall %}checked="checked" {% endif %}value="1">
+                            <label class="form-check-label" for="spring">Vår</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="fall" name="semester_fall"
+                                   {% if storedPostVars.semester_fall %}checked="checked" {% endif %}value="1">
+                            <label class="form-check-label" for="fall">Høst</label>
+                        </div>
+
+
+                        <!-- Teaching language -->
+                        <br>
+                        <br>
+                        <label for="teaching_language" class="h5">Undervisningsspråk</label>
+                        <select name="language" class="custom-select" id="teaching_language">
+                            {% for language in languages %}
+                                <option value="{{ language.getIdLanguage }}"{% if language.getIdLanguage == storedPostVars.language %} selected="selected"{% endif %}>{{ language.getLanguage }}</option>
+                            {% endfor %}
+                        </select>
+
+
+                        <!-- Exam type -->
+                        <br>
+                        <br>
+                        <label for="exam_type" class="h5">Eksamensform</label>
+                        <select name="exam_type" class="custom-select" id="exam_type">
+                            {% for examType in examTypes %}
+                                <option value="{{ examType.getIdExamType }}"{% if examType.getIdExamType == storedPostVars.exam_type %} selected="selected"{% endif %}>{{ examType.getExamType }}</option>
+                            {% endfor %}
+                        </select>
+
+
+                        <!-- Grade scale -->
+                        <br>
+                        <br>
+                        <label for="grade_scale" class="h5">Karakterskala</label>
+                        <select name="grade_scale" class="custom-select" id="grade_scale">
+                            {% for gradeScale in gradeScales %}
+                                <option value="{{ gradeScale.getIdGradeScale }}"{% if gradeScale.getIdGradeScale == storedPostVars.grade_scale %} selected="selected"{% endif %}>{{ gradeScale.getScale }}</option>
+                            {% endfor %}
+                        </select>
+
+
+                        <!-- courseCoordinator -->
+                        <div style="padding-bottom: 2em">
+                            <!-- Primary CourseCoordinator -->
+                            <div style="float: left; width: 45%; padding-right: 1em">
+                                <label for="courseCoordinator1" class="h5">Emneansvarlig</label>
+                                <select name="courseCoordinator1" class="custom-select" id="courseCoordinator1">
+                                    {% for user in users %}
+                                        <option value="{{ user.getIdUser }}"{% if user.getIdUser == storedPostVars.courseCoordinator1 %} selected="selected"{% endif %}>{{ user.getFullName }}</option>
+                                    {% endfor %}
+                                </select>
+
+                                <label for="coursePart1">Ansvarlig for</label>
+                                <input type="text" id="coursePart1" name="coursePart1" class="InputFields"
+                                       placeholder="Del-emne"
+                                       {% if storedPostVars.coursePart1 %}value="{{ storedPostVars.coursePart1 }}"{% endif %}>
+                            </div>
+
+                            <!-- Secondary CourseCoordinator -->
+                            <div style="float: right; width: 45%;">
+                                <label for="courseCoordinator2" class="h5">Emneansvarlig 2 (valgfritt)</label>
+                                <select name="courseCoordinator2" class="custom-select" id="courseCoordinator2">
+                                    <option value="0"{% if user.getIdUser == storedPostVars.courseCoordinator2 %} selected="selected"{% endif %}>
+                                        Ingen
+                                    </option>
+                                    {% for user in users %}
+                                        <option value="{{ user.getIdUser }}"{% if user.getIdUser == storedPostVars.courseCoordinator2 %} selected="selected"{% endif %}>{{ user.getFullName }}</option>
+                                    {% endfor %}
+                                </select>
+
+                                <label for="coursePart2">Ansvarlig for:</label>
+                                <input type="text" id="coursePart2" name="coursePart2" class="InputFields"
+                                       placeholder="Del-emne"
+                                       {% if storedPostVars.coursePart2 %}value="{{ storedPostVars.coursePart2 }}"{% endif %}>
+                            </div>
+                        </div>
+
+
+                        <!-- Teaching place -->
+                        <h5 class="text-left" style="padding-top: 12em;">Undervisningssted</h5>
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Tromsø</th>
+                                <th>Narvik</th>
+                                <th>Bodø</th>
+                                <th>Alta</th>
+                                <th>Mo i Rana</th>
+                                <th>Nettbasert</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td><input type="checkbox" id="tromso" name="tromso"
+                                           {% if storedPostVars.tromso %}checked="checked" {% endif %}value="1"></td>
+                                <td><input type="checkbox" id="narvik" name="narvik"
+                                           {% if storedPostVars.narvik %}checked="checked" {% endif %}value="1"></td>
+                                <td><input type="checkbox" id="bodo" name="bodo"
+                                           {% if storedPostVars.bodo %}checked="checked" {% endif %}value="1"></td>
+                                <td><input type="checkbox" id="alta" name="alta"
+                                           {% if storedPostVars.alta %}checked="checked" {% endif %}value="1"></td>
+                                <td><input type="checkbox" id="mo_i_rana" name="mo_i_rana"
+                                           {% if storedPostVars.mo_i_rana %}checked="checked" {% endif %}value="1"></td>
+                                <td><input type="checkbox" id="online" name="online"
+                                           {% if storedPostVars.online %}checked="checked" {% endif %}value="1"
+                                           onclick="invertContentDisplay()"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Select options for online students -->
+                        <div id="hidden_offers_online_students"{% if not storedPostVars.online %} style="display: none"{% endif %}>
+                            <h3>Tilbud for nettstudenter</h3>
+                            <br/>
+
+                            <div class="form-check-inline">
+                                <input name="streaming" type="checkbox" id="streaming"
+                                       {% if storedPostVars.streaming %}checked="checked" {% endif %}value="1">
+                                <label for="streaming" class="form-check-label">Strømming av forelesningene</label>
+                            </div>
+                            <br/>
+
+                            <div class="form-check form-check-inline">
+                                <input name="web_meeting_lecture" type="checkbox" id="web_meeting_lecture"
+                                       {% if storedPostVars.web_meeting_lecture %}checked="checked"
+                                       {% endif %}value="1">
+                                <label for="web_meeting_lecture" class="form-check-label">Åpent nettmøte under
+                                    forelesningene</label>
+                            </div>
+                            <br/>
+
+                            <div class="form-check form-check-inline">
+                                <input name="web_meeting_evening" type="checkbox" id="web_meeting_evening"
+                                       {% if storedPostVars.web_meeting_evening %}checked="checked"
+                                       {% endif %}value="1">
+                                <label for="web_meeting_evening" class="form-check-label">Nettmøte med studentassistent
+                                    på kveldstid</label>
+                            </div>
+                            <br/>
+
+                            <div class="form-check form-check-inline">
+                                <input name="followup" type="checkbox" id="followup"
+                                       {% if storedPostVars.followup %}checked="checked" {% endif %}value="1">
+                                <label for="followup" class="form-check-label">Oppfølging via telefon, epost, Skype
+                                    eller liknende</label>
+                            </div>
+                            <br/>
+
+                            <div class="form-check form-check-inline">
+                                <input name="organized_arrangements" type="checkbox" id="organized_arrangements"
+                                       {% if storedPostVars.organized_arrangements %}checked="checked"
+                                       {% endif %}value="1">
+                                <label for="organized_arrangements" class="form-check-label">Organisert opplegg i
+                                    samlingsukene (lab, ekskursjon, felt, etc.)</label>
+                            </div>
+                            <br/>
+
+                            <label for="other" class="h5">Annet</label>
+                            <textarea name="other" rows="5" cols="100" class="InputFields" id="other" maxlength="1000" placeholder="Valgfritt: Andre aktivitert, opplegg etc. som skal benyttes. Maks 1000 tegn.">{% if storedPostVars.online %}{{ storedPostVars.other }}{% endif %}</textarea>
+                        </div>
+                        <hr/>
+
+
+                        <div class="row" id="prerequisite_item_empty" style="padding-bottom: 0.5rem" hidden>
+                            <div class="col-6">
+                                <select class="form-control" id="prerequisites" name="prerequisites[]">
+                                    {% for courseCode in courseCodes %}
+                                        <option name="prerequisite"
+                                                value="{{ courseCode.getIdCourseCode }}">{{ courseCode.getCourseCode }}
+                                            - {{ courseCode.getNameNbNo }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-3 align-middle">
+                                <input class="form-check-input" type="checkbox" id="prerequisites_required"
+                                       name="prerequisites_required[]" value="1">
+                                <label class="form-check-label" id="prerequisites_required_label" style="padding: 0;"
+                                       for="prerequisites_required">Obligatorisk</label>
+                            </div>
+
+                            <div class="col-3 form-check">
+                                <a class="h6 btn btn-info Default-Bg-Color" style="color: white"
+                                   onclick="removePrerequisite(this.parentElement.parentElement)">Fjern krav</a>
+                            </div>
+                        </div>
+
+
+                        <div id="prerequisite_container">
+                            <h3>Forhåndskrav</h3>
+                            {% if storedPostVars.prerequisites %}
+                                {% for prerequisite in storedPostVars.prerequisites %}
+                                    <div class="row" id="prerequisite_item_empty" style="padding-bottom: 0.5rem">
+                                        <div class="col-6">
+                                            <select class="form-control" id="prerequisites" name="prerequisites[]">
+                                                {% for courseCode in courseCodes %}
+                                                    <option name="prerequisite"
+                                                            value="{{ courseCode.getIdCourseCode }}" {% if courseCode.getIdCourseCode == prerequisite %} selected="selected" {% endif %}>{{ courseCode.getCourseCode }}
+                                                        - {{ courseCode.getNameNbNo }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-3 align-middle">
+                                            <input class="form-check-input" type="checkbox" id="prerequisites_required"
+                                                   name="prerequisites_required[]"
+                                                   {% for required in storedPostVars.prerequisites_required %}{% if loop.parent.loop.index0 == required %}checked="checked"
+                                                   {% endif %}{% endfor %}value="{{ loop.index0 }}">
+                                            <label class="form-check-label" id="prerequisites_required_label"
+                                                   style="padding: 0;" for="prerequisites_required">Obligatorisk</label>
+                                        </div>
+                                        <div class="col-3 form-check">
+                                            <a class="h6 btn btn-info Default-Bg-Color" style="color: white"
+                                               onclick="removePrerequisite(this.parentElement.parentElement)">Fjern
+                                                krav</a>
+                                        </div>
+                                    </div>
+
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <a class="h6 btn btn-info Default-Bg-Color" style="color: white" id="addPrerequisite"
+                           onclick="addPrerequisite()">Nytt forkunnskapskrav</a>
+                        <hr/>
+
+
+                        <!-- Competence goals / What do you learn? -->
+                        <label title="Emnets læringsresultat skal være klart formulert, og beskrives punktvis under
+kategoriene kunnskaper og forståelse, ferdigheter og kompetanse.
+
+På små emner(10 stp) er kompetansebeskrivelsene ikke nødvendige.
+
+Læringsresultat må formuleres slik at det kan etterprøves og det skal være
+tydelig sammenheng mellom emnets læringsresultat, undervisningsopplegg
+og eksamens-og-vurderingsformer.
+
+Når språklig kompetanse er en del av læringsmålet, må dette tas inn i
+emnebeskrivelsene og studieplanene.
+
+Beskrivelsene skal følge følgende oppsett:
+
+    Etter bestått emne skal studentene ha følgende læringsresultat:
+        Kunnskaper og forståelse:
+        Ferdigheter:
+        Kompetanse:
+
+Maks 6000 tegn" for="competence_goals" class="h5">Læringsresultat (?)</label>
+                        <textarea rows="5" cols="100" class="InputFields" id="competence_goals" name="competence_goals"
+                                  placeholder="Kompetansemål..." maxlength="6000"
+                                  required>{% if storedPostVars.competence_goals %}{{ storedPostVars.competence_goals }}{% endif %}</textarea>
+
+                        <!-- Academic content -->
+                        <label title="Beskrivelse av faglig innhold. Maks 1800 tegn" for="academic_content" class="h5">Faglig
+                            innhold (?)</label>
+                        <textarea rows="5" cols="100" class="InputFields" id="academic_content" name="academic_content"
+                                  placeholder="Faglig innhold..." maxlength="1800"
+                                  required>{% if storedPostVars.academic_content %}{{ storedPostVars.academic_content }}{% endif %}</textarea>
+
+
+                        <!-- Learning methods -->
+                        <label title="Undervisningsomfang, undervisnings-og arbeidsform, samt undervisningsfrekvens
+skal beskrives.
+
+I tilfeller der det ikke gis undervisning i emnet hvert semester, bør
+emnebeskrivelsen inneholde opplysninger om muligheten for å avlegge eksamen
+i undervisningsfrie semestre.
+
+Det skal være tydelig sammenheng mellom emnets forventede læringsutbytte og
+de undervisnings- og arbeidsformer som er valgt for emnet.
+
+maks 900 tegn" for="learning_methods" class="h5">Læringsformer og aktiviteter (?)</label>
+                        <textarea rows="5" cols="100" class="InputFields" id="learning_methods" name="learning_methods"
+                                  placeholder="Læringsformer og aktiviteter..." maxlength="900"
+                                  required>{% if storedPostVars.learning_methods %}{{ storedPostVars.learning_methods }}{% endif %}</textarea>
+
+
+                        <!-- Work requirements -->
+                        <label title="VIKTIG! Beskrivelsen skal inneholde følgende:
+
+    En beskrivelse av eventuelle arbeidskrav, f.eks. «Et muntlig framlegg, et
+    notat ogdeltakelse på undervisning», omfanget av disse og hvilke som er
+    obligatoriske, f.eks.forelesninger, metodekurs, øvinger, praksis, feltkurs,
+    ekskursjoner, laboratoriearbeid,gruppeoppgaver, semesteroppgaver og andre
+    skriftlige oppgaver.
+
+    NB! Det må være oppgitt eksakte tall på totalt antall, og hvor mange
+    obligatoriskeøvinger det er, altså hvor mange godkjente/ikke godkjente
+    øvinger som vil bli levert tileksamenskontoret per student.
+
+Eksamen og vurdering:
+
+    Eksamensordning, prøve-og vurderingsform, herunder hvilke vurderinger som
+    kommer på vitnemålet eller som inngår i beregningsgrunnlaget for en
+    karakter som kommer på vitnemålet, skal angis.
+
+    Vurderingsuttrykk skal angis (bokstavkarakter eller «bestått/ikke bestått»).
+    Det skal være tydelig sammenheng mellom emnets forventede læringsutbytte
+    og de eksamens-og-vurderingsform(er) som er valgt for emnet.
+
+VIKTIG!
+Beskrivelsen skal være kort og inneholde følgende:
+
+    1. Hvilke eksamensformer som benyttes, f.eks. «Skriftlig skoleeksamen, 5timer»,
+        «Rapport», «Muntlig» etc.
+
+    2. Hvilken karakterskala som benyttes, f.eks. «Det gis bokstavkarakterer fra
+        A til F, der F er ikke bestått»
+
+    3. Det skal også opplyses om retten til kontinuasjon og hvilke deleksamener
+        som må tas opp igjendersom kandidaten ikke har bestått emnet,
+        f.eks. «Det gis kontinuasjonsadgang for studenter som ikke har bestått
+        siste ordinære arrangerte eksamen i dette emnet» eller «Det gis ikke
+        kontinuasjonsadgang for studenter som ikke har bestått eksamen i dette
+        emnet». Engelsk: «A re-sit exam will be arranged for this course» eller
+        «There will not be arranged a re-sit exam for this course».
+
+maks 3000 tegn" for="work_requirements" class="h5">Arbeidskrav, eksamen og vurdering (?)</label>
+                        <textarea rows="5" cols="100" class="InputFields" id="work_requirements"
+                                  name="work_requirements" placeholder="Arbeidskrav, eksamen og vurdering..."
+                                  maxlength="3000"
+                                  required>{% if storedPostVars.work_requirements %}{{ storedPostVars.work_requirements }}{% endif %}</textarea>
+                        <br/>
+                        <!-- Post form -->
+                        <input type="submit" name="submit" value="Create course overview"
+                               class="btn btn-info Default-Bg-Color" style="float: left"/>
+                    </form>
+                    <script>
+                        let index = {% if storedPostVars.prerequisites %}{{ storedPostVars.prerequisites|length -1 }}{% else %}-1{% endif %};
+
+                        function invertContentDisplay() {
+                            let x = document.getElementById("hidden_offers_online_students");
+                            if (x.style.display === "none") {
+                                x.style.display = "block";
+                            } else {
+                                x.style.display = "none";
+                            }
+                        }
+
+                        function addPrerequisite() {
+                            let container = document.getElementById("prerequisite_container");
+                            let prerequisiteItem = document.getElementById("prerequisite_item_empty");
+                            let identifier = document.getElementById("prerequisites_required");
+                            index++;
+                            identifier.setAttribute("value", index);
+                            const clonedItem = prerequisiteItem.cloneNode(true);
+                            clonedItem.hidden = false;
+                            container.appendChild(clonedItem);
+                        }
+
+                        function removePrerequisite(element) {
+                            let container = document.getElementById("prerequisite_container");
+                            index--;
+                            container.removeChild(element);
+                        }
+                    </script>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

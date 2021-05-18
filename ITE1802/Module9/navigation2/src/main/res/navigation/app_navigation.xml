@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_navigation"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.navigation2.MainFragment"
+        android:label="Hovedskjerm"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_blue"
+            app:destination="@id/blueFragment" />
+        <action
+            android:id="@+id/action_yellow"
+            app:destination="@id/yellowFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_in_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/blueFragment"
+        android:name="com.example.navigation2.BlueFragment"
+        android:label="Blå Skjerm"
+        tools:layout="@layout/fragment_blue">
+        <action
+            android:id="@+id/action_orange"
+            app:destination="@id/orangeFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right">
+
+            <argument
+                android:name="etLiteTall"
+                android:defaultValue="13"
+                app:argType="integer" />
+        </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/orangeFragment"
+        android:name="com.example.navigation2.OrangeFragment"
+        android:label="Orange Skjerm"
+        tools:layout="@layout/fragment_orange">
+        <argument
+            android:name="etLiteTall"
+            android:defaultValue="12"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_purple"
+            app:destination="@id/purpleFragment" />
+        <argument
+            android:name="enTekst"
+            android:defaultValue="..."
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/yellowFragment"
+        android:name="com.example.navigation2.YellowFragment"
+        android:label="Gul Skjerm"
+        tools:layout="@layout/fragment_yellow">
+        <action
+            android:id="@+id/action_blue2"
+            app:destination="@id/blueFragment" />
+        <action
+            android:id="@+id/action_gray"
+            app:destination="@id/grayFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_in_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/purpleFragment"
+        android:name="com.example.navigation2.PurpleFragment"
+        android:label="Lilla Skjerm"
+        tools:layout="@layout/fragment_purple" />
+
+    <action
+        android:id="@+id/action_global_mainFragment"
+        app:destination="@id/mainFragment" />
+    <fragment
+        android:id="@+id/grayFragment"
+        android:name="com.example.navigation2.GrayFragment"
+        android:label="Grå Skjerm"
+        tools:layout="@layout/fragment_gray" />
+
+    <action
+        android:id="@+id/action_global_grayFragment"
+        app:destination="@id/grayFragment" />
+    <fragment
+        android:id="@+id/deepLinkDestFragment"
+        android:name="com.example.navigation2.DeepLinkDestFragment"
+        android:label="Deep Link Destination"
+        tools:layout="@layout/fragment_deep_link_dest">
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="www.example.com/{myarg}" />
+        <argument android:name="myarg" />
+        <deepLink
+            android:id="@+id/deepLink2"
+            app:uri="kark.uit.no/deeplink/{number}" />
+    </fragment>
+
+</navigation>

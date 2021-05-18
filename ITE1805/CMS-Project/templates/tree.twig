@@ -1,0 +1,13 @@
+{% for catalogue in catalogueArr[start:] %}
+    <li>
+        <label for="{{  catalogue.getCatalogueID() }}"> {{ catalogue.getName() }}</label>
+        <input type="checkbox" id="{{ catalogue.getCatalogueID() }}"/>
+        <ol>
+            {% for file in fileArr %}
+                {% if file.getCatalogueID()==catalogue.getCatalogueID() %}
+                    <li class="file"><a href="download.php?file={{ file.getFileID }}">{{ file.getFilename() }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ol>
+    </li>
+{% endfor %}

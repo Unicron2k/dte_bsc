@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Volley</string>
+    <string name="str_download">Download</string>
+    <string name="str_clear_text">Clear text</string>
+</resources>

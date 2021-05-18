@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Lab9_2</string>
+    <string name="str_header_login">Innlogging</string>
+    <string name="str_login_username">brukernavn</string>
+    <string name="str_login_password">passord</string>
+    <string name="str_btn_loginn">Logg Inn</string>
+    <string name="str_btn_register">Registrer</string>
+    <string name="str_btn_logout">Logg Ut</string>
+    <string name="str_header_register">Registrer deg</string>
+    <string name="str_register">Registrering</string>
+    <string name="str_login_repeat_password">gjenta passord</string>
+    <string name="str_btn_cancel">Tilbake</string>
+    <string name="str_placeholder_title">Title</string>
+    <string name="str_placeholder_description">Description</string>
+    <string name="str_placeholder_exercise_name">Exercise Name</string>
+    <string name="str_placeholder_item_name">Item Name</string>
+    <string name="str_home">Hjem</string>
+    <string name="str_user">Bruker</string>
+    <string name="str_settings">Innstillinger</string>
+    <string name="str_already_registered">Du er allerede registrert…</string>
+    <string name="str_already_logged_in">Du er allerede logget inn</string>
+    <string name="str_error_tag">ERROR/Lab9.2</string>
+    <string name="str_workout_programs">Treningsprogrammer</string>
+    <string name="str_available_workout_programs">Tilgjengelige treningsprogrammer:</string>
+    <string name="str_details_for_exercise">Detaljer for %s</string>
+</resources>

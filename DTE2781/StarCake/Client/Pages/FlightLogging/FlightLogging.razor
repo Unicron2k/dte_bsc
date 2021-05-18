@@ -1,0 +1,486 @@
+﻿@page "/flightlogging"
+@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Services
+@using System.Globalization
+@using Color = MudBlazor.Color
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject AppData AppData
+@inject IJSRuntime JsRuntime
+@using BrowserInterop.Extensions
+@using BrowserInterop.Geolocation
+@using System.Collections.Specialized
+@using StarCake.Shared
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+
+
+@* @if (AppData.IsDepartmentEntitiesNullOrEmpty()) *@
+@* { *@
+@*     <MudProgressCircular Color="Color.Default" Indeterminate="true"/> *@
+@* } *@
+@* else *@
+@* { *@
+@*     <div class="container"> *@
+@*     <!-- Title and Entity-Select --> *@
+@*     <MudGrid> *@
+@*         <MudItem xs="12"> *@
+@*             <MudPaper Class="d-flex align-center justify-center mud-width-full py-2" Style="background-color: #d7d1d1"> *@
+@*                 <h1>Log a new flight</h1> *@
+@*             </MudPaper> *@
+@*         </MudItem> *@
+@*         <MudItem xs="12"> *@
+@*             <MudGrid Spacing="1" Justify="Justify.FlexStart"> *@
+@*                 <MudPaper Class="d-flex align-center justify-center mud-width-full py-2"> *@
+@*                     <!-- Display warning if no previous FlightLogs was found for selected entity --> *@
+@*                     @if (CountFlightLogsInCurrentEntity() == 0) *@
+@*                     { *@
+@*                         <MudAlert Severity="Severity.Info" Dense="true" Class="my-2">No previous FlightLogs for this entity found</MudAlert> *@
+@*                     } *@
+@*                     else *@
+@*                     { *@
+@*                         <MudAlert Style="cursor: pointer" OnClick="() => ShowPreviousFlightLogs(_flightLogToAdd.EntityId)" Severity="Severity.Normal" Dense="true">This entity has @CountFlightLogsInCurrentEntity() previous FlightLogs</MudAlert> *@
+@*                     } *@
+@*                     <MudFab OnClick="() => ShowMaintenance(_flightLogToAdd.EntityId)" Color="Color.Primary" Icon="@Icons.Material.Filled.Handyman" Size="Size.Small" IconSize="Size.Small" Label="Show maintenance" Class="ma-2"/> *@
+@* *@
+@* *@
+@*                     @code { *@
+@* *@
+@*                         private int CountFlightLogsInCurrentEntity() *@
+@*                         { *@
+@*                             var flightLogCount = AppData.CurrentUser.CurrentDepartment.Entities.Where(x => x.EntityId == _flightLogToAdd.EntityId).Select(f => f.FlightLogCount).FirstOrDefault(); *@
+@*                             return flightLogCount; *@
+@*                         } *@
+@*                         private void ShowPreviousFlightLogs(int entityId) *@
+@*                         { *@
+@*                             var parameters = new DialogParameters *@
+@*                             { *@
+@*                                 {nameof(FlightLoggingModalShowLastFlightLogs.EntityId), entityId} *@
+@*                             }; *@
+@*                             DialogService.Show<FlightLoggingModalShowLastFlightLogs>("Newest logs for this entity", parameters, new DialogOptions {MaxWidth = MaxWidth.ExtraLarge}); *@
+@*                         } *@
+@* *@
+@*                         [CascadingParameter] *@
+@*                         public IModalService ModalMaintenance { get; set; } *@
+@*                         private void ShowMaintenance(int entityId) *@
+@*                         { *@
+@*                             var parameters = new ModalParameters(); *@
+@*                             var entity = AppData.CurrentUser.CurrentDepartment.Entities.FirstOrDefault(x => x.EntityId == entityId); *@
+@*                             parameters.Add(nameof(FlightLoggingModalMaintenance.Entity), entity); *@
+@*                             var options = new ModalOptions {ContentScrollable = true}; *@
+@*                             ModalMaintenance.Show<FlightLoggingModalMaintenance>("entity.Name", parameters, options); *@
+@*                         } *@
+@* *@
+@*                     } *@
+@* *@
+@*                 </MudPaper> *@
+@*             </MudGrid> *@
+@*         </MudItem> *@
+@*     </MudGrid> *@
+@*     <MudDivider DividerType="DividerType.Middle" Class="my-6"/> *@
+@* *@
+@*     <!-- Display warning if no Entities was found in current Department --> *@
+@*     @if (!AppData.CurrentUser.CurrentDepartment.Entities.Any()) *@
+@*     { *@
+@*         <MudAlert Severity="Severity.Error"> *@
+@*             No entities found in current department!<br/> *@
+@*             Change department or contact your department/organization *@
+@*         </MudAlert> *@
+@*     } *@
+@*     else *@
+@*     { *@
+@*         <!-- Input Form --> *@
+@*         <EditForm Model="@_flightLogToAdd"> *@
+@*         <DataAnnotationsValidator/> *@
+@*         <MudCard> *@
+@*         <MudCardContent> *@
+@*         <MudGrid> *@
+@*             <!-- Entity --> *@
+@*             <MudItem xs="12" sm="6" md="4"> *@
+@*                 <MudSelect T="int" @bind-Value="@_flightLogToAdd.EntityId" T="int" Label="Select entity" Variant="Variant.Outlined" OffsetY="true"> *@
+@*                     @foreach (var entity in AppData.CurrentUser.CurrentDepartment.Entities) *@
+@*                     { *@
+@*                         <MudSelectItem T="int" Value="@(entity.EntityId)"> *@
+@*                             @entity.Name *@
+@*                         </MudSelectItem> *@
+@*                     } *@
+@*                 </MudSelect> *@
+@*             </MudItem> *@
+@* *@
+@*             <!--Pilot in Command--> *@
+@*             <MudItem xs="12" sm="6" md="4"> *@
+@*                 <MudSelect T="string" @bind-Value="@_flightLogToAdd.ApplicationUserIdPiloted" Label="Select the pilot" Variant="Variant.Outlined" OffsetY="true"> *@
+@*                     @foreach (var user in AppData.CurrentUser.CurrentDepartment.DepartmentApplicationUsers) *@
+@*                     { *@
+@*                         <MudSelectItem Value="@user.ApplicationUser.Id"> *@
+@*                             @user.ApplicationUser.GetNameFormal() *@
+@*                         </MudSelectItem> *@
+@*                     } *@
+@*                 </MudSelect> *@
+@*             </MudItem> *@
+@*             <!--DATE--> *@
+@*             <MudItem xs="12" sm="6" md="4"> *@
+@*                 <MudDatePicker PickerVariant="PickerVariant.Dialog" @bind-Date="@_startDateCalendar" Label="Date of flight" DisableToolbar="true"/> *@
+@*             </MudItem> *@
+@*             <!-- START --> *@
+@*             <MudItem xs="12" sm="6" md="4"> *@
+@*                 <MudTimePicker Label="Start time in 24h" @bind-Time="@_startTime" Square="true"/> *@
+@*             </MudItem> *@
+@*         </MudGrid> *@
+@* *@
+@*         <!-- Type of Flight new --> *@
+@*         <MudGrid> *@
+@*             <MudItem xs="12" sm="6" md="4"> *@
+@*                 <MudSelect T="int" SelectedValuesChanged="UpdateTypesOfOperation" Label="Type of operation" HelperText="Pick your types" MultiSelection="true" @#1#bind-SelectedValues="@_flightLogToAdd.TypeOfOperationIds"#1#> *@
+@*                     @foreach (var typeOfOperation in AppData.TypeOfOperations.Where(x=>x.IsActive).ToList()) *@
+@*                     { *@
+@*                         <MudSelectItem T="int" Value="@typeOfOperation.TypeOfOperationId"> *@
+@*                             @typeOfOperation.Name *@
+@*                         </MudSelectItem> *@
+@*                     } *@
+@*                 </MudSelect> *@
+@*             </MudItem> *@
+@*             <MudItem xs="12" sm="6" md="8"> *@
+@*                 <MudText Class="mb-n3" Typo="Typo.body2"> *@
+@*                     Selected Types: *@
+@*                     @if (_flightLogToAdd.FlightLogTypeOfOperations.Any()) *@
+@*                     { *@
+@*                         foreach (var typeOfOperation in _flightLogToAdd.FlightLogTypeOfOperations.Select(x => x.TypeOfOperation).ToList()) *@
+@*                         { *@
+@*                             <MudChip Text="@(typeOfOperation.Name)"/> *@
+@*                         } *@
+@*                     } *@
+@*                     else if (!_flightLogToAdd.FlightLogTypeOfOperations.Any()) *@
+@*                     { *@
+@*                         <MudAlert Severity="Severity.Info" Dense="true" Class="my-2">No types selected yet</MudAlert>} *@
+@*                     else if (!AppData.TypeOfOperations.Any()) *@
+@*                     { *@
+@*                         <MudAlert Severity="Severity.Error" Dense="true" Class="my-2">No types was found! Please contact your administrator to add some</MudAlert>} *@
+@*                 </MudText> *@
+@*             </MudItem> *@
+@*         </MudGrid> *@
+@* *@
+@*         @code { *@
+@* *@
+@*             private void UpdateTypesOfOperation(HashSet<int> selectedValues) *@
+@*             { *@
+@*                 _flightLogToAdd.FlightLogTypeOfOperations = selectedValues.Select(typeOfOperationId => new FlightLogTypeOfOperationViewModel *@
+@*                 { *@
+@*                     TypeOfOperationId = typeOfOperationId, *@
+@*                     TypeOfOperation = new TypeOfOperationViewModel *@
+@*                     { *@
+@*                         Name = AppData.TypeOfOperations.Where(x => x.TypeOfOperationId == typeOfOperationId).Select(x => x.Name).FirstOrDefault() *@
+@*                     } *@
+@*                 }).ToList(); *@
+@*             } *@
+@* *@
+@*         } *@
+@* *@
+@* *@
+@*         <!-- City/ZipCode/Address --> *@
+@*         <MudGrid> *@
+@*             <MudItem xs="12" sm="6" md="4"> *@
+@*                 <!-- City --> *@
+@*                 <MudTextField Label="City" HelperText="Ex. Tromsø" @bind-Value="_flightLogToAdd.City" For="@(() => _flightLogToAdd.City)"/> *@
+@*             </MudItem> *@
+@*             <MudItem xs="12" sm="6" md="4"> *@
+@*                 <!-- ZipCode --> *@
+@*                 <MudTextField Label="ZipCode" HelperText="Ex. 9019" @bind-Value="_flightLogToAdd.ZipCode" For="@(() => _flightLogToAdd.ZipCode)"/> *@
+@*             </MudItem> *@
+@*             <MudItem xs="12" sm="6" md="4"> *@
+@*                 <!-- Address --> *@
+@*                 <MudTextField Label="Address" HelperText="Ex. Storgata 12" @bind-Value="_flightLogToAdd.Address" For="@(() => _flightLogToAdd.Address)"/> *@
+@*             </MudItem> *@
+@*         </MudGrid> *@
+@* *@
+@*         <!-- Country/Latitude/Longitude --> *@
+@*         <MudGrid> *@
+@*             <MudItem xs="12" sm="6" md="4"> *@
+@*                 <!-- Country --> *@
+@*                 <MudSelect T="int" @bind-Value="@_flightLogToAdd.CountryId" Label="Select country" Variant="Variant.Outlined" OffsetY="true"> *@
+@*                     @foreach (var country in AppData.Countries.Where(x=>x.IsActive).ToList()) *@
+@*                     { *@
+@*                         <MudSelectItem Value="@country.CountryId"> *@
+@*                             @country.Name *@
+@*                         </MudSelectItem> *@
+@*                     } *@
+@*                 </MudSelect> *@
+@*             </MudItem> *@
+@*             <MudItem xs="12" sm="6" md="4"> *@
+@*                 <!-- Latitude --> *@
+@*                 <MudTextField Label="Latitude (not required)" HelperText="Ex. 68.4354946" @bind-Value="_flightLogToAdd.Latitude" For="@(() => _flightLogToAdd.Latitude)"/> *@
+@*             </MudItem> *@
+@*             <MudItem xs="12" sm="6" md="4"> *@
+@*                 <!-- Longitude --> *@
+@*                 <MudTextField Label="Longitude (not required)" HelperText="Ex. 17.4342462" @bind-Value="_flightLogToAdd.Longitude" For="@(() => _flightLogToAdd.Longitude)"/> *@
+@*             </MudItem> *@
+@*         </MudGrid> *@
+@* *@
+@*         <!-- Get Lat+Long from browser --> *@
+@* *@
+@*         @code { *@
+@*             // Geolocation question modal *@
+@*             [CascadingParameter] *@
+@*             public IModalService ModalLocationDialog { get; set; } *@
+@* *@
+@*             private void ShowLocationModal() *@
+@*             { *@
+@*                 ModalLocationDialog.Show<FlightLoggingLocationModal>(); *@
+@*             } *@
+@* *@
+@*             // Used to get Coordinates from the web-browser using JavaScript *@
+@*             private WindowNavigatorGeolocation _geolocationWrapper; *@
+@*             private GeolocationResult _currentPosition; *@
+@* *@
+@*             private async Task GetGeolocation() *@
+@*             {    *@
+@*                 var window = await JsRuntime.Window(); *@
+@*                 var navigator = await window.Navigator(); *@
+@*                 _geolocationWrapper = navigator.Geolocation; *@
+@*                 _currentPosition = await _geolocationWrapper.GetCurrentPosition(new PositionOptions() *@
+@*                 { *@
+@*                     EnableHighAccuracy = true, *@
+@*                     MaximumAgeTimeSpan = TimeSpan.FromHours(1), *@
+@*                     TimeoutTimeSpan = TimeSpan.FromMinutes(1) *@
+@*                 }); *@
+@* *@
+@*                 if (_currentPosition?.Location?.Coords != null) *@
+@*                 { *@
+@*                     _flightLogToAdd.Latitude = _currentPosition.Location.Coords.Latitude.ToString(CultureInfo.InvariantCulture); *@
+@*                     _flightLogToAdd.Longitude = _currentPosition.Location.Coords.Longitude.ToString(CultureInfo.InvariantCulture); *@
+@*                      *@
+@*                     // LAT+LONG was found, try to get address via https://opencagedata.com/ API *@
+@*                     if (AppData.CurrentUser.CurrentDepartment.Organization.ApiKeyOpenCageData == null) *@
+@*                         Snackbar.Add("Could not get address, no API key for OpenCage is set for your organization", Severity.Error); *@
+@*                     else *@
+@*                     { *@
+@*                         var openCageResponse = await GetOpenCageResponse(latitude: _currentPosition.Location.Coords.Latitude, longitude: _currentPosition.Location.Coords.Longitude); *@
+@*                         switch (openCageResponse.StatusCode) *@
+@*                         { *@
+@*                             case 200: *@
+@*                                 try *@
+@*                                 { *@
+@*                                     _flightLogToAdd.City = openCageResponse.City; *@
+@*                                     _flightLogToAdd.ZipCode = openCageResponse.ZipCode; *@
+@*                                     _flightLogToAdd.Address = openCageResponse.Road; *@
+@*                                     _flightLogToAdd.Address += " " + openCageResponse.HouseNumber; *@
+@*                                     Snackbar.Add("Address was successfully found", Severity.Success); *@
+@*                                 } *@
+@*                                 catch (Exception e){/*ignored*/} *@
+@*                                 break; *@
+@*                             default: *@
+@*                                 Snackbar.Add(GetOpenCageErrorMessage(openCageResponse.StatusCode), Severity.Error); *@
+@*                                 break; *@
+@*                         } *@
+@* *@
+@*                     } *@
+@*                 } *@
+@*             } *@
+@* *@
+@*             private static string GetGeolocationErrorMessage(int errorCode) *@
+@*             { *@
+@*                 return errorCode switch *@
+@*                 { *@
+@*                     1 => "Permission denied, make sure position is allowed on this site in your browser", *@
+@*                     2 => "Position was unavailable", *@
+@*                     3 => "Position timed out, try again", *@
+@*                     _ => "Unknown error" *@
+@*                     }; *@
+@*             } *@
+@*             private static string GetOpenCageErrorMessage(int? errorCode) *@
+@*             { *@
+@*                 return errorCode switch *@
+@*                 { *@
+@*                     402 => "Could not get address, Quota for opencagedata.com-API exceeded", *@
+@*                     429 => "Could not get address, try again", *@
+@*                     _ => "Address was not found, unknown error" *@
+@*                     }; *@
+@*             } *@
+@*             async Task<OpenCageResponse> GetOpenCageResponse(double latitude, double longitude) *@
+@*             { *@
+@*                 var queryPrefix = "api/FlightLogAPI/GetAddressFromCoordinate/"; *@
+@*                 var nvc = new NameValueCollection *@
+@*                 { *@
+@*                     {"latitude", latitude.ToString(CultureInfo.InvariantCulture)}, *@
+@*                     {"longitude", longitude.ToString(CultureInfo.InvariantCulture)}, *@
+@*                     {"openCageApiKey", AppData.CurrentUser.CurrentDepartment.Organization.ApiKeyOpenCageData} *@
+@*                 }; *@
+@*                 var geocoderResponse = await Http.GetFromJsonAsync<OpenCageResponse>(queryPrefix+Coding.Query.ToQueryString(nvc)); *@
+@*                 return geocoderResponse; *@
+@*             } *@
+@*         } *@
+@* *@
+@* *@
+@*         <MudGrid> *@
+@*             <MudItem xs="12"> *@
+@*                 <MudGrid Spacing="1" Justify="Justify.FlexStart"> *@
+@*                     <MudItem class="row justify-content-center align-self-center"> *@
+@*                         <MudButton OnClick="GetGeolocation" Size="Size.Small" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.GpsFixed" Color="Color.Success"> *@
+@*                             Get location automatically *@
+@*                         </MudButton> *@
+@*                     </MudItem> *@
+@*                     <MudItem class="row justify-content-center align-self-center"> *@
+@*                         <MudFab OnClick="ShowLocationModal" Color="Color.Secondary" Icon="@Icons.Material.Filled.HelpOutline" Size="Size.Small" IconSize="Size.Small" Class="ma-2"/> *@
+@*                     </MudItem> *@
+@*                     <MudItem> *@
+@*                         <MudItem class="row justify-content-center align-self-center"> *@
+@*                             @if (_currentPosition != null) *@
+@*                             { *@
+@*                                 if (_currentPosition.Location != null) *@
+@*                                 { *@
+@*                                     if (_currentPosition.Location.Coords != null) *@
+@*                                     { *@
+@*                                         <MudAlert Severity="Severity.Success">@($"Location was found with {_currentPosition.Location.Coords.Accuracy}m accuracy")</MudAlert> *@
+@*                                     } *@
+@*                                 } *@
+@*                                 else if (_currentPosition.Error != null) *@
+@*                                 { *@
+@*                                     <MudAlert Severity="Severity.Warning">@GetGeolocationErrorMessage(_currentPosition.Error.Code)</MudAlert> *@
+@*                                 } *@
+@*                             } *@
+@*                         </MudItem> *@
+@*                     </MudItem> *@
+@*                 </MudGrid> *@
+@*             </MudItem> *@
+@*         </MudGrid> *@
+@* *@
+@*         <!-- Duration flown --> *@
+@* *@
+@*         @code{ *@
+@* *@
+@*             List<DurationItem> _durationItems = new List<DurationItem> *@
+@*             { *@
+@*                 new DurationItem {Min = 0, Max = 60, Name = "Minutes", SecondsPerValue = 60}, *@
+@*                 new DurationItem {Min = 0, Max = 60, Name = "Seconds", SecondsPerValue = 1} *@
+@*             }; *@
+@* *@
+@*         } *@
+@* *@
+@*         <MudGrid> *@
+@*             <MudItem xs="12"> *@
+@*                 <MudText Typo="Typo.h5">Flight duration</MudText> *@
+@*             </MudItem> *@
+@*             <MudItem xs="12"> *@
+@*                 <MudGrid> *@
+@*                     @foreach (var item in _durationItems) *@
+@*                     { *@
+@*                         <MudGrid> *@
+@*                             <MudItem xs="12"> *@
+@*                                 <MudGrid Spacing="1" Justify="Justify.FlexStart"> *@
+@*                                     <MudItem> *@
+@*                                         <MudFab OnClick="@item.Pop" Color="Color.Warning" Icon="@Icons.Material.Filled.Remove" Size="Size.Small" IconSize="Size.Small" Class="ma-2"/> *@
+@*                                     </MudItem> *@
+@*                                     <MudItem> *@
+@*                                         <MudTextField @bind-Value="@item.Value" Class="col-xs-3" Min="@item.Min" Max="@item.Max" InputType="InputType.Number" Placeholder="0" HelperText="@item.HelperText()" Label="@item.LabelText()" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Timer"/> *@
+@*                                     </MudItem> *@
+@*                                     <MudItem> *@
+@*                                         <MudFab OnClick="@item.Add" Color="Color.Success" Icon="@Icons.Material.Filled.Add" Size="Size.Small" IconSize="Size.Small" Class="ma-2"/> *@
+@*                                     </MudItem> *@
+@*                                 </MudGrid> *@
+@*                             </MudItem> *@
+@*                         </MudGrid> *@
+@*                     } *@
+@*                 </MudGrid> *@
+@*             </MudItem> *@
+@*         </MudGrid> *@
+@* *@
+@*         <!-- Remarks --> *@
+@*         <MudGrid> *@
+@*             <MudItem xs="12"> *@
+@*                 <MudTextField Label="Remarks (Not required)" HelperText="Write any optional extra remark here" @bind-Value="_flightLogToAdd.Remarks" For="@(() => _flightLogToAdd.Remarks)"/> *@
+@*             </MudItem> *@
+@*         </MudGrid> *@
+@*         </MudCardContent> *@
+@*         <div Class="d-flex justify-content-center align-items-center"> *@
+@*             <MudCardActions > *@
+@*                 <MudButton OnClick="OnValidSubmit" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register new flight</MudButton> *@
+@*             </MudCardActions> *@
+@*         </div> *@
+@*         </MudCard> *@
+@*         </EditForm> *@
+@*         <MudDivider DividerType="DividerType.Middle" Class="my-6"/> *@
+@*     } *@
+@* *@
+@*     </div> *@
+@* } *@
+@* *@
+@* *@
+@* *@
+@* @code { *@
+@*     private FlightLogViewModel _flightLogToAdd; *@
+@* *@
+@*     TimeSpan? _startTime = DateTime.UtcNow.TimeOfDay; *@
+@*     DateTime? _startDateCalendar = DateTime.UtcNow; *@
+@* *@
+@* *@
+@*     protected override async Task OnInitializedAsync() *@
+@*     { *@
+@*         InitializeFlightLogToAdd(); *@
+@*     } *@
+@* *@
+@*     private void InitializeFlightLogToAdd() *@
+@*     { *@
+@*         _flightLogToAdd = new FlightLogViewModel *@
+@*         { *@
+@*             FlightLogTypeOfOperations = new List<FlightLogTypeOfOperationViewModel>(), *@
+@*             ApplicationUserIdLogged = AppData.CurrentUser.Id, *@
+@*             ApplicationUserIdPiloted = AppData.CurrentUser.Id, *@
+@*             EntityId = AppData.CurrentUser.CurrentDepartment.Entities.Select(x => x.EntityId).FirstOrDefault(), *@
+@*             CountryId = AppData.Countries.Select(x => x.CountryId).FirstOrDefault(), *@
+@*         }; *@
+@*     } *@
+@* *@
+@*     [CascadingParameter] *@
+@*     public IModalService ModalConfirmPost { get; set; } *@
+@* *@
+@*     private ModalResult _resultConfirmPost; *@
+@* *@
+@*     private async Task OnValidSubmit() *@
+@*     { *@
+@*         if (!(_durationItems.All(x => x.IsValid()) && _durationItems.Any(x => x.Value != 0))) *@
+@*             Snackbar.Add("Check Flight Durations", Severity.Error); *@
+@*         else if (_flightLogToAdd.EntityId == 0) *@
+@*             Snackbar.Add("Make sure to select an entity", Severity.Error); *@
+@*         else if (!_flightLogToAdd.FlightLogTypeOfOperations.Any()) *@
+@*             Snackbar.Add("You have not chosen any type of flight", Severity.Error); *@
+@*         else if (_flightLogToAdd.CountryId == 0) *@
+@*             Snackbar.Add("Please select a country", Severity.Error); *@
+@*         else if (_flightLogToAdd.City == "" || _flightLogToAdd.ZipCode == "" || _flightLogToAdd.Address == "") *@
+@*             Snackbar.Add("Make sure to add City, ZipCode and Address", Severity.Error); *@
+@*         else *@
+@*         { *@
+@*             var messageForm = ModalConfirmPost.Show<FlightLoggingModalConfirmPost>("Confirm adding FlightLog"); *@
+@*             _resultConfirmPost = await messageForm.Result; *@
+@*             if (!_resultConfirmPost.Cancelled) *@
+@*             { *@
+@*                 _flightLogToAdd.DepartmentId = AppData.CurrentUser.CurrentLoggedInDepartmentId; *@
+@*                 _flightLogToAdd.FlightDurationInSeconds = _durationItems.Sum(durationItem => durationItem.Value * durationItem.SecondsPerValue); *@
+@*                 _flightLogToAdd.ACCOfEntityAtFlightInSeconds = AppData.CurrentUser.CurrentDepartment.Entities.Select(e => e.TotalFlightDurationInSeconds).FirstOrDefault(); *@
+@* *@
+@*                 _flightLogToAdd.Date = new DateTime(_startDateCalendar.Value.Year, _startDateCalendar.Value.Month, _startDateCalendar.Value.Day, *@
+@*                     _startTime.Value.Hours, _startTime.Value.Minutes, _startTime.Value.Seconds); *@
+@* *@
+@*                 var response = await Http.PostAsJsonAsync("api/FlightLogAPI/", _flightLogToAdd); *@
+@*                 if (response != null) *@
+@*                 { *@
+@*                     if (response.IsSuccessStatusCode) *@
+@*                     { *@
+@*                         Snackbar.Add("Success! A new FlightLog has been added", Severity.Success); *@
+@*                         foreach (var entity in AppData.CurrentUser.CurrentDepartment.Entities) *@
+@*                             if (entity.EntityId == _flightLogToAdd.EntityId) *@
+@*                                 entity.FlightLogCount++; *@
+@*                         InitializeFlightLogToAdd(); *@
+@*     //await GetGeolocation(); *@
+@*                     } *@
+@*                     else *@
+@*                     { *@
+@*                         await JsRuntime.InvokeVoidAsync("alert", *@
+@*                             $"Error, FlightLog could not be added\n\nERROR MESSAGE:\n{response}"); *@
+@*                     } *@
+@*                 } *@
+@*             } *@
+@*         } *@
+@*     } *@
+@* *@
+@* } *@

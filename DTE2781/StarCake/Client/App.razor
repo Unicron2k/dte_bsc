@@ -1,0 +1,72 @@
+@using StarCake.Client.Services
+@inject AppData AppData
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation;
+
+
+
+<CascadingAuthenticationState>
+    <CascadingBlazoredModal>
+        <Router AppAssembly="@typeof(Program).Assembly">
+            <Found Context="routeData">
+                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                    <NotAuthorized>
+                        @if (!context.User.Identity.IsAuthenticated)
+                        {
+                            <RedirectToLogin/>
+                        }
+                        else
+                        {
+                            <p>You are not authorized to access this resource.</p>
+                        }
+                    </NotAuthorized>
+                </AuthorizeRouteView>
+            </Found>
+            <NotFound>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p>Sorry, there's nothing at this address.</p>
+                </LayoutView>
+            </NotFound>
+        </Router>
+        
+        <!-- MudBlazor -->
+        <MudThemeProvider Theme="AppData.CurrentMudTheme"/>
+        <MudDialogProvider
+            CloseButton="true"/>
+        <MudSnackbarProvider/>
+    </CascadingBlazoredModal>
+</CascadingAuthenticationState>
+
+
+@code {
+    protected override void OnInitialized()
+    {
+        AppData.ParentRoot = this;
+    }
+    public void RefreshApp()
+    {
+        StateHasChanged();
+    }
+}
+
+
+@code {
+    // To be called from AppData.cs singleton object
+    public void ShowSnackBar(string message, Severity severity, int hideTransitionDuration = 1000, Variant snackBarVariant = Variant.Filled)
+    {
+        Snackbar.Add(
+            message,
+            severity,
+            config =>
+            {
+                config.HideTransitionDuration = hideTransitionDuration;
+                config.SnackbarVariant = snackBarVariant;
+            });
+    }
+    
+    // To be called if AppData is not loaded
+    public void ForceNavigateHome()
+    {
+        Navigation.NavigateTo(Navigation.BaseUri, forceLoad: true);
+    }
+}

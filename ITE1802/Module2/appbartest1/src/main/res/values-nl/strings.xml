@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AppBarTest1</string>
+    <string name="action_settings">Einstellung</string>
+    <string name="action_mail">fgfg</string>
+    <string name="action_quit">fgg</string>
+    <string name="action_upload">ssdgg</string>
+</resources>

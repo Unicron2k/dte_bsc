@@ -1,0 +1,255 @@
+@using StarCake.Shared.Models.ViewModels.Maintenance
+@using StarCake.Shared.Models.ViewModels
+@using Microsoft.AspNetCore.Components
+@using StarCake.Client.Services
+@using StarCake.Shared
+@using System.Net
+@using System.Collections.Specialized
+@using StarCake.Client.Pages.ExportData.MaintenanceLogs
+
+@inject HttpClient _http
+@inject ISnackbar _snackbar
+@inject IDialogService _dialogService
+
+@if (_checkedEntities == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+}
+else
+{
+    <MudGrid>
+        <MudItem>
+            @*Date-picking*@
+            <MudGrid xs="12" Spacing="1" Justify="Justify.FlexStart">
+                <MudItem>
+                    <MudDatePicker Label="Start date" @bind-Date="@_dateStart" OpenTo="OpenTo.Month" Disabled="@_includeAllDates" MaxDate="_dateEnd"/>
+                </MudItem>
+
+                <MudItem>
+                    <MudDatePicker Label="End date" @bind-Date="@_dateEnd" OpenTo="OpenTo.Month" Disabled="@_includeAllDates" MinDate="_dateStart" MaxDate="DateTime.Today"/>
+                </MudItem>
+            </MudGrid>
+
+            @*Entity-scope*@
+            <MudGrid xs="12" Spacing="1" Justify="Justify.FlexStart">
+                <MudItem class="row justify-content-center align-self-center">
+                    <MudSwitch @bind-Checked="@_includeAllDates" Label="All time" Color="Color.Primary"/>
+                </MudItem>
+
+                <MudItem class="row justify-content-center align-self-center">
+                    <MudSwitch @bind-Checked="@_includeAllLogs" Label="From all entities" Color="Color.Primary"/>
+                </MudItem>
+
+                <MudItem class="row justify-content-center align-self-center">
+                    <MudSwitch @bind-Checked="@_includeCurrentUserOnly" Label="Current user only" Color="Color.Primary"/>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+        <MudItem class="row justify-content-center align-self-center">
+            <MudFab OnClick="UpdateMaintenanceLogTable" Color="Color.Primary" Icon="@Icons.Material.Filled.Autorenew" Size="Size.Small" IconSize="Size.Small" Label="Update Table" Class="ma-2"/>
+        </MudItem>
+    </MudGrid>
+    @*Checkbox for entities*@
+    <MudSelect Disabled="_includeAllLogs" T="EntityViewModel" Label="Select entities to search for maintenance-logs" Variant="Variant.Outlined" OffsetY="true">
+        @foreach (var checkedEntity in _checkedEntities)
+        {
+            <MudCheckBox @bind-Checked="@checkedEntity.Checked">@checkedEntity.EntityViewModel.Name</MudCheckBox>
+        }
+    </MudSelect>
+    <br />
+}
+
+@if (_maintenanceLogs == null)
+{
+    <MudAlert Severity="Severity.Info">Not yet updated</MudAlert>
+}
+else if (!_maintenanceLogs.Any())
+{
+    <MudAlert Severity="Severity.Warning">No maintenance-logs found in your search</MudAlert>
+}
+else
+{
+    <MudGrid>
+        <MudTable Items="@_maintenanceLogs" MultiSelection="true" Bordered="true" Striped="true" Dense="true" Hover="true" @bind-SelectedItems="_selectedItems" Filter="new Func<MaintenanceLogTableViewModel, bool>(FilterFunc)">
+            <ToolBarContent>
+                <MudGrid Justify="Justify.FlexStart">
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6">@($"{_maintenanceLogs.Count} logs found from {_dateStart?.ToString("yyMMdd")} to {_dateEnd?.ToString("yyMMdd")}")</MudText>
+                        <MudButton OnClick="@(DownloadData)" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Color="Color.Primary">@($"Export {_selectedItems.Count()} Maintenance-logs")</MudButton>
+                    </MudItem>
+                </MudGrid>
+                <MudToolBarSpacer/>
+                <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<MaintenanceLogTableViewModel, object>(x => x.Date)">Date</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<MaintenanceLogTableViewModel, object>(x => x.MaintainedItemName)">Item</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<MaintenanceLogTableViewModel, object>(x => x.MaintainedItemSerialNumber)">Serial</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<MaintenanceLogTableViewModel, object>(x => x.ACCSeconds)">ACC</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<MaintenanceLogTableViewModel, object>(x => x.Department.Name)">Department</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<MaintenanceLogTableViewModel, object>(x => x.ApplicationUserLogged.LastName)">User</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<MaintenanceLogTableViewModel, object>(x => x.TaskDescription)">Task</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<MaintenanceLogTableViewModel, object>(x => x.ActionDescription)">Corrective Action</MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Date">@TimeFormatting.DateTimeToYYMMDD(context.Date)</MudTd>
+                <MudTd DataLabel="Item">@(context.MaintainedItemName)</MudTd>
+                <MudTd DataLabel="Item">@(context.MaintainedItemSerialNumber)</MudTd>
+                <MudTd DataLabel="ACC">@TimeFormatting.SecondsToHHMM(context.ACCSeconds)</MudTd>
+                <MudTd DataLabel="Department">@context.Department.Name</MudTd>
+                <MudTd DataLabel="User">@(context.ApplicationUserLogged.GetNameFormal())</MudTd>
+                <MudTd DataLabel="Task">@context.TaskDescription</MudTd>
+                <MudTd DataLabel="Corrective Action">@context.ActionDescription</MudTd>
+            </RowTemplate>
+
+            
+            <PagerContent>
+                <MudTablePager/>
+            </PagerContent>
+        </MudTable>
+        <div class="d-flex flex-wrap mt-4">
+            <MudText Inline="true">@($"Selected: {_selectedItems.Count()} of {_maintenanceLogs.Count()} total")</MudText>
+            </div>
+    </MudGrid>
+}
+
+@code {
+    private bool _includeAllDates;
+    private bool _includeAllLogs;
+    private bool _includeCurrentUserOnly;
+    private bool _searching;
+    private string _searchString = "";
+    private DateTime? _dateStart = DateTime.UtcNow.AddMonths(-2);
+    private DateTime? _dateEnd = DateTime.UtcNow;
+    private ICollection<MaintenanceLogTableViewModel> _maintenanceLogs;
+    private HashSet<MaintenanceLogTableViewModel> _selectedItems = new HashSet<MaintenanceLogTableViewModel>();
+    private List<CheckedEntities> _checkedEntities;
+    private class CheckedEntities
+    {
+        public EntityViewModel EntityViewModel { get; set; }
+        public bool Checked { get; set; }
+    }
+    
+    
+    protected override async Task OnInitializedAsync()
+    {
+        //Refresh MaintenanceLogs
+        //TODO: Use API instead in order to fetch based solely on the given parameters
+        AppData.CurrentUser.CurrentDepartment.MaintenanceLogs = await _http.GetFromJsonAsync<List<MaintenanceLogViewModel>>("api/MaintenanceLog/GetAll");
+        if (AppData.CurrentUser.CurrentDepartment.Entities != null && AppData.CurrentUser.CurrentDepartment.Entities.Count > 1)
+        {
+            _checkedEntities = new List<CheckedEntities>();
+            foreach (var entity in AppData.CurrentUser.CurrentDepartment.Entities) 
+                _checkedEntities = _checkedEntities.Append(new CheckedEntities{EntityViewModel = entity, Checked = false}).ToList();
+        }
+        _includeAllLogs = true;
+        UpdateMaintenanceLogTable();
+    }
+    
+    private bool FilterFunc(MaintenanceLogTableViewModel element)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        var strings = new List<string>(new[]
+        {
+        /* Date */ TimeFormatting.DateTimeToYYMMDD(element.Date)??"",
+        /* Item */ element.MaintainedItemName??"",
+        /* S.N. */ element.MaintainedItemSerialNumber??"",
+        /* ACC */ TimeFormatting.SecondsToHHMM(element.ACCSeconds)??"",
+        /* Department */ element.Department.Name??"",
+        /* User */ element.ApplicationUserLogged.GetNameFormal()??"",
+        /* Task */ element.TaskDescription??"",
+        /* Corrective Action */ element.ActionDescription??""
+        });
+        return strings.Any(str => str.Contains(_searchString, StringComparison.OrdinalIgnoreCase));
+    }
+    
+    //To whatever unlucky dude ending up having to work on this shit: Good luck, you're gonna need it!
+    private void UpdateMaintenanceLogTable()
+    {
+        if (_dateStart <= _dateEnd || _includeAllDates)
+        {
+            _maintenanceLogs = new List<MaintenanceLogTableViewModel>();
+            if (_includeAllLogs)
+            {
+                //Select logs in department from all entities
+                _maintenanceLogs.Clear();
+                foreach (var item in AppData.CurrentUser.CurrentDepartment.MaintenanceLogs)
+                {
+                    _maintenanceLogs.Add(MaintenanceLogTableViewModel.ToModel(item));
+                }
+
+            }
+            else if (_checkedEntities.Any(x => x.Checked))
+            {
+                //Select logs from checked entities only
+                _maintenanceLogs.Clear();
+                var entityIds = _checkedEntities.Where(x => x.Checked).Select(x => x.EntityViewModel.EntityId).ToList();
+                foreach (var item in AppData.CurrentUser.CurrentDepartment.MaintenanceLogs.Where(item => entityIds.Contains(item.EntityId)))
+                {
+                    _maintenanceLogs.Add(MaintenanceLogTableViewModel.ToModel(item));
+                }
+            }
+            else
+            {
+                _snackbar.Add("Make sure to check one or more entities", Severity.Error);
+                return;
+            }
+
+            if (!_includeAllDates)
+            {
+                //Filter on selected dates
+                _maintenanceLogs = _maintenanceLogs.Where(item => item.Date>=_dateStart && item.Date<=_dateEnd?.AddHours(24) ).ToList();
+            }
+            
+            if (_includeCurrentUserOnly)
+            {
+                //TODO: Use selectlist to select users instead of current user only
+                //Filter on current user
+                _maintenanceLogs = _maintenanceLogs.Where(item => item.ApplicationUserLogged.Id==AppData.CurrentUser.Id ).ToList();
+            }
+            //Update list of selected items
+            _selectedItems = new HashSet<MaintenanceLogTableViewModel>(_maintenanceLogs);
+        }
+        else
+            _snackbar.Add("Make sure Start date is earlier than End date", Severity.Error);
+    }
+
+    private void DownloadData()
+    {
+        _selectedItems.OrderBy(x => x.Date); //???
+        var maintenanceLogIds = _selectedItems.Select(x => x.MaintenanceLogId).ToList();
+        if (!maintenanceLogIds.Any())
+            _snackbar.Add("No maintenance-logs are selected", Severity.Error);
+        else
+        {
+            var parameters = new DialogParameters
+            {
+                {nameof(ExportDataModalDownloadMaintenanceLogs.SelectedMaintenanceLogs), _selectedItems.ToList()},
+                {nameof(ExportDataModalDownloadMaintenanceLogs.MaintenanceLogIds), maintenanceLogIds},
+                {nameof(ExportDataModalDownloadMaintenanceLogs.DateStart), _dateStart},
+                {nameof(ExportDataModalDownloadMaintenanceLogs.DateEnd), _dateEnd},
+            };
+            _dialogService.Show<ExportDataModalDownloadMaintenanceLogs>("Choose a format", parameters);
+        }
+    }
+}

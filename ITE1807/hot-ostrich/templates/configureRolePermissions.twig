@@ -1,0 +1,135 @@
+{% extends 'base.twig' %}
+
+{% block title %} Roller og Rettigheter{% endblock %}
+
+{% block main %}
+{% if not insufficientRights %}
+    <!-- Heading -->
+    <div class="container">
+        <div class="row">
+            <h1>Roller og rettigheter</h1>
+        </div>
+        <div class="row">
+            <div class="col-8" id="single_course_code">
+                <form method="POST" action="editRolesAndFakultet.php" name="update_permissions" id="update_permissions">
+                    <table class="table table-striped">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>Rollenavn</th>
+                            <th>Lese</th>
+                            <th>Skrive</th>
+                            <th>Redigere</th>
+                            <th>Slette</th>
+                            <th>Opprette</th>
+                            <th>Godkjenne</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+{% for role in roles %}
+    <tr>
+        <th scope="row">
+            <input type="text" value="{{ role.role }}" disabled>
+        </th>
+        <td>
+            <input type="checkbox" name="roles[{{ role.IdRole }}][read]" value="1" {% if role.read == 1 %}checked="checked" {% endif %}disabled>
+        </td>
+        <td>
+            <input type="checkbox" name="roles[{{ role.IdRole }}][write]" value="1" {% if role.write == 1 %}checked="checked" {% endif %}disabled>
+        </td>
+        <td>
+            <input type="checkbox" name="roles[{{ role.IdRole }}][edit]" value="1" {% if role.edit == 1 %}checked="checked" {% endif %}disabled>
+        </td>
+        <td>
+            <input type="checkbox" name="roles[{{ role.IdRole }}][delete]" value="1" {% if role.delete == 1 %}checked="checked" {% endif %}disabled>
+        </td>
+        <td>
+            <input type="checkbox" name="roles[{{ role.IdRole }}][create]" value="1" {% if role.create == 1 %}checked="checked" {% endif %}disabled>
+        </td>
+        <td>
+            <input type="checkbox" name="roles[{{ role.IdRole }}][approve]" value="1" {% if role.approve == 1 %}checked="checked" {% endif %}disabled>
+        </td>
+    </tr>
+{% endfor %}
+                        </tbody>
+                    </table>
+                </form>
+
+            </div>
+            <div class="col-4" style="padding: 20px">
+                <button class="button" style="vertical-align:middle" onclick="toggle_inputs()">
+                    <span>Rediger</span>
+                </button>
+
+                <br>
+                <br>
+
+                <button id="bt_update" class="button" style="vertical-align:middle" name="UpdateRoles" onclick="submit()" hidden>
+                    <span>Oppdater</span>
+                </button>
+            </div>
+            <div class="col-8" id="single_course_code">
+
+                <h1>Fakulteter</h1>
+                <form method="POST" action="editRolesAndFakultet.php" name="update_permissions" id="update_permissions">
+
+                    <table class="table table-striped">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>Fakultet</th>
+                            <th>Fakultet ID</th>
+                            <th>Slett</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+{% for fakultet in facultys %}
+    <tr>
+        <th scope="row">
+            <input type="text" value="{{ fakultet.nameFakultet }}" disabled>
+        </th>
+        <td>
+            <input type="text" name="fakultetId[{{ fakultet.idFakultet }}]" value="{{ fakultet.idFakultet }}" disabled>
+        </td>
+        <td>
+            <input type="checkbox" name="fakultetId[{{ fakultet.idFakultet }}][read]" disabled>
+        </td>
+    </tr>
+{% endfor %}
+                        </tbody>
+                    </table>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- onClick JavaScript that toggles .disabled -->
+    <script>
+        let input_disabled = false;
+        let inputs = document.getElementById("update_permissions").getElementsByTagName('input');
+        let selects = document.getElementById("update_permissions").getElementsByTagName('select');
+        let btUpdate = document.getElementById("bt_update");
+
+        function submit() {
+            document.getElementById("update_permissions").submit();
+        }
+
+        function toggle_inputs() {
+            <!-- Toggle all fields -->
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].disabled = input_disabled;
+                btUpdate.hidden = input_disabled;
+            }
+
+            for (let i = 0; i < selects.length; i++) {
+                selects[i].disabled = input_disabled;
+            }
+            input_disabled = !input_disabled;
+        }
+    </script>
+{% else %}
+    <h2>Du har ikke nødvendige rettigheter for å se eller redigere roller og fakulterer!</h2>
+    <h2>Kontakt administrator.</h2>
+{% endif %}
+{% endblock %}

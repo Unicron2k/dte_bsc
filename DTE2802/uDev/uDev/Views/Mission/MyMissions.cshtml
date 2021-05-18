@@ -1,0 +1,48 @@
+@model Tuple<List<uDev.Models.Entity.Mission>, List<uDev.Models.Entity.Mission>>
+
+@{
+    ViewData["Title"] = "Current Missions";
+}
+
+<h1>Your Announced missions</h1>
+<div class="card-columns">
+    
+    @foreach (var item in Model.Item1)
+        {
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h4>
+                    <h6 class="card-subtitle mb-2 text-muted">Type: @Html.DisplayFor(modelItem => item.Category.Content) </h6>
+                    <p class="card-text">
+                        @Html.DisplayFor(model => item.Content)
+                    </p>
+                    <a asp-action="Details" asp-route-id="@item.MissionId" class="btn btn-primary">See details</a>
+                </div>
+            </div>
+        }
+</div>
+<br>
+<hr/>
+<br>
+<h1>Your Claimed missions</h1>
+<div class="card-columns">
+    @foreach (var item in Model.Item2)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h4>
+                <h6 class="card-subtitle mb-2 text-muted">Type: @Html.DisplayFor(modelItem => item.Category.Content) </h6>
+                <p class="card-text">
+                    @Html.DisplayFor(model => item.Content)
+                </p>
+                <a asp-action="Details" asp-route-id="@item.MissionId" class="btn btn-primary">See details</a>
+                <form asp-action="RelinquishClaim">
+                    <div class="form-group">
+                        <input type="hidden" asp-for="@item.MissionId" name="missionId" id="missionId"/>
+                        <input type="submit" value="Relinquish mission!" class="btn btn-danger"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+</div>

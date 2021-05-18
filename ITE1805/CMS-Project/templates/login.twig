@@ -1,0 +1,26 @@
+<link rel="stylesheet" href="../css/login.css">
+<div class="login-page">
+    {% if loggedIn==true %}
+        <p style="text-align: center;">You are already logged in!</p>
+    {% elseif loggedOut==true %}
+        <p style="text-align: center;">Logged out.<br/>If you are not redirected in 5 seconds, click <a href="index.php">here</a></p>
+    {% elseif notLoggedIn==true %}
+        <p style="text-align: center;">You need to be logged in to do that</p>
+    {% elseif loginSuccess==true %}
+        <p style="text-align: center;">Login success!<br/>If you are not redirected in 5 seconds, click <a href="index.php">here</a></p>
+    {% else %}
+
+    <div class="form">
+        <form class="login-form" method="post">
+            <label for="username"></label>
+            <input type="text" name="username" id="username" placeholder="Username"/>
+            <label for="password"></label>
+            <input type="password" name="password" id="password" placeholder="Password"/>
+            <button type="submit" name="login">login</button>
+            {% if status is not null and status.status == "FAIL" %}
+                <p class="message">{{ status.errorMessage }}</p>
+            {% endif %}
+        </form>
+    </div>
+    {% endif %}
+</div>

@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using StarCake.Client.Services
+@using StarCake.Shared.Models.ViewModels
+@using System.Net
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using StarCake.Client.Services
+@using StarCake.Shared
+@inject AppData AppData
+
+
+<AuthorizeView>
+    <NotAuthorized>
+        <MudGrid Justify="Justify.Center">
+            <MudLink Href="authentication/login">
+                <MudButton Size="Size.Large" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Login" Color="Color.Primary">
+                    @($"Log in")
+                </MudButton>
+            </MudLink>
+        </MudGrid>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    protected override void OnInitialized()
+    {
+        AppData.OnChange += StateHasChanged;
+    }
+}

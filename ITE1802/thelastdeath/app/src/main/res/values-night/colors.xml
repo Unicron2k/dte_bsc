@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Standard values -->
+    <color name="colorPrimary">#942013</color>
+
+    <!-- Gradient color -->
+    <color name="colorRed_GradientStart">#942013</color>
+    <color name="colorRed_GradientEnd">#FC5130</color>
+
+</resources>

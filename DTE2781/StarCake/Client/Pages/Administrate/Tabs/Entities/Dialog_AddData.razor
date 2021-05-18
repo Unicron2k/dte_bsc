@@ -1,0 +1,98 @@
+@using StarCake.Shared.Models.ViewModels
+@inject IJSRuntime Js
+
+
+
+@if (MudDialog.Title.Contains("Add a new Component Type"))
+{
+    <EditForm Model="@ComponentType" OnValidSubmit="@SubmitForm">
+        <MudDialog>
+            <TitleContent>
+                <MudText Typo="Typo.h6"> Add a new Componen type</MudText>
+            </TitleContent>
+            <DialogContent>
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+                <label for="Name">Add new Type</label>
+                <input @bind="ComponentType.Name" type="text" class="form-control" placeholder="Name of type" id="Name">
+            </DialogContent>
+            <DialogActions>
+                <button type="submit" class="btn btn-primary">Add Component Type</button>
+                <button @onclick="Cancel" class="btn btn-danger">Cancel</button>
+            </DialogActions>
+        </MudDialog>
+    </EditForm>
+}
+@if (MudDialog.Title.Contains("Add a new Manufacturer"))
+{
+    <EditForm Model="@manufacturerType" OnValidSubmit="@SubmitFormManufacturer">
+        <MudDialog>
+            <TitleContent>
+                <MudText Typo="Typo.h6"> Add a new manufactur</MudText>
+            </TitleContent>
+            <DialogContent>
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+                <label for="Name">Add new manufactur</label>
+                <input @bind="manufacturerType.Name" type="text" class="form-control" placeholder="Name of new manufactur" id="Name">
+            </DialogContent>
+            <DialogActions>
+                <button type="submit" class="btn btn-primary">Add manufactur</button>
+                <button @onclick="Cancel" class="btn btn-danger">Cancel</button>
+            </DialogActions>
+        </MudDialog>
+    </EditForm>
+}
+@if (MudDialog.Title.Contains("Add a new EnitetType"))
+{
+    <EditForm Model="@entityType" OnValidSubmit="@SubmitFormEntitet">
+        <MudDialog>
+            <TitleContent>
+                <MudText Typo="Typo.h6"> Add a new entity type</MudText>
+            </TitleContent>
+            <DialogContent>
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+
+                <label for="Name">Add new entity type</label>
+                <input @bind="entityType.Name" type="text" class="form-control" placeholder="Name of type" id="Name">
+            </DialogContent>
+            <DialogActions>
+                <button type="submit" class="btn btn-primary">Add entity type</button>
+                <button @onclick="Cancel" class="btn btn-danger">Cancel</button>
+            </DialogActions>
+        </MudDialog>
+    </EditForm>
+}
+
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    private ComponentTypeViewModel ComponentType = new ComponentTypeViewModel();
+    private ManufacturerViewModel manufacturerType = new ManufacturerViewModel();
+    private EntityTypeViewModel entityType = new EntityTypeViewModel();
+
+    void SubmitForm()
+    {
+        MudDialog.Close(DialogResult.Ok(ComponentType));
+    }
+
+    void SubmitFormEntitet()
+    {
+        MudDialog.Close(DialogResult.Ok(entityType));
+    }
+
+    void SubmitFormManufacturer()
+    {
+        MudDialog.Close(DialogResult.Ok(manufacturerType));
+    }
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+}

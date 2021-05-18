@@ -1,0 +1,85 @@
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using StarCake.Client.Services
+@using StarCake.Shared.Models.ViewModels
+@using System.Net
+@using ActionScheduler
+@using StarCake.Client.Pages.Administrate
+@using StarCake.Shared
+@using StarCake.Client.Services
+
+@inject NavigationManager _navigation
+@inject SignOutSessionStateManager _signOutManager
+@inject HttpClient _http
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IDialogService _dialog
+@inject AppData _appData
+
+@inherits LayoutComponentBase
+
+<MudNavMenu Class="mud-width-full">
+    <MudGrid Justify="Justify.FlexStart">
+        <MudItem Class="d-flex align-center">
+            <MudItem>
+                <MudTooltip Text="Dark mode" Placement="Placement.End" Delay="1500">
+                    <MudToggleIconButton
+                        Toggled="@DarkModeEnabled" ToggledChanged="DarkModeValueChangedHandler"
+                        Icon="@Icons.Material.Filled.WbSunny" Color="@Color.Info"
+                        ToggledIcon="@Icons.Material.Filled.Brightness3" ToggledColor="@Color.Surface"/>
+                </MudTooltip>
+            </MudItem>
+        </MudItem>
+        <MudItem Class="d-flex align-center">
+            <MudMenu
+                EndIcon="@Icons.Filled.KeyboardArrowDown"
+                Label="@AppData.CurrentUser.CurrentDepartment.Name"
+                Color="Color.Primary" Variant="Variant.Filled" Direction="Direction.Bottom"
+                OffsetY="true" FullWidth="true" MaxHeight="200">
+                @foreach (var department in 
+                    AppData.CurrentUser.Departments
+                        .Where(x => x.DepartmentId != AppData.CurrentUser.CurrentDepartment.DepartmentId))
+                {
+                    <MudMenuItem OnClick="() => ChangeDepartment(department.DepartmentId)">@department.Name</MudMenuItem>
+                }
+            </MudMenu>
+        </MudItem>
+    </MudGrid>
+    <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">
+        @AppData.CurrentUser.LastName, @AppData.CurrentUser.FirstName
+    </MudText>
+    <MudDivider Class="my-2"/>
+
+    <MudNavLink Href="" Icon="@Icons.Filled.Dashboard">Home</MudNavLink>
+    <MudNavLink Href="/administrate" Icon="@Icons.Filled.AdminPanelSettings">Administrate</MudNavLink>
+    <MudNavLink Href="/newflightlogging" Icon="@Icons.Filled.AirplanemodeActive">Log flight</MudNavLink>
+    @*<MudNavLink Href="/newflightlogging" Icon="@Icons.Filled.AirplanemodeActive" IconColor="Color.Error">(NEW)Log flight</MudNavLink>*@
+    <MudNavLink Href="/maintenance" Icon="@Icons.Filled.EventNote">Maintenance</MudNavLink>
+    <MudNavLink Href="/exportdata" Icon="@Icons.Filled.FileDownload">Export</MudNavLink>
+    <MudNavLink Href="/about" Icon="@Icons.Filled.Help">About</MudNavLink>
+    <MudNavGroup Title="Settings" Icon="@Icons.Filled.Settings" Expanded="false">
+        <MudNavLink Href="authentication/profile" Icon="@Icons.Filled.People" IconColor="Color.Success">Profile</MudNavLink>
+        <MudNavLink Href="/settings" Icon="@Icons.Filled.Security" IconColor="Color.Info">Other</MudNavLink>
+        <AuthorizeView Roles="@($"{Roles.Admin}, {Roles.OrganizationMaintainer}, {Roles.DepartmentMaintainer}")">
+            <MudNavLink Href="authentication/register" Icon="@Icons.Filled.Add">Register new user</MudNavLink>
+        </AuthorizeView>
+    </MudNavGroup>
+    <MudItem Class="mud-width-full py-2">
+        <MudText Class=" " Style="text-align: center;">
+            ©2021 - StarCake Project
+        </MudText>
+    </MudItem>
+</MudNavMenu>
+
+@code {
+    private bool DarkModeEnabled { get; set; }
+    private void DarkModeValueChangedHandler(bool value)
+    {
+        DarkModeEnabled = value;
+        _appData.EnableDarkMode(DarkModeEnabled);
+    }
+    
+    private async Task ChangeDepartment(int departmentId)
+    {
+        await _http.GetStringAsync($"api/ApplicationUserAPI/ChangeDepartment/{departmentId}");
+        _navigation.NavigateTo(_navigation.BaseUri, forceLoad: true);
+    }
+}

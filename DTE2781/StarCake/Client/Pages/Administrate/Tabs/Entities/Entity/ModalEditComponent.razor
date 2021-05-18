@@ -1,0 +1,128 @@
+﻿@inject AppData AppData
+@using StarCake.Client.Services
+@using StarCake.Shared.Models.ViewModels
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer>
+            @if (ComponentCache == null)
+            {
+                <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+            }
+            else
+            {
+                const string errorMsg = "Make sure to fill in all fields";
+                <EditForm Model="@ComponentCache" OnValidSubmit="SubmitForm" OnInvalidSubmit="() => ShowErrorSnack(errorMsg)">
+                    <DataAnnotationsValidator/>
+                    <MudCard>
+                        <MudCardContent>
+                            <MudTextField
+                                Label="Name"
+                                @bind-Value="@ComponentCache.Name"
+                                For="@(() => ComponentCache.Name)"/>
+                            <MudTextField
+                                Label="Serial number"
+                                @bind-Value="@ComponentCache.SerialNumber"
+                                For="@(() => ComponentCache.SerialNumber)"/>
+                            <MudTextField
+                                Label="Max cycles between maintenance"
+                                @bind-Value="@ComponentCache.MaxCyclesBtwMaintenance"
+                                For="@(() => ComponentCache.MaxCyclesBtwMaintenance)"/>
+                            <MudTextField
+                                Label="Max days between maintenance"
+                                @bind-Value="@ComponentCache.MaxDaysBtwMaintenance"
+                                For="@(() => ComponentCache.MaxDaysBtwMaintenance)"/>
+                            <MudTextField
+                                Label="Max hours flight-time between maintenance"
+                                @bind-Value="@_maxHoursFlightTime"
+                                For="@(() => ComponentCache.MaxFlightSecondsBtwMaintenance)"/>
+                            <MudSelect T="int" @bind-value="@ComponentCache.ComponentTypeId" Label="Type" Strict="true" Variant="Variant.Outlined" Format="F2">
+                                @foreach (var componentType in AppData.ComponentTypes.Where(a=>a.IsActive).OrderBy(x => x.Name))
+                                {
+                                    <MudSelectItem T="int" Value="@componentType.ComponentTypeId">
+                                        @componentType.Name
+                                    </MudSelectItem>
+                                }
+                            </MudSelect>
+                            <MudSelect T="int" @bind-value="@ComponentCache.ManufacturerId" Label="Manufacturer" Strict="true" Variant="Variant.Outlined" Format="F2">
+                                @foreach (var manufacturer in AppData.Manufacturers.Where(a=>a.IsActive).OrderBy(x => x.ManufacturerId))
+                                {
+                                    <MudSelectItem T="int" Value="@manufacturer.ManufacturerId">
+                                        @manufacturer.Name
+                                    </MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton
+                                ButtonType="ButtonType.Submit"
+                                Variant="Variant.Filled"
+                                Color="Color.Primary"
+                                FullWidth="true">
+                                Edit component
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </EditForm>
+            }
+
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+
+    </DialogActions>
+</MudDialog>
+
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        
+        ComponentCache = ComponentInAppData.Clone();
+        _maxHoursFlightTime = ComponentCache.MaxFlightSecondsBtwMaintenance / (60 * 60);
+    }
+
+    // Rx parameter
+    [Parameter]
+    public ComponentViewModel ComponentInAppData { get; set; }
+    // Tx parameter
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+    
+    
+    private ComponentViewModel ComponentCache { get; set; }
+    private int _maxHoursFlightTime;
+
+
+    
+
+    async Task SubmitForm()
+    {
+        ComponentCache.MaxFlightSecondsBtwMaintenance = _maxHoursFlightTime * (60 * 60);
+        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(ComponentCache));
+
+        var response = await Http.PutAsJsonAsync("api/Component/" + ComponentCache.ComponentId, ComponentCache);
+        if (response.IsSuccessStatusCode)
+        {
+            var componentFromDb = await response.Content.ReadFromJsonAsync<ComponentViewModel>();
+            if (componentFromDb != null)
+            {
+                ComponentInAppData.Update(componentFromDb);
+                Snackbar.Add("Entity updated", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+        }
+        else
+            ShowErrorSnack("Error, could  not update to database");
+    }
+
+    void ShowErrorSnack(string msg)
+    {
+        Snackbar.Add(msg, Severity.Error);
+    }
+
+
+}

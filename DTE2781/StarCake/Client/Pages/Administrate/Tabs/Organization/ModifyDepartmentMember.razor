@@ -1,0 +1,115 @@
+@using StarCake.Shared.Models.ViewModels
+@inject AppData AppData
+@using StarCake.Client.Services
+@inject HttpClient Http
+
+<MudDialog>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" md="6">
+                <MudText Typo="Typo.h6" GutterBottom="true">Member</MudText>
+                <MudPaper Width="100%">
+                    <MudList Clickable="true" @bind-SelectedItem="selectedItem">
+                        
+                        @foreach (var departmentMatchUser in from department in AppData.AllDepartments
+                            from userIsInDepartment in department.DepartmentApplicationUsers
+                                .Where(x => x.ApplicationUserId == User.Id)
+                            from departmentMatchUser in AppData.AllDepartments
+                                .Where(x => x.DepartmentId == userIsInDepartment.DepartmentId && x.OrganizationId == AppData.CurrentUser.CurrentDepartment.OrganizationId)
+                            select departmentMatchUser)
+                        {
+                            <MudListItem OnClick="()=> AddUserToDepartment(departmentMatchUser.DepartmentId, User.Id, false)">@departmentMatchUser.Name</MudListItem>
+                        }
+
+                    </MudList>
+                </MudPaper>
+
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudText Typo="Typo.h6" GutterBottom="true">Avaible department</MudText>
+                <MudPaper Width="100%">
+                    <MudList Dense="true" Clickable="true" @bind-SelectedItem="selectedItem">
+                        @foreach (var departmentMatches in from department in AppData.AllDepartments
+                            from userIsNotInDepartment in department.DepartmentApplicationUsers
+                                .Where(x => x.ApplicationUserId == User.Id)
+                            from departmentMatches in AppData.AllDepartments
+                                .Where(x => x.DepartmentId != userIsNotInDepartment.DepartmentId && x.OrganizationId == AppData.CurrentUser.CurrentDepartment.OrganizationId)
+                            select departmentMatches)
+                        {
+                            <MudListItem OnClick="() =>AddUserToDepartment(departmentMatches.DepartmentId, User.Id, true)">@departmentMatches.Name</MudListItem>
+                        }
+                        
+                    </MudList>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+
+    MudListItem selectedItem;
+    MudListItem selectedAvailableDepartment;
+
+    
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public ApplicationUserViewModel User { get; set; }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    
+
+    private bool hover = true;
+
+    
+
+    private async Task AddUserToDepartment(int departmentId, string userId, bool addToDepartment)
+    {
+        if (addToDepartment)
+        {
+            var response = await Http.PostAsJsonAsync("api/DepartmentAPI/DepartmentUser/" + departmentId, userId);
+
+            if (response.IsSuccessStatusCode)
+            {
+                AppData.ParentRoot.ShowSnackBar("User is been added", Severity.Success);
+                AppData.AllDepartments = await Http.GetFromJsonAsync<List<DepartmentViewModel>>("api/DepartmentAPI/");
+                StateHasChanged();
+                
+            }
+            else
+            {
+                AppData.ParentRoot.ShowSnackBar("UPSSSS", Severity.Error);
+            }
+        }
+        else
+        {
+            var response = await Http.PostAsJsonAsync("api/DepartmentAPI/DepartmentUserDelete/" + departmentId, userId);
+
+            if (response.IsSuccessStatusCode)
+            {
+                AppData.ParentRoot.ShowSnackBar($" is been Removed", Severity.Success);
+                AppData.AllDepartments = await Http.GetFromJsonAsync<List<DepartmentViewModel>>("api/DepartmentAPI/");
+                StateHasChanged();
+                
+            }
+            else
+            {
+                AppData.ParentRoot.ShowSnackBar("UPSSSS", Severity.Error);
+            }
+        }
+
+        
+
+    }
+    
+    
+
+}

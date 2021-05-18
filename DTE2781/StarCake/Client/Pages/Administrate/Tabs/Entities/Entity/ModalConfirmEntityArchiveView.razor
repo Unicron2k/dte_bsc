@@ -1,0 +1,86 @@
+﻿@using StarCake.Shared.Models.ViewModels
+@using StarCake.Shared
+@using StarCake.Client.Services
+@inject ISnackbar Snackbar
+@inject HttpClient Http
+@inject AppData AppData
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        @if (Entity == null)
+        {
+            <MudItem xs="12">
+                <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+            </MudItem>
+        }
+        else
+        {
+            <AuthorizeView Roles="@($"{Roles.GetOrganizationMaintainerAndUp()}")">
+                <MudGrid Spacing="2" Justify="Justify.Center">
+                    <MudItem xs="6">
+                        <MudButton 
+                            OnClick="Cancel" 
+                            Variant="Variant.Filled"
+                            Color="Color.Success"
+                            FullWidth="true"
+                            EndIcon="@Icons.Material.Filled.Cancel">
+                            Cancel
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudButton 
+                            OnClick="SubmitForm" 
+                            Variant="Variant.Filled"
+                            Color="Color.Error"
+                            FullWidth="true"
+                            EndIcon="@Icons.Material.Filled.Delete">
+                            Archive
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </AuthorizeView>
+        }
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    // Rx parameter
+    [Parameter]
+    public EntityViewModel Entity { get; set; }
+
+    // Tx parameter
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    async Task SubmitForm()
+    {
+        Entity.IsArchived = true;
+        var response = await Http.PutAsJsonAsync("api/EntityAPI/" + Entity.EntityId, Entity);
+        if (response.IsSuccessStatusCode)
+        {
+            var entityFromDb = await response.Content.ReadFromJsonAsync<EntityViewModel>();
+            var toRemove = AppData.CurrentUser.CurrentDepartment.Entities.FirstOrDefault(x => x.EntityId == Entity.EntityId);
+            AppData.CurrentUser.CurrentDepartment.Entities.Remove(toRemove);
+            AppData.CurrentUser.CurrentDepartment.Entities.Add(entityFromDb);
+            MudDialog.Close(DialogResult.Ok(true));
+            AppData.ParentRoot.ShowSnackBar($"{Entity.Name} was archived!", Severity.Success);
+        }
+        else
+        {
+            AppData.ParentRoot.ShowSnackBar($"There was an error archiving {Entity.Name}!", Severity.Error);
+            Entity.IsArchived = false;
+        }
+            
+    }
+
+    void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+    }
+
+}

@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">8_3_DB_Comms_Room</string>
+    <string name="str_option_menu_category">Kategorier</string>
+    <string name="str_choose_category">Velg Kategori</string>
+    <string name="str_new_category">Ny Kategori</string>
+    <string name="str_edit_category">Endre Kategori</string>
+    <string name="str_category_name">Kategorinavn</string>
+    <string name="str_new_contact">Ny Kontakt</string>
+    <string name="str_edit_contact">Endre Kontakt</string>
+    <string name="str_contact_name_placeholder">contact_name_placeholder</string>
+    <string name="str_save">Lagre</string>
+    <string name="str_save_changes">Lagre Endringer</string>
+    <string name="str_birth_year">Fødselsaar(YYYY)</string>
+    <string name="str_fb_link">FB-Link</string>
+    <string name="str_email">Email</string>
+    <string name="str_phone_number">Telefonnummer</string>
+    <string name="str_last_name">Etternavn</string>
+    <string name="str_first_name">Fornavn</string>
+    <string name="str_contacts_title">Kontakter (%d)</string>
+    <string name="str_categories">Kategorier</string>
+    <string name="str_num_contacts">Kontakter</string>
+    <string name="str_contact_name_bottom">%s %s</string>
+    <string name="str_no_category">Ingen kategori valgt</string>
+    <string name="str_contact_deleted">Kontakt slettet</string>
+    <string name="str_category_name_empty">Kategori-navn kan ikke være tomt</string>
+    <string name="str_first_name_empty">Fornavn kan ikke være tomt</string>
+    <string name="str_last_name_empty">Etternavn kan ikke være tomt</string>
+    <string name="str_phone_number_minimum_8">Telefonnummer må være minst 8 siffer</string>
+    <string name="str_select_category">Venligst velg en kategori</string>
+</resources>

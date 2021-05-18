@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Tester IntentSercice</string>
+    <string name="app_name">MyIntentService</string>
+    <string name="result_activity">Resultataktivitet</string>
+</resources>

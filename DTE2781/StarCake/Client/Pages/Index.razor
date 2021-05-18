@@ -1,0 +1,74 @@
+﻿@page "/"
+
+@using StarCake.Client.Services
+@using StarCake.Shared.Models.ViewModels
+@using StarCake.Client.Pages.Maintenance
+
+@inject AppData _appData
+@inject HttpClient _http
+@inject AuthenticationStateProvider _authenticationStateProvider
+
+@if (_showLoading)
+{
+    <MudItem xs="12">
+        <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+    </MudItem>}
+else if (_showError)
+{
+    <p>An error occured. Make sure you are connected to the internet and reload the page</p>
+}
+else if (_isAuthenticated && AppData.CurrentUser!=null && AppData.IsLoaded)
+{
+    <MaintenanceStatus/>
+}
+else
+{
+    <h2>Please <a href="authentication/login">Log in</a> to utilize the system.</h2>
+}
+
+@code
+{
+    bool _showError;
+    bool _showLoading=true;
+    bool _isAuthenticated;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        //Set to true to enable debug-functions
+        //DebugTools.DebugEnabled = true;
+        try
+        {
+            await base.OnInitializedAsync();
+            
+            var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            _isAuthenticated = authenticationState.User.Identity.IsAuthenticated;
+            
+            //Only load if we are authorized and CurrentUser is not populated
+            if (_isAuthenticated && AppData.CurrentUser == null)
+            {
+                AppData.CurrentUser = await _http.GetFromJsonAsync<ApplicationUserViewModel>("api/ApplicationUserAPI");
+                AppData.CurrentUser.CurrentDepartment = await _http.GetFromJsonAsync<DepartmentViewModel>("api/DepartmentAPI/" + AppData.CurrentUser.CurrentLoggedInDepartmentId);
+                AppData.CurrentUser.Departments = await _http.GetFromJsonAsync<ICollection<DepartmentViewModel>>("api/DepartmentAPI/all");
+                
+                
+                _appData.EntityTypes = await _http.GetFromJsonAsync<EntityTypeViewModel[]>("api/EntityType");
+                _appData.Manufacturers = await _http.GetFromJsonAsync<ManufacturerViewModel[]>("api/Manufacturer");
+                _appData.ComponentTypes = await _http.GetFromJsonAsync<ComponentTypeViewModel[]>("api/ComponentType");
+                _appData.Countries = await _http.GetFromJsonAsync<List<CountryViewModel>>("api/Country/");
+                _appData.TypeOfOperations = await _http.GetFromJsonAsync<List<TypeOfOperationViewModel>>("api/TypeOfOperation/all");
+                _appData.AllDepartments = await _http.GetFromJsonAsync<List<DepartmentViewModel>>("api/DepartmentAPI/");
+                
+                AppData.IsLoaded = true;
+                StateHasChanged();
+            }
+            _showLoading = false;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            _showError = true;
+            throw;
+        }
+    }
+
+}

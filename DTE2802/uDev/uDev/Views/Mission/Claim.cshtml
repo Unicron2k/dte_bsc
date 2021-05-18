@@ -1,0 +1,44 @@
+@using uDev.Models.Entity
+@model uDev.Models.ViewModels.MissionViewModel
+@inject UserManager<ApplicationUser> UserManager
+@{
+
+    Layout = "_Layout";
+
+    //TODO: replace with _StatusMessage?
+    ViewBag.Title = "Mission not Claimed!";
+    ViewBag.status = "badge-danger";
+    
+    if (ViewBag.ClaimedByUser){
+        ViewBag.message = "You have successfully claimed this mission!";
+        ViewBag.Title = "Mission Claimed!";
+        ViewBag.status = "badge-success";
+    }
+    else if (ViewBag.alreadyClaimedByUser)
+    {
+        ViewBag.message = "You have Already claimed this mission!";
+        ViewBag.Title = "Mission Claimed!";
+        ViewBag.status = "badge-success";
+    }
+    else if (ViewBag.ClaimingOwn)
+    {
+        ViewBag.message = "You cannot claim your own mission!";
+    }
+    else if (ViewBag.claimedByOther)
+    {
+        ViewBag.message = "This mission have already been claimed by someone else.";
+    }
+    else
+    {
+        ViewBag.message = "Unable to claim mission: Something unexpected happened";
+    }
+}
+
+<h2>@ViewBag.Title</h2>
+<br>
+<p class="text-center"> <span class="card @ViewBag.status">@ViewBag.message</span><br>
+</p>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

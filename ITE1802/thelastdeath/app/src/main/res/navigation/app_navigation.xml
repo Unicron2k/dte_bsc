@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_navigation"
+    app:startDestination="@id/homeFragment"
+    tools:ignore="UnusedNavigation">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.thelastdeath.fragment.LoginFragment"
+        android:label="@string/fragment_user_login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.thelastdeath.fragment.HomeFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_dashboard" >
+        <action
+            android:id="@+id/action_homeFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment"/>
+        <action
+            android:id="@+id/action_homeFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment"/>
+        <action
+            android:id="@+id/action_homeFragment_to_newUserProgramFragment"
+            app:destination="@id/newUserProgramFragment">
+            <argument
+                android:name="userObject"
+                app:argType="com.example.thelastdeath.entity.User"/>
+        </action>
+        <action
+            android:id="@+id/action_homeFragment_to_newUserProgramSession"
+            app:destination="@id/newUserProgramSession" />
+        <action
+            android:id="@+id/action_homeFragment_to_userprograms"
+            app:destination="@id/userPrograms" />
+        <action
+            android:id="@+id/action_homeFragment_to_newAppProgramType"
+            app:destination="@id/newAppProgramType" />
+        <action
+            android:id="@+id/action_homeFragment_to_viewExercisesFragment"
+            app:destination="@id/viewExercisesFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_appProgramTypes"
+            app:destination="@id/appProgramTypes" >
+            <argument
+                android:name="userObject"
+                app:argType="com.example.thelastdeath.entity.User"/>
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/newExerciseFragment"
+        android:name="com.example.thelastdeath.fragment.NewExerciseFragment"
+        android:label="@string/newExercise_title"
+        tools:layout="@layout/fragment_new_exercise"
+
+        >
+        <argument
+            android:name="UserProgramNewExercise"
+            app:argType="com.example.thelastdeath.entity.UserProgram" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.thelastdeath.fragment.SettingsFragment"
+        android:label="@string/settings"
+        tools:layout="">
+        <action
+            android:id="@+id/action_settingsFragment_to_feedbackFragment"
+            app:destination="@id/feedbackFragment"/>
+        <action
+            android:id="@+id/action_settingsFragment_to_aboutFragment"
+            app:destination="@id/aboutFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.example.thelastdeath.fragment.UserProfileFragment"
+        android:label="@string/userprofile_title"
+        tools:layout="@layout/fragment_userprofile" />
+
+    <fragment
+        android:id="@+id/userStatsFragment"
+        android:name="com.example.thelastdeath.fragment.UserStatsFragment"
+        android:label="@string/userstats_title"
+        tools:layout="@layout/fragment_userstats" />
+
+    <fragment
+        android:id="@+id/feedbackFragment"
+        android:name="com.example.thelastdeath.fragment.FeedbackFragment"
+        android:label="@string/pref_send_feedback"
+        tools:layout="@layout/fragment_feedback" />
+
+    <fragment
+        android:id="@+id/newUserProgramFragment"
+        android:name="com.example.thelastdeath.fragment.NewUserProgramFragment"
+        android:label="@string/newUserProgram_title"
+        tools:layout="@layout/fragment_new_user_program">
+        <argument
+            android:name="userObject"
+            app:argType="com.example.thelastdeath.entity.User"/>
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/newUserProgramSession"
+        android:name="com.example.thelastdeath.fragment.NewUserProgramSessionFragment"
+        android:label="@string/newUserProgramSession_title"
+        tools:layout="@layout/fragment_new_user_program_session" />
+
+    <fragment
+        android:id="@+id/userPrograms"
+        android:name="com.example.thelastdeath.fragment.userprogram.UserProgramsFragment"
+        android:label="@string/userPrograms_title"
+        tools:layout="@layout/fragment_user_programs" >
+        <action
+            android:id="@+id/action_userPrograms_to_userProgramDetails"
+            app:destination="@id/userProgramDetails">
+            <argument
+                android:name="userProgramObject"
+                app:argType="com.example.thelastdeath.entity.UserProgram"/>
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/userProgramDetails"
+        android:name="com.example.thelastdeath.fragment.userprogram.UserProgramDetailsFragment"
+        android:label="@string/userProgramsDetails_title"
+        tools:layout="@layout/fragment_user_program_details" >
+        <argument
+            android:name="userProgramObject"
+            app:argType="com.example.thelastdeath.entity.UserProgram"/>
+        <action
+            android:id="@+id/action_userProgramDetails_to_userProgramSessionDetails"
+            app:destination="@id/userProgramSessionDetails">
+            <argument
+                android:name="UserProgramSessionObject"
+                app:argType="com.example.thelastdeath.entity.UserProgramSession"/>
+        </action>
+        <action
+            android:id="@+id/action_userProgramDetails_to_userProgramExerciseDetails"
+            app:destination="@id/userProgramExerciseDetails">
+            <argument
+                android:name="UserProgramExerciseObject"
+                app:argType="com.example.thelastdeath.entity.UserProgramExercise"/>
+        </action>
+        <action
+            android:id="@+id/action_userProgramDetails_to_newExerciseFragment"
+            app:destination="@id/newExerciseFragment">
+            <argument
+                android:name="UserProgramNewExercise"
+                app:argType="com.example.thelastdeath.entity.UserProgram" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/userProgramSessionDetails"
+        android:name="com.example.thelastdeath.fragment.userprogram.UserProgramSessionDetailsFragment"
+        android:label="@string/userProgramSessionDetails_title"
+        tools:layout="@layout/fragment_user_program_session_details" >
+        <argument
+            android:name="UserProgramSessionObject"
+            app:argType="com.example.thelastdeath.entity.UserProgramSession"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/userProgramExerciseDetails"
+        android:name="com.example.thelastdeath.fragment.userprogram.UserProgramExerciseDetailsFragment"
+        android:label="@string/userProgramExerciseDetails_name_title"
+        tools:layout="@layout/fragment_user_program_exercise_details" >
+        <argument
+            android:name="UserProgramExerciseObject"
+            app:argType="com.example.thelastdeath.entity.UserProgramExercise"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/newAppProgramType"
+        android:name="com.example.thelastdeath.fragment.add.newAppProgramTypeFragment"
+        android:label="@string/newAppProgramType_title"
+        tools:layout="@layout/fragment_new_app_program_type" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/appProgramTypes"
+        android:name="com.example.thelastdeath.fragment.app_program_type.AppProgramTypesFragment"
+        android:label="@string/appProgramTypes_title"
+        tools:layout="@layout/fragment_appprogramtypes">
+        <argument
+            android:name="userObject"
+            app:argType="com.example.thelastdeath.entity.User"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/viewExercisesFragment"
+        android:name="com.example.thelastdeath.fragment.ViewExercisesFragment"
+        android:label="@string/exercises"
+        tools:layout="@layout/fragment_view_exercises" />
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.example.thelastdeath.fragment.AboutFragment"
+        android:label="@string/pref_about_summary"
+        tools:layout="@layout/fragment_about"/>
+
+</navigation>

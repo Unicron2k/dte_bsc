@@ -1,0 +1,96 @@
+﻿@page "/administrate"
+@using StarCake.Client.Services
+@using StarCake.Shared
+@inject HttpClient _http
+@inject AppData _appData
+@inject NavigationManager _navigation
+
+@using StarCake.Client.Pages.Administrate.Tabs.Entities.Entity
+@using StarCake.Client.Pages.Administrate.Tabs.Entities.Archived
+@using StarCake.Client.Pages.Administrate.Tabs.Entities.EntityType
+@using StarCake.Client.Pages.Administrate.Tabs.Entities.Manufactur
+@using StarCake.Client.Pages.Administrate.Tabs.Entities.ComponentType
+@using StarCake.Client.Pages.Administrate.Tabs.Department
+@using StarCake.Client.Pages.Administrate.Tabs.Organization
+@using StarCake.Client.Pages.Administrate.Tabs.Countries
+@using StarCake.Client.Pages.Administrate.Tabs.FlightLogging.TypeOfOperation
+@using StarCake.Client.Pages.Administrate.Tabs.Organization.OrganizeDepartments
+
+<!-- If refreshing the site, redirect to home index  to load Appdata -->
+@if (!AppData.IsLoaded)
+{
+    _navigation.NavigateTo(_navigation.BaseUri, forceLoad: true);
+}
+
+<MudTabs Elevation="2" Rounded="true" Centered="true" Color="Color.Dark">
+    <!-- Entities Tab -->
+    <MudTabPanel Text="Entities" BadgeData='"S"'>
+        <MudTabs Elevation="2" Rounded="true" Centered="true" Color="Color.Surface">
+            <MudTabPanel Text="Entity">
+                <TabEntity/>
+            </MudTabPanel>
+            <MudTabPanel Text="Archived" BadgeData='"S"'>
+                <TabArchived/>
+            </MudTabPanel>
+
+            <MudTabPanel Text="EntityTypes">
+                <Entities_TabEntityTypes/>
+            </MudTabPanel>
+            <MudTabPanel Text="Component Types">
+                <Entities_TabComponentType/>
+            </MudTabPanel>
+            <MudTabPanel Text="Manufacturer">
+                <Entities_TabManufacturer/>
+            </MudTabPanel>
+        </MudTabs>
+    </MudTabPanel>
+
+    <!-- Department Tab -->
+    <AuthorizeView Roles="@($"{Roles.GetDepartmentMaintainerAndUp()}")">
+        <MudTabPanel Text="Department" BadgeColor="Color.Dark">
+            <MudTabs Elevation="2" Rounded="true" Centered="true">
+                <MudTabPanel Text="Users">
+                    <Department_Users/>
+                </MudTabPanel>
+
+                <MudTabPanel Text="Edit department info">
+                    <Department_EditDepartment/>
+                </MudTabPanel>
+            </MudTabs>
+        </MudTabPanel>
+    </AuthorizeView>
+
+    <!-- Organization Tab -->
+    <AuthorizeView Roles="@($"{Roles.GetOrganizationMaintainerAndUp()}")">
+        <MudTabPanel Text="Organization">
+            <MudTabs Elevation="2" Rounded="true" Centered="true">
+
+                <MudTabPanel Text="Edit users">
+                    <Organization_Users/>
+                </MudTabPanel>
+
+                <MudTabPanel Text="Edit organization info">
+                    <Organization_EditOrganization/>
+                </MudTabPanel>
+                
+                <MudTabPanel Text="Organize departments">
+                    <OrganizeDepartments/>
+                </MudTabPanel>
+            </MudTabs>
+        </MudTabPanel>
+    </AuthorizeView>
+
+    <!-- FlightLogging Tab -->
+    <MudTabPanel Text="FlightLogging" Icon="@Icons.Filled.AirplanemodeActive">
+        <MudTabs Elevation="2" Rounded="true" Centered="true" Color="Color.Surface">
+            <MudTabPanel Text="Types of operation">
+                <TabTypeOfOperations/>
+            </MudTabPanel>
+        </MudTabs>
+    </MudTabPanel>
+
+    <!-- Countries Tab -->
+    <MudTabPanel Text="Countries">
+        <TabCountries/>
+    </MudTabPanel>
+</MudTabs>
