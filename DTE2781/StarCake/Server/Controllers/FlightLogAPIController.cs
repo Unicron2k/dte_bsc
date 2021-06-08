@@ -36,6 +36,10 @@ namespace StarCake.Server.Controllers
         
         
         // GET: api/FlightLogAPI
+        /// <summary>
+        /// Get all flightlog from database
+        /// </summary>
+        /// <returns>IEnumerable Flightlog</returns>
         [HttpGet]
         public async Task<IEnumerable<FlightLog>> GetFlightLogs()
         {
@@ -43,6 +47,12 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/FlightLogAPI/GetFlightLogsInEntityForTable
+        /// <summary>
+        /// Get the last flightlogs for specific entity to view table
+        /// </summary>
+        /// <param name="entityId">int entityId</param>
+        /// <param name="numberOfFlightLogs">int, show how many log to show</param>
+        /// <returns>IEnumerable FlightLogViewModelTable</returns>
         [HttpGet("GetFlightLogsInEntityForTable/")]
         public async Task<IEnumerable<FlightLogViewModelTable>> GetLastFlightLogsInEntityForTable(
             [FromQuery] int entityId, 
@@ -52,6 +62,11 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/FlightLogAPI/{id}
+        /// <summary>
+        /// Get a specific flightlog by flightlog id
+        /// </summary>
+        /// <param name="id">int flightlogId</param>
+        /// <returns>IActionResult flightlog</returns>
         [HttpGet("{id:int}")]
         public IActionResult Get([FromRoute] int id)
         {
@@ -64,6 +79,13 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/FlightLogAPI/GetAddressFromCoordinate/
+        /// <summary>
+        /// Get adress from cordinate
+        /// </summary>
+        /// <param name="latitude">double, latitude</param>
+        /// <param name="longitude">double, longitude</param>
+        /// <param name="openCageApiKey">openCageApiKey</param>
+        /// <returns></returns>
         [HttpGet("GetAddressFromCoordinate/")]
         public async Task<OpenCageResponseReverse> GetAddressFromCoordinate([FromQuery] double latitude, [FromQuery] double longitude, [FromQuery] string openCageApiKey)
         {
@@ -84,6 +106,12 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/FlightLogAPI/GetCoordinateFromAddress/
+        /// <summary>
+        /// Get Cordinate in latiude and lonitude from a adress
+        /// </summary>
+        /// <param name="address">string adress</param>
+        /// <param name="openCageApiKey">openCageApiKey</param>
+        /// <returns></returns>
         [HttpGet("GetCoordinateFromAddress/")]
         public OpenCageResponseForward GetCoordinateFromAddress([FromQuery] string address, [FromQuery] string openCageApiKey)
         {
@@ -105,6 +133,11 @@ namespace StarCake.Server.Controllers
         }
         
         // POST: api/FlightLogAPI
+        /// <summary>
+        /// Add a new flightlog
+        /// </summary>
+        /// <param name="flightLogViewModel">Object FlightLogViewModel, passing data to Database</param>
+        /// <returns>IActionResult</returns>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] FlightLogViewModel flightLogViewModel)
         {
@@ -137,6 +170,13 @@ namespace StarCake.Server.Controllers
             return CreatedAtAction("Get", new { id = flightLog.FlightLogId }, flightLogViewModel);
         }
         
+        /// <summary>
+        /// Get all flughtlog by department
+        /// </summary>
+        /// <param name="base64DepartmentId">departmentId</param>
+        /// <param name="base64DateStart">startDate</param>
+        /// <param name="base64DateEnd">End date</param>
+        /// <returns>IAction</returns>
         [HttpGet("FlightLogsForTable/ByDepartment/")]
         public async Task<IActionResult> GetAllFlightLogsByDepartment(
             [FromQuery] string base64DepartmentId,
@@ -153,6 +193,13 @@ namespace StarCake.Server.Controllers
             return Ok(flightLogs);
         }
         
+        /// <summary>
+        /// Get flightlog by entities
+        /// </summary>
+        /// <param name="base64EntityIdList">list of all entityId</param>
+        /// <param name="base64DateStart">Date start</param>
+        /// <param name="base64DateEnd">Date end</param>
+        /// <returns>IActionResult</returns>
         [HttpGet("FlightLogsForTable/ByEntities/")]
         public async Task<IActionResult> GetAllFlightLogsByEntities(
             [FromQuery] string base64EntityIdList,

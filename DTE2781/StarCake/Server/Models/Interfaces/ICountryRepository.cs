@@ -10,6 +10,6 @@ namespace StarCake.Server.Models.Interfaces
         Task<IEnumerable<Country>> GetAll();
         Task Save(Country country);
         Task Update(CountryViewModel countryViewModel);
-        Country Get(int? id);
+        public Task<Country> Get(int? id);
     }
 }

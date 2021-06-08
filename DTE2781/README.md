@@ -6,7 +6,7 @@
 
 ### About
 "Project StarCake" is the final project as part of the final bachelor thesis-project at UiT Narvik, spring 2021,
-and is commisioned by Commisioned by [Magnus Skogmo](mailto:magnus@flylavt.no) (manager) at [FlyLavt AS](https://www.flylavt.no/). \
+and is commisioned by [Magnus Skogmo](mailto:) (manager) at [FlyLavt AS](https://www.flylavt.no/). \
 \
 "Project StarCake" aims to be a complete flight-log and technical management-system for use in drone-operations
 in Norway, adhering to [terms and regulations for drones](https://luftfartstilsynet.no/en/drones//) as laid out by [Luftfartstilsynet](https://luftfartstilsynet.no/en/ "Civil Aviation Authority")
@@ -15,13 +15,12 @@ in Norway, adhering to [terms and regulations for drones](https://luftfartstilsy
 This project runs on the .netCore 3.1 OpenSource Framework, licensed under the MIT license (see [LICENSE.txt](LICENSE.txt)),
 utilizing a MySQL-server for database-handling.
 \
-To configure the MySQL-server connection, see [appsettings.json](StarCake/Server/appsettings.json)
+To configure the application, see [appsettings.json](StarCake/Server/appsettings.json), [appsettings.Production.json](StarCake/Server/appsettings.Production.json) and [appsettings.Development.json](StarCake/Server/appsettings.Development.json)
 
 ### Developers
 
 |Name|Email|
 |----|-----|
-Nope
 
 #### Notes
 This readme follows the [GitLab Flavoured Markdown (GFM)](https://docs.gitlab.com/ee/user/markdown.html) \

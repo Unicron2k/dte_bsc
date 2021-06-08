@@ -9,9 +9,11 @@ namespace StarCake.Server.Models.Interfaces
     {
         Task<List<ComponentViewModel>> AllInEntityViewModel(int entityId);
         Task<List<ComponentViewModel>> AllArchivedInDepartment(int departmentId);
-        // TODO: Add States IsArchived and IsInstorage and do those instead of G:11
 
         Task Update(Component component);
         Task Save(Component component);
+        
+        Task<IEnumerable<Component>> GetAll();
+        public Task<Component> Get(int? id);
     }
 }

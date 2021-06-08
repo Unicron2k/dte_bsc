@@ -66,6 +66,5 @@ namespace StarCake.Server.Models.Entity
                 MaxFlightSecondsBtwMaintenance = componentViewModel.MaxFlightSecondsBtwMaintenance
             };
         }
-
     }
 }

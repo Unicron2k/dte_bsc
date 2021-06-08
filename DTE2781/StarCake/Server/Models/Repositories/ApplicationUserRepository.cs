@@ -112,8 +112,7 @@ namespace StarCake.Server.Models.Repositories
             {
                 _db.ApplicationUsers.Attach(user);
                 _db.Entry(user).Property(x => x.CurrentLoggedInDepartmentId).IsModified = true;
-                var result = await _db.SaveChangesAsync();
-                Console.WriteLine(result);
+                 await _db.SaveChangesAsync();
             }
         }
 

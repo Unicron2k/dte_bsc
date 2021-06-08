@@ -25,6 +25,10 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/Country
+        /// <summary>
+        /// Get all countries from database
+        /// </summary>
+        /// <returns>IEnumerable of countries</returns>
         [HttpGet]
         public async Task<IEnumerable<Country>> GetCountries()
         {
@@ -32,18 +36,29 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/Country/{id}
+        /// <summary>
+        /// Get a specific country
+        /// </summary>
+        /// <param name="id">CountryId - int</param>
+        /// <returns>Country ActionResult</returns>
         [HttpGet("{id:int}")]
-        public IActionResult Get([FromRoute] int id)
+        public async Task<ActionResult<Country>> Get([FromRoute] int? id)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var country = _repository.Get(id);
-            if (country == null)
+            if (id == null)
+                return NotFound("Bad parameter");
+            var componentType = await _repository.Get(id);
+            if (componentType == null)
                 return NotFound();
-            return Ok(country);
+            return componentType;
         }
         
         // PUT: api/Country/{id}
+        /// <summary>
+        /// Update the specific countru
+        /// </summary>
+        /// <param name="id">CountryId</param>
+        /// <param name="country">CountryViewModel with updated data</param>
+        /// <returns>Updated Country IActionResult</returns>
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Put([FromRoute] int id, [FromBody] CountryViewModel country)
         {
@@ -65,6 +80,11 @@ namespace StarCake.Server.Controllers
         }
         
         // POST: api/Country
+        /// <summary>
+        /// Add a new Country to database
+        /// </summary>
+        /// <param name="country">Country, data to add to database</param>
+        /// <returns>New country</returns>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Country country)
         {

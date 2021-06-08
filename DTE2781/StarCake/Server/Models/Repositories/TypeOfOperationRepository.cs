@@ -44,12 +44,11 @@ namespace StarCake.Server.Models.Repositories
 
         
 
-        public TypeOfOperation Get(int? id)
+        public async Task<TypeOfOperation> Get(int? id)
         {
-            var c = (from o in _db.TypeOfOperations
-                where o.TypeOfOperationId == id
-                select o).FirstOrDefault();
-            return c;
+            if (id == null)
+                return new TypeOfOperation();
+            return await _db.TypeOfOperations.FirstOrDefaultAsync(c => c.TypeOfOperationId == id);
         }
     }
 }

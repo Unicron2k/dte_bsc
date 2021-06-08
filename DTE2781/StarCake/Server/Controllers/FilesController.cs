@@ -25,6 +25,20 @@ namespace StarCake.Server.Controllers
             _dbContext = dbContext;
         }
 
+        
+        /// <summary>
+        /// DEPRECATED
+        /// Add file to server, details to DB
+        /// </summary>
+        ///  /// <remarks>
+        /// This method is obsolete, images are now stored in database as Base64-string. 
+        /// This was done due to Blazor-Client not having an open API endpoint to the server in wwwroot for static images.
+        /// This can be used but the file would need to be encoded to base64 and decoded on Client-side
+        /// FileDetail is a class which contains the absolute path for the file in the Server¨s wwwroot folder
+        /// </remarks>
+        /// <param name="file"></param>
+        /// <returns>FileDetail object</returns>
+        [Obsolete]
         [HttpPost]
         public async Task<IActionResult> Post([FromForm]IFormFile file)
         {
@@ -63,6 +77,18 @@ namespace StarCake.Server.Controllers
             return Ok(fileDetail);
         }
         
+        /// <summary>
+        /// Get a specific file detail
+        /// </summary>
+        /// <remarks>
+        /// This method is obsolete, images are now stored in database as Base64-string. 
+        /// This was done due to Blazor-Client not having an open API endpoint to the server in wwwroot for static images.
+        /// This can be used but the file would need to be encoded to base64 and decoded on Client-side
+        /// FileDetail is a class which contains the absolute path for the file in the Server¨s wwwroot folder
+        /// </remarks>
+        /// <param name="id"></param>
+        /// <returns>FileDetail</returns>
+        [Obsolete]
         [HttpGet("{id:int}")]
         public IActionResult GetFileDetail([FromRoute] int id)
         {

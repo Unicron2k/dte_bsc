@@ -31,10 +31,7 @@ namespace StarCake.Server.Models.Repositories
         public async Task<Manufacturer> GetManufacturer(int? id)
         {
             if (id == null)
-            {
                 return new Manufacturer();
-            }
-
             return await _db.Manufacturers.FirstOrDefaultAsync(m => m.ManufacturerId == id);
         }
 

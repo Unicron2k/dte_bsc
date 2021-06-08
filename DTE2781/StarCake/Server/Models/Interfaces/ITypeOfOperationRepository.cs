@@ -10,6 +10,6 @@ namespace StarCake.Server.Models.Interfaces
         Task<IEnumerable<TypeOfOperation>> GetAll();
         Task Save(TypeOfOperation typeOfOperation);
         Task Update(TypeOfOperationViewModel typeOfOperationViewModel);
-        TypeOfOperation Get(int? id);
+        public Task<TypeOfOperation> Get(int? id);
     }
 }

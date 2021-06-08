@@ -16,6 +16,11 @@ namespace StarCake.Server.Controllers
 
 		public IClientRequestParametersProvider ClientRequestParametersProvider { get; }
 
+		/// <summary>
+		/// Generate from .net
+		/// </summary>
+		/// <param name="clientId"></param>
+		/// <returns></returns>
 		[HttpGet("_configuration/{clientId}")]
 		public IActionResult GetClientRequestParameters([FromRoute] string clientId)
 		{

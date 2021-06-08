@@ -38,6 +38,10 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/ApplicationUserAPI/all
+        /// <summary>
+        /// Get all ApplicationUsers in database
+        /// </summary>
+        /// <returns>List of users</returns>
         [HttpGet("all")]
         public async Task<List<ApplicationUserViewModel>> GetApplicationUsers()
         {
@@ -54,6 +58,10 @@ namespace StarCake.Server.Controllers
             }).ToList();
         }
         
+        /// <summary>
+        /// Get a current current
+        /// </summary>
+        /// <returns>Current user</returns>
         [HttpGet]
         [Authorize]
         //For no ID given, return current ApplicationUser
@@ -85,6 +93,11 @@ namespace StarCake.Server.Controllers
         
         
         // GET: api/ApplicationUserAPI/{id}
+        /// <summary>
+        ///Get the ApplicationUser specified by the id
+        /// </summary>
+        /// <param name="id">ApplicationUserId-string</param>
+        /// <returns>User</returns>
         [HttpGet("{id}")]
         public IActionResult Get([FromRoute] string id)
         {
@@ -100,6 +113,11 @@ namespace StarCake.Server.Controllers
             return Ok(applicationUser);
         }
 
+        /// <summary>
+        /// Get name from specified user by id
+        /// </summary>
+        /// <param name="id">ApplicationUserId-string</param>
+        /// <returns>String - Name</returns>
         // GET: api/ApplicationUserAPI/NAME/{id}
         [HttpGet("NAME/"+"{id}")]
         public IActionResult GetName([FromRoute] string id)
@@ -114,6 +132,12 @@ namespace StarCake.Server.Controllers
             return Ok(name);
         }
 
+        /// <summary>
+        /// Update the current department the user is logged in with
+        /// </summary>
+        /// <param name="id">ApplicationUserId-string</param>
+        /// <param name="departmentId">DepartmentId-int</param>
+        /// <returns>Updated currentdepartment</returns>
         // PUT: api/ApplicationUserAPI/CURRENTDEPARTMENTID/{id}
         [HttpPut("CURRENTDEPARTMENTID/"+"{id}")]
         public async Task<IActionResult> Put([FromRoute] string id, [FromBody] int departmentId)
@@ -144,6 +168,11 @@ namespace StarCake.Server.Controllers
         }
         
         // POST: api/ApplicationUserAPI
+        /// <summary>
+        /// Save the supplied ApplicationUser to database
+        /// </summary>
+        /// <param name="applicationUser">applicationUser</param>
+        /// <returns>Awaitable task</returns>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ApplicationUser applicationUser)
         {

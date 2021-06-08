@@ -15,7 +15,7 @@ namespace StarCake.Shared
     public static class Utils
     {
             /// <summary>
-            /// @Author: 
+            /// @Author: aes014@uit.no
             /// Helper methods for many builtin functions in C#
             /// </summary>
             public static class BuiltIns
@@ -35,7 +35,7 @@ namespace StarCake.Shared
 
     
     /// <summary>
-    /// @Author: 
+    /// @Author: aes014@uit.no
     /// Helper methods for validation, mostly in AppendFlightLog.razor
     /// </summary>
     public static class Validation

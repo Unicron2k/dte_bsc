@@ -8,7 +8,18 @@ Adheres to the [GitLab Flavoured Markdown (GFM)](https://docs.gitlab.com/ee/user
 
 
 
-## [Unreleased]## [0.3.8] - 2021-05-10
+
+
+## [Released]
+## [1.0.0] - 2021-05-10
+- Final version released
+
+## [Unreleased]
+## [0.3.9] - 2021-05-10
+### ADDED
+- Misc. tests
+
+## [0.3.8] - 2021-05-10
 ### ADDED
 - Exporting of FlightLogs for PDF
 ### CHANGED

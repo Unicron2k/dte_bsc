@@ -28,6 +28,14 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/ExportDataAPI/File/?
+        /// <summary>
+        /// Export for flightlog
+        /// </summary>
+        /// <param name="base64FlightLogIds">List of all flightlogId to export</param>
+        /// <param name="base64ApplicationUserId">List of all ApplicationUserId to export</param>
+        /// <param name="base64DepartmentId">List of all DepartmentId to export</param>
+        /// <param name="base64FileType">Which type file to export</param>
+        /// <returns></returns>
         [HttpGet("FlightLogs/")]
         public IActionResult GetFlightLogsAsFile(
             [FromQuery] string base64FlightLogIds,

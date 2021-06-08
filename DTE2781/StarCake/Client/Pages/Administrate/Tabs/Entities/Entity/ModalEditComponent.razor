@@ -102,7 +102,6 @@
     async Task SubmitForm()
     {
         ComponentCache.MaxFlightSecondsBtwMaintenance = _maxHoursFlightTime * (60 * 60);
-        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(ComponentCache));
 
         var response = await Http.PutAsJsonAsync("api/Component/" + ComponentCache.ComponentId, ComponentCache);
         if (response.IsSuccessStatusCode)

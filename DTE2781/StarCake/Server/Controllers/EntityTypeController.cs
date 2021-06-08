@@ -28,34 +28,63 @@ namespace StarCake.Server.Controllers
         
         
         // GET: api/EntityType
+        /// <summary>
+        /// Get all entitytpes from database
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IEnumerable<EntityType>> GetEntityTypes()
         {
-            IEnumerable<EntityType> entityTypes = await _context.EntityTypes.ToListAsync();
+            IEnumerable<EntityType> entityTypes = await _repository.GetAll();
             return entityTypes;
         }
         
         // GET: api/EntityType/
+        /// <summary>
+        /// Get a specific entity type
+        /// </summary>
+        /// <param name="id">ID of entity type</param>
+        /// <returns>entity type</returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<EntityType>> GetEntityType(int id)
+        public async Task<ActionResult<EntityType>> GetEntityType(int? id)
         {
-            var entityType = await _context.EntityTypes.FindAsync(id);
+            var entityType = await _repository.GetEntityType(id);
             if (entityType == null)
                 return NotFound();
             return entityType;
         }
         
         // POST: api/EntityType
+        /// <summary>
+        /// Add a new entity type to the database
+        /// </summary>
+        /// <param name="entityType">Data to post database</param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = Roles.OrganizationMaintainer+ "," + Roles.DepartmentMaintainer+ "," +Roles.Admin)]
-        public async Task<ActionResult<EntityType>> PostEntityType(EntityType entityType)
+        public async Task<IActionResult> PostEntityType(EntityType entityType)
         {
-            await _context.EntityTypes.AddAsync(entityType);
-            await _context.SaveChangesAsync();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (entityType == null)
+            {
+                return NotFound();
+            }
+
+            await _repository.SaveEntityType(entityType);
             return CreatedAtAction("GetEntityType", new { id = entityType.EntityTypeId }, entityType);
         }
         
         //PUT: api/EntityType/{id}
+        /// <summary>
+        /// Update a specific entity type
+        /// </summary>
+        /// <param name="id">ID of entity type</param>
+        /// <param name="entityType">Data of new values to update</param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize(Roles = Roles.OrganizationMaintainer+ "," + Roles.DepartmentMaintainer+ "," +Roles.Admin)]
         public async Task<IActionResult> Put([FromRoute] int id, [FromBody] EntityTypeViewModel entityType)

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,19 +22,41 @@ namespace StarCake.Server.Controllers
             _context = context;
         }
 
-        // GET: api/Component/
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<Component>> Get(int id)
+        // GET: api/Component/all
+        /// <summary>
+        /// Get all Compoennts from DB
+        /// </summary>
+        /// <returns>IEnumerable Component</returns>
+        [HttpGet("all/")]
+        public async Task<IEnumerable<Component>> GetComponents()
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var component = await _context.Components.FindAsync(id);
+            return await _repository.GetAll();
+        }
+
+        // GET: api/Component/
+        /// <summary>
+        /// Get a specific component by id 
+        /// </summary>
+        /// <param name="id">ComponentId - int</param>
+        /// <returns>Component</returns>
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<Component>> Get([FromRoute] int? id)
+        {
+            if (id == null)
+                return NotFound("Bad parameter");
+            var component = await _repository.Get(id);
             if (component == null)
                 return NotFound();
-            return Ok(component);
+            return component;
         }
 
         // PUT: api/Component/{id}
+        /// <summary>
+        /// Update the specific component by id and data
+        /// </summary>
+        /// <param name="id">ComponentId-int</param>
+        /// <param name="component">Component data to update</param>
+        /// <returns>Updated component IActionResult</returns>
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Component component)
         {
@@ -55,8 +78,13 @@ namespace StarCake.Server.Controllers
         }
 
         // POST: api/Component
+        /// <summary>
+        /// Save a new Component
+        /// </summary>
+        /// <param name="component">Component</param>
+        /// <returns>New Component</returns>
         [HttpPost]
-        public async Task<ActionResult<Component>> Post([FromBody]Component component)
+        public async Task<IActionResult> Post([FromBody]Component component)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

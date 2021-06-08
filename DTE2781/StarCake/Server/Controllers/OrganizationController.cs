@@ -25,7 +25,7 @@ namespace StarCake.Server.Controllers
         /// GET: api/Organization
         /// Returns all organizations
         /// </summary>
-        /// <returns>IEnumerable<Organization></returns>
+        /// <returns>IEnumerable Organization</returns>
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -38,7 +38,7 @@ namespace StarCake.Server.Controllers
         /// </summary>
         /// <param name="id">Id of organization to fetch</param>
         /// <returns>IActionResult with the specified organization</returns>
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public IActionResult Get([FromRoute] int? id)
         {
             if (id<1)
@@ -77,7 +77,7 @@ namespace StarCake.Server.Controllers
         /// Update an organization from the supplied model
         /// </summary>
         /// <param name="model">OrganizationViewModel</param>
-        /// <returns>Awaitable Task<IActionResult></returns>
+        /// <returns>Awaitable Task IActionResult</returns>
         [HttpPut]
         [Authorize(Roles = Roles.OrganizationMaintainer+ "," + Roles.Admin)]
         public async Task<IActionResult> Put([FromBody] OrganizationViewModel model)

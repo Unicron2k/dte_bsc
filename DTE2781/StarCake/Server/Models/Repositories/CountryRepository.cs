@@ -44,12 +44,11 @@ namespace StarCake.Server.Models.Repositories
         }
 
         
-        public Country Get(int? id)
+        public async Task<Country> Get(int? id)
         {
-            var country = (from o in _db.Countries
-                where o.CountryId == id
-                select o).FirstOrDefault();
-            return country;
+            if (id == null)
+                return new Country();
+            return await _db.Countries.FirstOrDefaultAsync(c => c.CountryId == id);
         }
     }
 }

@@ -18,7 +18,10 @@ using StarCake.Server.Models.Entity;
 using StarCake.Server.Models.Interfaces;
 using StarCake.Server.Models.Repositories;
 using StarCake.Server.Services;
-
+using System;
+using System.Reflection;
+using System.IO;
+using Microsoft.OpenApi.Models;
 
 namespace StarCake.Server
 {
@@ -119,13 +122,42 @@ namespace StarCake.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
             //services.AddScoped<IModalService, ModalService>();
+            
+            
+            //Swagger-UI
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Documentation of StarCakes API",
+                    Description = "Show all API in StarCake project",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "",
+                        Url = new Uri("https://source.coderefinery.org/")
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "User under Apache 2.0",
+                        Url = new Uri("https://swagger.io/license/")
+                    }
+                });
+                
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
 
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dbContext)
         {
+            dbContext.Database.Migrate();
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -146,10 +178,20 @@ namespace StarCake.Server
 
             app.UseRouting();
             
+          
             app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+            
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

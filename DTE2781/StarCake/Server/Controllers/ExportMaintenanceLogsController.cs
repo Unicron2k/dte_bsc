@@ -45,6 +45,12 @@ namespace StarCake.Server.Controllers
         }
 
         // GET: api/ExportDataAPI/File/?
+        /// <summary>
+        /// Export the maintencelog
+        /// </summary>
+        /// <param name="base64MaintenanceLogIds">List of all mainteancelogId to export</param>
+        /// <param name="base64FileType">const string of type file to export</param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> GetFlightLogsAsFile([FromQuery] string base64MaintenanceLogIds, [FromQuery] string base64FileType)
         {
@@ -97,7 +103,6 @@ namespace StarCake.Server.Controllers
             return File(fileBytes, contentType, $"MaintenanceLogs_generated-{DateTime.Now:yyyy-MM-dd}{fileExtension}");
         }
         
-        
         private async Task<List<MaintenanceLogExportViewModel>> GetMaintenanceLogsFromIds(ICollection<int> maintenanceLogIds)
         {
             return (await _maintenanceLogRepository.GetAllInDepartment(_user.CurrentLoggedInDepartmentId))
@@ -105,7 +110,6 @@ namespace StarCake.Server.Controllers
                     .Select(ToExportModel)
                     .ToList();
         }
-        
         private async Task<string> GetMaintenanceLogsAsCsv(ICollection<int> flightLogIds)
         {
             var builder = new StringBuilder()

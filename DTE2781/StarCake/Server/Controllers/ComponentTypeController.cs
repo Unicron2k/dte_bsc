@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StarCake.Server.Data;
@@ -13,6 +14,7 @@ using StarCake.Shared.Models.ViewModels;
 
 namespace StarCake.Server.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ComponentTypeController : ControllerBase
@@ -28,34 +30,64 @@ namespace StarCake.Server.Controllers
         
         
         // GET: api/ComponentType
+        /// <summary>
+        /// Get all ComponentTypes from database
+        /// </summary>
+        /// <returns>Task IEnumerable</returns>
         [HttpGet]
         public async Task<IEnumerable<ComponentType>> GetComponentTypes()
         {
-            IEnumerable<ComponentType> componentTypes = await _context.ComponentTypes.ToListAsync();
+            IEnumerable<ComponentType> componentTypes = await _repository.GetAll();
             return componentTypes;
         }
         
         // GET: api/ComponentType/
+        /// <summary>
+        /// Get a specific component type
+        /// </summary>
+        /// <param name="id">ID of componenttype</param>
+        /// <returns>ComponentType</returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<ComponentType>> GetComponentType(int id)
+        [Authorize(Roles = Roles.DepartmentMaintainer+ "," + Roles.DepartmentMaintainer+ "," +Roles.Admin)]
+        public async Task<ActionResult<ComponentType>> GetEntityType(int? id)
         {
-            var componentType = await _context.ComponentTypes.FindAsync(id);
+            if (id == null)
+            {
+                return NotFound("Bad parameter");
+            }
+            
+            var componentType = await _repository.GetComponentType(id);
             if (componentType == null)
                 return NotFound();
             return componentType;
         }
         
-        // POST: api/ComponentType
+ /// <summary>
+ /// Add a new ComponentType to Database
+ /// </summary>
+ /// <param name="componentType">Object ComponentType, passing new data to DB</param>
+ /// <returns>IActionResult</returns>
         [HttpPost]
         [Authorize(Roles = Roles.OrganizationMaintainer+ "," + Roles.DepartmentMaintainer+ "," +Roles.Admin)]
-        public async Task<ActionResult<ComponentType>> PostComponentType(ComponentType componentType)
+        public async Task<IActionResult> PostComponentType([FromBody] ComponentType componentType)
         {
-            await _context.ComponentTypes.AddAsync(componentType);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction("GetComponentType", new { id = componentType.ComponentTypeId }, componentType);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            await _repository.SaveComponentType(componentType);
+            
+            return CreatedAtAction("GetEntityType", new { id = componentType.ComponentTypeId }, componentType);
         }
         
+        
         //PUT: api/ComponentType/{id}
+        /// <summary>
+        /// Update a specific component type
+        /// </summary>
+        /// <param name="id">ID of component type</param>
+        /// <param name="componentType">Data of new values to update</param>
+        /// <returns>TaskIActionResult</returns>
         [HttpPut("{id}")]
         [Authorize(Roles = Roles.OrganizationMaintainer+ "," + Roles.DepartmentMaintainer+ "," +Roles.Admin)]
         public async Task<IActionResult> Put([FromRoute] int id, [FromBody] ComponentTypeViewModel componentType)
@@ -73,7 +105,7 @@ namespace StarCake.Server.Controllers
             try
             {
                 await _repository.UpdateComponentType(componentType);
-                return CreatedAtAction("GetComponentType", new {id = componentType.ComponentTypeId}, componentType);
+                return CreatedAtAction("GetEntityType", new {id = componentType.ComponentTypeId}, componentType);
 
             }
             catch (DbUpdateConcurrencyException)

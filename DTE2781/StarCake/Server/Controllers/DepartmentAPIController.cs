@@ -44,6 +44,10 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/DepartmentAPI
+        /// <summary>
+        /// Get all departmens from database
+        /// </summary>
+        /// <returns>Task IEnumerable Department</returns>
         [HttpGet]
         public async Task<IEnumerable<Department>> GetDepartments()
         {
@@ -103,6 +107,11 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/DepartmentAPI/{id}
+        /// <summary>
+        /// Get a specific department by departmentID
+        /// </summary>
+        /// <param name="id">ID of departmentID</param>
+        /// <returns>IActionResult</returns>
         [HttpGet("{id:int}")]
         public IActionResult Get([FromRoute] int id)
         {
@@ -119,6 +128,11 @@ namespace StarCake.Server.Controllers
         }
         
         //PUT: api/DepartmentAPI
+        /// <summary>
+        /// Update the specific department
+        /// </summary>
+        /// <param name="department">Object departmentViewMode, passing data to update DB</param>
+        /// <returns>Task IActionResult</returns>
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] DepartmentViewModel department)
         {
@@ -174,6 +188,11 @@ namespace StarCake.Server.Controllers
         }
         
         // POST: api/DepartmentAPI
+        /// <summary>
+        /// Add a new department to database
+        /// </summary>
+        /// <param name="department">Object Department, passing data to update DB</param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = Roles.OrganizationMaintainer+ "," + Roles.Admin)]
         public async Task<IActionResult> Post([FromBody] Department department)
@@ -183,14 +202,13 @@ namespace StarCake.Server.Controllers
             await _departmentRepository.Save(department);
             return CreatedAtAction("Get", new { id = department.DepartmentId }, department);
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="departmentId"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
         /// api/DepartmentAPI/DepartmentUser/id
+        /// <summary>
+        /// Add a user to another department
+        /// </summary>
+        /// <param name="departmentId">int departmentId, passing data to add DB</param>
+        /// <param name="userId">string ApplicationUser, passing data to add DB</param>
+        /// <returns>IActionResult</returns>
         [HttpPost("DepartmentUser/{departmentId:int}")]
         [Authorize(Roles = Roles.OrganizationMaintainer + "," + Roles.Admin)]
         public async Task<IActionResult> Post([FromRoute] int departmentId, [FromBody] string userId)
@@ -225,6 +243,12 @@ namespace StarCake.Server.Controllers
         }
         
         //Delete
+        /// <summary>
+        /// Remove a users membership to a department
+        /// </summary>
+        /// <param name="departmentId">int departmentId, passing data to remove DB</param>
+        /// <param name="userId">string userId, passing data to remove DB</param>
+        /// <returns>IActionResult</returns>
         [HttpPost("DepartmentUserDelete/{departmentId:int}")]
         [Authorize(Roles = Roles.OrganizationMaintainer + "," + Roles.Admin)]
         public async Task<IActionResult> Delete([FromRoute] int departmentId, [FromBody] string userId)

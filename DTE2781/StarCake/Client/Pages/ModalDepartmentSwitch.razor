@@ -59,7 +59,6 @@ else
         var response = await Http.PutAsJsonAsync("api/ApplicationUserAPI/CURRENTDEPARTMENTID/" + AppData.CurrentUser.Id, _selectedDepartment.DepartmentId);
         if (response.IsSuccessStatusCode)
         {
-            Console.WriteLine(response);//AppData.CurrentUser.CurrentLoggedInDepartmentId = await response.Content.ReadFromJsonAsync<int>());
             await ModalInstance.CloseAsync(ModalResult.Ok(_selectedDepartment.DepartmentId));            
         }
             

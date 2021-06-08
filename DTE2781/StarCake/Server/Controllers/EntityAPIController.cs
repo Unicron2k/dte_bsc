@@ -28,6 +28,10 @@ namespace StarCake.Server.Controllers
         }
 
         // GET: api/EntityAPI
+        /// <summary>
+        /// Get all Entities from database
+        /// </summary>
+        /// <returns>IENumerable of Entities</returns>
         [HttpGet]
         public async Task<IEnumerable<Entity>> GetEntities()
         {
@@ -35,6 +39,11 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/EntityAPI/{id}
+        /// <summary>
+        /// Get a specific Entity from database
+        /// </summary>
+        /// <param name="id">int EntityID</param>
+        /// <returns>IActionResult Enitiy</returns>
         [HttpGet("{id:int}")]
         public IActionResult Get([FromRoute] int id)
         {
@@ -47,6 +56,12 @@ namespace StarCake.Server.Controllers
         }
         
         // PUT: api/EntityAPI/{id}
+        /// <summary>
+        /// Update the specific entity
+        /// </summary>
+        /// <param name="id">int EntityId</param>
+        /// <param name="entity">Object Entity, passing to update DB</param>
+        /// <returns>IActionResult</returns>
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Entity entity)
         {
@@ -68,6 +83,11 @@ namespace StarCake.Server.Controllers
         }
         
         // POST: api/EntityAPI
+        /// <summary>
+        /// Add a new Entity to DB
+        /// </summary>
+        /// <param name="entity">Object Entity, passing to add DB</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Entity entity)
         {

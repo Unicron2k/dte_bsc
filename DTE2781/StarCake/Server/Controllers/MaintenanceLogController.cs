@@ -38,20 +38,20 @@ namespace StarCake.Server.Controllers
         /// Get a specific maintenance-log
         /// </summary>
         /// <param name="id">ID of maintenance-log</param>
-        /// <returns>Task<MaintenanceLogViewModel></returns>
+        /// <returns>Task MaintenanceLogViewModel</returns>
         [HttpGet("{id:int}")]
         public async Task<MaintenanceLogViewModel> Get([FromRoute] int id)
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = await _userManager.FindByIdAsync(userId);
             var entity = await _maintenanceLogRepository.Get(id);
-            return entity.DepartmentId==user.CurrentLoggedInDepartmentId ? ToModel(entity) : new MaintenanceLogViewModel();
+            return entity?.DepartmentId==user.CurrentLoggedInDepartmentId ? ToModel(entity) : new MaintenanceLogViewModel();
         }
 
         /// <summary>
         /// Gets all logs for the current department in which the user is logged in to
         /// </summary>
-        /// <returns>Task<IEnumerable></returns>
+        /// <returns>Task IEnumerable</returns>
         [HttpGet("GetAll")]
         public async Task<IEnumerable<MaintenanceLogViewModel>> GetAll()
         {
@@ -65,7 +65,7 @@ namespace StarCake.Server.Controllers
         /// Save new maintenance-log to the database
         /// </summary>
         /// <param name="model">MaintenanceLogViewModel</param>
-        /// <returns>Task<IActionResult></returns>
+        /// <returns>Task IActionResult</returns>
         [HttpPost]
         public async Task<IActionResult> Save(MaintenanceLogItemViewModel model)
         {
@@ -98,9 +98,9 @@ namespace StarCake.Server.Controllers
                 Component = model.ComponentId == 0 ? null : component
             };
             await _maintenanceLogRepository.Save(logEntity);
-            var logSavedStatus = logEntity.MaintenanceLogId > 0 ? Ok("Maintenance-log saved successfully") : StatusCode(500, "Unable to save maintenance-log");
             
-            
+            if (logEntity.MaintenanceLogId < 1)
+                return StatusCode(500, "Unable to save maintenance-log");
 
             //if componentID>0, assume we have maintained a component
             if (component!=null)
@@ -130,7 +130,8 @@ namespace StarCake.Server.Controllers
                 }
             }
 
-            return logSavedStatus;
+            return Ok("Maintenance-log saved successfully");
+
         }
 
         /// <summary>

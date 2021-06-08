@@ -25,6 +25,10 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/TypeOfOperation/all
+        /// <summary>
+        /// Get all Type of operation from DB
+        /// </summary>
+        /// <returns>IEnumerable TypeOfOperation</returns>
         [HttpGet("all/")]
         public async Task<IEnumerable<TypeOfOperation>> GetTypeOfOperations()
         {
@@ -32,18 +36,29 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/TypeOfOperation/{id}
+        /// <summary>
+        /// Get a specific Type of operation
+        /// </summary>
+        /// <param name="id">int typeOfOperationId</param>
+        /// <returns>IActionResult </returns>
         [HttpGet("{id:int}")]
-        public IActionResult Get([FromRoute] int id)
+        public async Task<ActionResult<TypeOfOperation>> Get([FromRoute] int? id)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var typeOfOperation = _repository.Get(id);
-            if (typeOfOperation == null)
+            if (id == null)
+                return NotFound("Bad parameter");
+            var componentType = await _repository.Get(id);
+            if (componentType == null)
                 return NotFound();
-            return Ok(typeOfOperation);
+            return componentType;
         }
         
         // PUT: api/TypeOfOperation/{id}
+        /// <summary>
+        /// Update a specific Type of operation
+        /// </summary>
+        /// <param name="id">int typeOfOperationId</param>
+        /// <param name="typeOfOperation">Object TypeOfOperationViewModel, passing data to update DB</param>
+        /// <returns>IActionResult </returns>
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Put([FromRoute] int id, [FromBody] TypeOfOperationViewModel typeOfOperation)
         {
@@ -65,6 +80,11 @@ namespace StarCake.Server.Controllers
         }
         
         // POST: api/TypeOfOperation
+        /// <summary>
+        /// Add a new Type of operation to DB
+        /// </summary>
+        /// <param name="typeOfOperation">Object TypeOfOperation, passing data to DB</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] TypeOfOperation typeOfOperation)
         {

@@ -7,7 +7,7 @@ using System.Linq;
 namespace StarCake.Server.Models
 {
     /// <summary>
-    /// @Author
+    /// @Author aes014@uit.no
     /// </summary>
     public static class Utils
     {

@@ -31,6 +31,9 @@ namespace StarCake.Server.Controllers
         }
         
         // GET
+        /// <summary>
+        /// To claim privacy-policy
+        /// </summary>
         [Route("grant")]
         [Route("")]
         [HttpGet]
@@ -55,6 +58,10 @@ namespace StarCake.Server.Controllers
         }
         
         // GET
+        /// <summary>
+        /// Remove private-policy claim
+        /// </summary>
+        /// <returns></returns>
         [Route("withdraw")]
         [HttpGet]
         public async Task<IActionResult> Withdraw()

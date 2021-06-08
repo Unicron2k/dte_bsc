@@ -25,6 +25,10 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/FlightLogTypeOfOperationAPI
+        /// <summary>
+        /// Get all flightlog Type of operations
+        /// </summary>
+        /// <returns>IEnumerable FlightlogTypeOfOperation</returns>
         [HttpGet]
         public async Task<IEnumerable<FlightLogTypeOfOperation>> GetFlightLogTypeOfOperations()
         {
@@ -33,6 +37,11 @@ namespace StarCake.Server.Controllers
         }
         
         // GET: api/FlightLogTypeOfOperationAPI/{id}
+        /// <summary>
+        /// Get a specific Flightlog type of operation by id
+        /// </summary>
+        /// <param name="id">int typeOfOperationId</param>
+        /// <returns>IActionResult</returns>
         [HttpGet("{id}")]
         public IActionResult Get([FromRoute] int id)
         {
@@ -49,6 +58,11 @@ namespace StarCake.Server.Controllers
         }
         
         // POST: api/FlightLogTypeOfOperationAPI
+        /// <summary>
+        /// Add a new type of operation
+        /// </summary>
+        /// <param name="flightLogTypeOfOperation">Object FlightLogTypeOfOperation, passing to DB</param>
+        /// <returns>IActionResult</returns>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] FlightLogTypeOfOperation flightLogTypeOfOperation)
         {
@@ -61,6 +75,11 @@ namespace StarCake.Server.Controllers
         }
         
         // DELETE: api/FlightLogTypeOfOperationAPI/{id}
+        /// <summary>
+        /// Remove a Flightlog- type of operation
+        /// </summary>
+        /// <param name="id">int id to typeofoperation</param>
+        /// <returns>IActionResult</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFlightLogTypeOfOperation([FromRoute] int id)
         {

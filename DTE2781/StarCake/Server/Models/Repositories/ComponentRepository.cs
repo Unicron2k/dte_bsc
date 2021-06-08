@@ -19,6 +19,20 @@ namespace StarCake.Server.Models.Repositories
             _db = db;
         }
         
+        public async Task<IEnumerable<Component>> GetAll()
+        {
+            return await _db.Components
+                .ToListAsync();;
+        }
+
+        
+        public async Task<Component> Get(int? id)
+        {
+            if (id == null)
+                return new Component();
+            return await _db.Components.FirstOrDefaultAsync(c => c.ComponentId == id);
+        }
+        
         public async Task Update(Component component)
         {
             _db.Components.Update(component);
@@ -42,7 +56,6 @@ namespace StarCake.Server.Models.Repositories
             {
                 Console.WriteLine("");
                 componentViewModels.Add(viewModel);
-                // TODO: Add image in Component also
             }
             return componentViewModels;
         }

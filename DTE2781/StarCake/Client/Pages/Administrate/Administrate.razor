@@ -47,6 +47,7 @@
 
     <!-- Department Tab -->
     <AuthorizeView Roles="@($"{Roles.GetDepartmentMaintainerAndUp()}")">
+        <!--Sjekk etter hvilken avdeling brukeren er department i -->
         <MudTabPanel Text="Department" BadgeColor="Color.Dark">
             <MudTabs Elevation="2" Rounded="true" Centered="true">
                 <MudTabPanel Text="Users">
